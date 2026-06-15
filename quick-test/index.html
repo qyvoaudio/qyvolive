@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quick Test — Pitch infinito pra sua live no TikTok</title>
+<meta name="description" content="Sua voz sustenta a venda. Não você. Extensão Chrome que toca seu pitch em loop infinito direto no Live Studio. Gravou 1x, vende todo dia.">
+<meta property="og:title" content="Quick Test — Pitch infinito pra TikTok Live">
+<meta property="og:description" content="Gravou 1x. Toca o dia inteiro. Você só aparece pra fechar a venda.">
+<meta property="og:image" content="https://qyvolive.com.br/assets/01-popup-principal.png">
+<link rel="icon" href="assets/logo.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #0A0A0E;
+  --bg-2: #11111A;
+  --panel: #14141C;
+  --panel-hi: #1B1B26;
+  --border: #2A2A35;
+  --border-hi: #3A3A48;
+  --text: #F5F2E8;
+  --muted: #6B6B7A;
+  --muted-hi: #9B9AA8;
+  --accent: #FF1F8E;
+  --accent-2: #FF4D9F;
+  --accent-glow: rgba(255, 31, 142, 0.35);
+  --signal: #00FF9D;
+  --signal-glow: rgba(0, 255, 157, 0.25);
+  --warn: #FFB800;
+
+  --display: "Anton", "Bebas Neue", "Impact", sans-serif;
+  --body: "DM Sans", system-ui, sans-serif;
+  --mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  font-size: 17px;
+  line-height: 1.55;
+  overflow-x: hidden;
+  position: relative;
+  font-weight: 400;
+}
+
+/* Grain noise overlay — adds texture */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  mix-blend-mode: overlay;
+}
+
+/* Subtle scan lines for broadcast feel */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255,255,255,0.012) 2px,
+    rgba(255,255,255,0.012) 4px
+  );
+}
+
+/* ═══ HEADER STRIP (broadcast console) ═══ */
+.strip {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  background: rgba(10, 10, 14, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  z-index: 100;
+  padding: 14px 32px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.strip .logo {
+  width: 28px; height: 28px;
+  background: var(--accent);
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  filter: drop-shadow(0 0 8px var(--accent-glow));
+}
+.strip .brand { font-weight: 700; font-size: 13px; letter-spacing: 0.12em; }
+.strip .brand .mark { color: var(--accent); margin: 0 1px; }
+.strip .led {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px;
+  background: rgba(255, 31, 142, 0.1);
+  border: 1px solid rgba(255, 31, 142, 0.3);
+  border-radius: 100px;
+  color: var(--accent);
+  font-weight: 700;
+}
+.strip .led::before {
+  content: "";
+  width: 6px; height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+  box-shadow: 0 0 6px var(--accent);
+  animation: blink 1.4s ease-in-out infinite;
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+.strip .spacer { flex: 1; }
+.strip nav { display: flex; gap: 22px; }
+.strip nav a { color: var(--muted-hi); text-decoration: none; }
+.strip nav a:hover { color: var(--text); }
+.strip .cta {
+  background: var(--accent);
+  color: white;
+  padding: 8px 18px;
+  border-radius: 100px;
+  text-decoration: none;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  transition: all 0.2s;
+}
+.strip .cta:hover {
+  background: var(--accent-2);
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+
+/* ═══ HERO ═══ */
+.hero {
+  min-height: 100vh;
+  padding: 140px 32px 80px;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 80px;
+  max-width: 1400px;
+  margin: 0 auto;
+  align-items: center;
+  position: relative;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  top: 200px;
+  right: -200px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(40px);
+}
+
+.hero-content { position: relative; z-index: 1; }
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--signal);
+  margin-bottom: 32px;
+  padding: 8px 16px;
+  background: rgba(0, 255, 157, 0.07);
+  border: 1px solid rgba(0, 255, 157, 0.25);
+  border-radius: 100px;
+}
+.eyebrow::before {
+  content: "";
+  width: 6px; height: 6px;
+  background: var(--signal);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--signal-glow);
+}
+
+h1 {
+  font-family: var(--display);
+  font-size: clamp(56px, 9vw, 120px);
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  margin-bottom: 28px;
+  position: relative;
+}
+h1 .magenta {
+  color: var(--accent);
+  text-shadow: 0 0 40px var(--accent-glow);
+}
+h1 .strike {
+  position: relative;
+  display: inline-block;
+  color: var(--muted);
+}
+h1 .strike::after {
+  content: "";
+  position: absolute;
+  top: 50%; left: -4%;
+  width: 108%;
+  height: 6px;
+  background: var(--accent);
+  transform: rotate(-3deg);
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+
+.hero-sub {
+  font-size: 22px;
+  line-height: 1.45;
+  color: var(--muted-hi);
+  max-width: 520px;
+  margin-bottom: 40px;
+}
+.hero-sub strong { color: var(--text); font-weight: 500; }
+
+.hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-bottom: 50px; }
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--accent);
+  color: white;
+  padding: 18px 32px;
+  border-radius: 100px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.02em;
+  transition: all 0.2s;
+  box-shadow: 0 8px 32px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,0.2);
+  font-family: var(--body);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 48px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+.btn-primary .arrow { transition: transform 0.2s; }
+.btn-primary:hover .arrow { transform: translateX(4px); }
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+  padding: 16px 26px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 15px;
+  border: 1px solid var(--border-hi);
+  border-radius: 100px;
+  transition: all 0.2s;
+}
+.btn-ghost:hover { border-color: var(--text); }
+
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  border-top: 1px solid var(--border);
+  padding-top: 32px;
+}
+.stat .num {
+  font-family: var(--display);
+  font-size: 44px;
+  line-height: 1;
+  color: var(--accent);
+}
+.stat .lbl {
+  font-family: var(--mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+/* ═══ HERO mockup (right side) ═══ */
+.hero-mockup {
+  position: relative;
+  z-index: 1;
+  perspective: 1500px;
+}
+.mockup-frame {
+  position: relative;
+  background: var(--panel);
+  border: 1px solid var(--border-hi);
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 80px rgba(255,31,142,0.15);
+  transform: rotate(-3deg);
+  transition: transform 0.4s ease;
+}
+.mockup-frame:hover { transform: rotate(0deg) translateY(-8px); }
+.mockup-frame::before {
+  content: "● ● ●";
+  position: absolute;
+  top: -22px; left: 14px;
+  font-size: 12px;
+  letter-spacing: 4px;
+  color: var(--muted);
+  opacity: 0.4;
+}
+.mockup-frame img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 6px;
+}
+.mockup-tag {
+  position: absolute;
+  bottom: -16px; right: -16px;
+  background: var(--signal);
+  color: var(--bg);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 10px 18px;
+  border-radius: 100px;
+  box-shadow: 0 0 20px var(--signal-glow);
+}
+
+/* ═══ Section base ═══ */
+section.block {
+  padding: 100px 32px;
+  position: relative;
+}
+.wrap { max-width: 1280px; margin: 0 auto; }
+
+.sec-header { margin-bottom: 60px; }
+.sec-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sec-label::before {
+  content: "";
+  width: 24px;
+  height: 1px;
+  background: var(--accent);
+}
+.sec-title {
+  font-family: var(--display);
+  font-size: clamp(40px, 6vw, 72px);
+  line-height: 0.95;
+  text-transform: uppercase;
+  max-width: 900px;
+  letter-spacing: -0.01em;
+}
+.sec-title em {
+  color: var(--accent);
+  font-style: normal;
+}
+.sec-sub {
+  font-size: 18px;
+  color: var(--muted-hi);
+  max-width: 640px;
+  margin-top: 18px;
+}
+
+/* ═══ PROBLEMA — "antes / depois" ═══ */
+.contrast {
+  background: var(--bg-2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.contrast-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-top: 60px;
+}
+.contrast-card {
+  padding: 36px;
+  border-radius: 14px;
+  position: relative;
+}
+.contrast-card.before {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+}
+.contrast-card.after {
+  background: linear-gradient(135deg, rgba(255,31,142,0.08), rgba(255,31,142,0.02));
+  border: 1px solid rgba(255, 31, 142, 0.4);
+  box-shadow: 0 0 60px rgba(255,31,142,0.08);
+}
+.contrast-card h3 {
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  margin-bottom: 24px;
+  color: var(--muted);
+}
+.contrast-card.after h3 { color: var(--accent); }
+.contrast-card ul { list-style: none; }
+.contrast-card li {
+  padding: 14px 0;
+  border-bottom: 1px dashed var(--border);
+  font-size: 16px;
+  line-height: 1.5;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.contrast-card li:last-child { border-bottom: 0; }
+.contrast-card.before li::before {
+  content: "✗";
+  color: var(--muted);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.contrast-card.after li::before {
+  content: "→";
+  color: var(--accent);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ═══ COMO FUNCIONA — timeline ═══ */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  margin-top: 60px;
+  position: relative;
+}
+.steps::before {
+  content: "";
+  position: absolute;
+  top: 32px;
+  left: 16%;
+  right: 16%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  z-index: 0;
+}
+.step {
+  position: relative;
+  z-index: 1;
+  padding: 32px 28px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  transition: all 0.3s;
+}
+.step:hover {
+  border-color: var(--accent);
+  transform: translateY(-4px);
+}
+.step-num {
+  font-family: var(--display);
+  font-size: 48px;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 18px;
+  position: relative;
+}
+.step-num::after {
+  content: "";
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  background: var(--bg);
+  border: 1px solid var(--accent);
+  border-radius: 50%;
+  vertical-align: super;
+  margin-left: 6px;
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+.step h3 {
+  font-family: var(--display);
+  font-size: 24px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  letter-spacing: 0.01em;
+}
+.step p {
+  color: var(--muted-hi);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* ═══ SCREENSHOTS — broadcast monitor stack ═══ */
+.shots {
+  background: var(--bg-2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.shot-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 24px;
+  margin-top: 60px;
+}
+.shot {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  position: relative;
+}
+.shot::before {
+  content: "REC";
+  position: absolute;
+  top: -10px;
+  left: 16px;
+  background: var(--accent);
+  color: white;
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.1em;
+}
+.shot img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 6px;
+}
+.shot .cap {
+  margin-top: 14px;
+  padding: 0 4px 4px;
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+.shot .cap strong { color: var(--text); font-weight: 500; }
+.shot.s1 { grid-column: span 7; }
+.shot.s2 { grid-column: span 5; }
+.shot.s3 { grid-column: span 5; }
+.shot.s4 { grid-column: span 7; }
+
+/* ═══ PRA QUEM É ═══ */
+.audience {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-top: 60px;
+}
+.aud-card {
+  padding: 28px 24px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  transition: all 0.3s;
+}
+.aud-card:hover {
+  border-color: var(--accent);
+  background: var(--panel-hi);
+}
+.aud-card .ic {
+  font-size: 32px;
+  display: block;
+  margin-bottom: 16px;
+  filter: grayscale(1);
+  transition: filter 0.3s;
+}
+.aud-card:hover .ic { filter: none; }
+.aud-card h4 {
+  font-family: var(--display);
+  font-size: 22px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  letter-spacing: 0.01em;
+}
+.aud-card p {
+  font-size: 14px;
+  color: var(--muted-hi);
+  line-height: 1.5;
+}
+
+/* ═══ PREÇO ═══ */
+.pricing {
+  background:
+    radial-gradient(ellipse at top, rgba(255,31,142,0.12), transparent 60%),
+    var(--bg);
+  text-align: center;
+}
+.price-card {
+  max-width: 540px;
+  margin: 60px auto 0;
+  background: var(--panel);
+  border: 1px solid var(--border-hi);
+  border-radius: 20px;
+  padding: 48px 40px;
+  position: relative;
+  box-shadow: 0 30px 80px rgba(255,31,142,0.15);
+  text-align: left;
+}
+.price-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  padding: 1px;
+  background: linear-gradient(135deg, var(--accent), transparent 40%, transparent 60%, var(--accent));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+.price-badge {
+  display: inline-block;
+  background: var(--accent);
+  color: white;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  padding: 6px 14px;
+  border-radius: 100px;
+  margin-bottom: 22px;
+}
+.price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.price-from {
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--muted);
+  text-decoration: line-through;
+}
+.price-now {
+  font-family: var(--display);
+  font-size: 72px;
+  line-height: 1;
+  color: var(--accent);
+  letter-spacing: -0.02em;
+}
+.price-cents { font-size: 28px; color: var(--accent); }
+.price-period {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 28px;
+}
+.price-features { list-style: none; margin: 24px 0; }
+.price-features li {
+  padding: 10px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 15px;
+  border-top: 1px dashed var(--border);
+}
+.price-features li:first-child { border-top: 0; }
+.price-features li::before {
+  content: "▸";
+  color: var(--accent);
+  font-weight: 700;
+}
+.price-card .btn-primary {
+  width: 100%;
+  justify-content: center;
+  margin-top: 12px;
+  padding: 22px;
+  font-size: 17px;
+}
+.price-foot {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 18px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* ═══ FAQ ═══ */
+.faq {
+  background: var(--bg-2);
+  border-top: 1px solid var(--border);
+}
+.faq-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 60px;
+}
+details.qa {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+details.qa[open] { border-color: var(--accent); }
+details.qa summary {
+  padding: 22px 26px;
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--display);
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+details.qa summary::-webkit-details-marker { display: none; }
+details.qa summary::after {
+  content: "+";
+  font-family: var(--display);
+  font-size: 28px;
+  color: var(--accent);
+  transition: transform 0.2s;
+  line-height: 1;
+}
+details.qa[open] summary::after { transform: rotate(45deg); }
+details.qa .body {
+  padding: 0 26px 24px;
+  color: var(--muted-hi);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+/* ═══ Final CTA strip ═══ */
+.final {
+  padding: 120px 32px;
+  text-align: center;
+  background: var(--bg);
+  position: relative;
+}
+.final::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, var(--accent-glow), transparent 60%);
+  opacity: 0.3;
+  pointer-events: none;
+}
+.final-eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  margin-bottom: 24px;
+}
+.final h2 {
+  font-family: var(--display);
+  font-size: clamp(48px, 8vw, 96px);
+  line-height: 0.92;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+  position: relative;
+  z-index: 1;
+}
+.final h2 em { color: var(--accent); font-style: normal; }
+.final p {
+  font-size: 19px;
+  color: var(--muted-hi);
+  max-width: 540px;
+  margin: 0 auto 40px;
+  position: relative;
+  z-index: 1;
+}
+.final .btn-primary {
+  position: relative;
+  z-index: 1;
+  padding: 22px 44px;
+  font-size: 18px;
+}
+
+/* ═══ Footer ═══ */
+footer {
+  padding: 40px 32px;
+  border-top: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+footer a { color: var(--muted-hi); text-decoration: none; }
+footer a:hover { color: var(--accent); }
+footer .links { display: flex; gap: 22px; flex-wrap: wrap; }
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width: 980px) {
+  .strip { padding: 12px 18px; gap: 12px; }
+  .strip nav { display: none; }
+  .hero { padding: 110px 20px 60px; grid-template-columns: 1fr; gap: 60px; }
+  .hero-mockup { max-width: 480px; margin: 0 auto; }
+  section.block { padding: 70px 20px; }
+  .contrast-grid { grid-template-columns: 1fr; }
+  .steps { grid-template-columns: 1fr; }
+  .steps::before { display: none; }
+  .shot-grid > * { grid-column: 1 / -1 !important; }
+  .audience { grid-template-columns: repeat(2, 1fr); }
+  .faq-grid { grid-template-columns: 1fr; }
+  .final { padding: 80px 20px; }
+}
+@media (max-width: 520px) {
+  .audience { grid-template-columns: 1fr; }
+  .hero-stats { grid-template-columns: 1fr; gap: 18px; }
+}
+
+/* ═══ Entrance animations ═══ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.hero-content > * { animation: fadeUp 0.7s ease-out backwards; }
+.hero-content .eyebrow { animation-delay: 0.05s; }
+.hero-content h1 { animation-delay: 0.15s; }
+.hero-content .hero-sub { animation-delay: 0.3s; }
+.hero-content .hero-ctas { animation-delay: 0.45s; }
+.hero-content .hero-stats { animation-delay: 0.6s; }
+.hero-mockup { animation: fadeUp 0.9s 0.4s ease-out backwards; }
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER STRIP ═══ -->
+<div class="strip">
+  <div class="logo"></div>
+  <div class="brand">QUICK<span class="mark">·</span>TEST</div>
+  <span class="led">ON AIR</span>
+  <div class="spacer"></div>
+  <nav>
+    <a href="#como-funciona">Como funciona</a>
+    <a href="#shots">Por dentro</a>
+    <a href="#preco">Preço</a>
+    <a href="#faq">FAQ</a>
+  </nav>
+  <a href="#preco" class="cta">Comprar</a>
+</div>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="eyebrow">EXTENSÃO CHROME · TIKTOK LIVE STUDIO</div>
+    <h1>
+      <span class="strike">Você</span> gravando<br>
+      seu pitch <span class="magenta">o dia inteiro?</span><br>
+      <span style="color: var(--text);">Acabou.</span>
+    </h1>
+    <p class="hero-sub">
+      <strong>Quick Test</strong> toca seu roteiro de venda em loop infinito direto no Live Studio.
+      Você grava 1 vez, deixa rolando, e <strong>só aparece pra fechar a venda</strong>.
+    </p>
+    <div class="hero-ctas">
+      <a href="#preco" class="btn-primary">
+        Quero pitch infinito <span class="arrow">→</span>
+      </a>
+      <a href="#como-funciona" class="btn-ghost">
+        ▸ Ver como funciona
+      </a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="num">0h</div>
+        <div class="lbl">gravando ao vivo</div>
+      </div>
+      <div class="stat">
+        <div class="num">∞</div>
+        <div class="lbl">horas de transmissão</div>
+      </div>
+      <div class="stat">
+        <div class="num">7×</div>
+        <div class="lbl">lives simultâneas*</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-mockup">
+    <div class="mockup-frame">
+      <img src="assets/01-popup-principal.png" alt="Quick Test rodando — interface principal">
+      <span class="mockup-tag">▸ AO VIVO</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PROBLEMA / SOLUÇÃO ═══ -->
+<section class="block contrast">
+  <div class="wrap">
+    <div class="sec-header">
+      <div class="sec-label">o problema real</div>
+      <h2 class="sec-title">Live seller bom <em>queima a voz.</em><br>Live seller esperto <em>queima a tela.</em></h2>
+    </div>
+    <div class="contrast-grid">
+      <div class="contrast-card before">
+        <h3>▸ Antes — você na luta</h3>
+        <ul>
+          <li>8 horas falando direto. Pigarro, voz arranhada, dor de cabeça</li>
+          <li>Mesmo pitch repetido até virar pesadelo</li>
+          <li>Não consegue ir no banheiro sem cortar a live</li>
+          <li>1 conta por vez. Multi-live? Impossível</li>
+          <li>Esquece de mencionar o cupom, perde venda</li>
+          <li>Voz cansa = audiência some no final do dia</li>
+        </ul>
+      </div>
+      <div class="contrast-card after">
+        <h3>▸ Depois — Quick Test no comando</h3>
+        <ul>
+          <li>Grava 1x cada categoria. Áudio toca sozinho 8h, 12h, 24h</li>
+          <li>Mix inteligente que NÃO repete frase seguida</li>
+          <li>Sininho automático em prova social. CTA na sacolinha laranja constante</li>
+          <li>Cabos virtuais → roda em 2, 3, 7 lives ao mesmo tempo</li>
+          <li>Cupom, escassez, garantia, FOMO — tudo automatizado</li>
+          <li>Você só entra ao vivo pra agradecer venda, responder dúvida ou apresentar produto novo</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ COMO FUNCIONA ═══ -->
+<section class="block" id="como-funciona">
+  <div class="wrap">
+    <div class="sec-header">
+      <div class="sec-label">setup em 10 minutos</div>
+      <h2 class="sec-title">Não precisa <em>aprender nada novo.</em></h2>
+      <p class="sec-sub">Se você sabe abrir o Live Studio, sabe usar Quick Test. Sério.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <h3>Grava seu roteiro</h3>
+        <p>Você grava 1 áudio por categoria: gancho, oferta, prova social, escassez, CTA. Pode usar IA pra gerar as frases — Quick Test tem gerador embutido (Claude / GPT / Gemini).</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <h3>Cola na extensão</h3>
+        <p>Sobe os áudios em categorias. Configura sininho de prova social, sons de ambiente, vídeo da live. Tudo organizado em perfis — 1 perfil por produto.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <h3>Aperta play. Vai viver.</h3>
+        <p>Quick Test sequencia automaticamente, sem repetir, com pausas naturais. O áudio sai pelo cabo virtual (BlackHole / VB-Cable) direto no Live Studio. Você fecha o notebook e vai pro almoço.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SCREENSHOTS ═══ -->
+<section class="block shots" id="shots">
+  <div class="wrap">
+    <div class="sec-header">
+      <div class="sec-label">por dentro</div>
+      <h2 class="sec-title">Console de <em>broadcast</em><br>na palma da mão.</h2>
+      <p class="sec-sub">Cada perfil é uma "estação" completa: 17 categorias de frase, sininho, ambient noise, vídeo, timer de live, output device.</p>
+    </div>
+    <div class="shot-grid">
+      <div class="shot s1">
+        <img src="assets/01-popup-principal.png" alt="Popup principal — play/stop, perfil ativo, duração">
+        <div class="cap"><strong>Console principal</strong> · play / stop / perfil / cabo virtual</div>
+      </div>
+      <div class="shot s2">
+        <img src="assets/02-config-header.png" alt="Tela de configuração — perfis, gerador IA">
+        <div class="cap"><strong>Configurações</strong> · gerencia perfis</div>
+      </div>
+      <div class="shot s3">
+        <img src="assets/04-gerador-ia.png" alt="Gerador de roteiro com IA">
+        <div class="cap"><strong>Gerador IA</strong> · 161 frases em 1 click</div>
+      </div>
+      <div class="shot s4">
+        <img src="assets/03-cards-biblioteca.png" alt="Biblioteca de áudios por categoria">
+        <div class="cap"><strong>Biblioteca</strong> · 17 categorias · upload por click</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PRA QUEM É ═══ -->
+<section class="block">
+  <div class="wrap">
+    <div class="sec-header">
+      <div class="sec-label">público</div>
+      <h2 class="sec-title">Feito pra <em>quem vive em live.</em></h2>
+    </div>
+    <div class="audience">
+      <div class="aud-card">
+        <span class="ic">🛒</span>
+        <h4>TikTok Shop seller</h4>
+        <p>Vende em live de 4h+ e quer manter a presença mesmo quando precisa descansar a voz</p>
+      </div>
+      <div class="aud-card">
+        <span class="ic">🏠</span>
+        <h4>Multi-conta solo</h4>
+        <p>Roda 2, 3, 7 contas TikTok em paralelo (Sandboxie ou MultiLogin) e precisa de áudio em todas</p>
+      </div>
+      <div class="aud-card">
+        <span class="ic">🎯</span>
+        <h4>Afiliado / dropshipper</h4>
+        <p>Não tem voz pra ficar 8h ao vivo, mas quer aproveitar a audiência sustentada</p>
+      </div>
+      <div class="aud-card">
+        <span class="ic">📊</span>
+        <h4>Agência de live</h4>
+        <p>Gerencia múltiplos sellers e precisa padronizar o pitch com qualidade profissional</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PREÇO ═══ -->
+<section class="block pricing" id="preco">
+  <div class="wrap">
+    <div class="sec-header" style="text-align: center;">
+      <div class="sec-label" style="justify-content: center;">oferta de lançamento</div>
+      <h2 class="sec-title" style="margin: 0 auto;">Paga 1 vez por ano. <em>Sem mensalidade.</em></h2>
+    </div>
+    <div class="price-card">
+      <div class="price-badge">▸ EARLY ADOPTER · 10 PRIMEIRAS LICENÇAS</div>
+      <div class="price-row">
+        <span class="price-from">R$ 247/ano</span>
+      </div>
+      <div class="price-row" style="margin-bottom: 8px; align-items: baseline;">
+        <span style="color: var(--muted); font-family: var(--mono); font-size: 14px;">R$</span>
+        <span class="price-now">197</span>
+        <span style="color: var(--muted-hi); font-family: var(--mono); font-size: 16px; margin-left: 4px;">/ ano</span>
+      </div>
+      <div class="price-period">12 meses de uso pleno · sem mensalidade</div>
+      <ul class="price-features">
+        <li>Acesso completo a todas as funcionalidades da extensão por 1 ano</li>
+        <li>Gerador de roteiro com Claude, GPT e Gemini integrados</li>
+        <li>2 máquinas por licença (PC casa + notebook trabalho)</li>
+        <li>Updates inclusos durante o período ativo</li>
+        <li>Suporte por WhatsApp direto com a Carol</li>
+        <li>Backup &amp; sync entre máquinas (v0.9.1+)</li>
+        <li>Renovação opcional após 12 meses — você escolhe</li>
+      </ul>
+      <a href="https://pay.kiwify.com.br/geJVKFP" class="btn-primary">
+        ▸ Garantir minha licença anual <span class="arrow">→</span>
+      </a>
+      <div class="price-foot">
+        🔒 Pagamento seguro Kiwify · 7 dias de garantia
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FAQ ═══ -->
+<section class="block faq" id="faq">
+  <div class="wrap">
+    <div class="sec-header">
+      <div class="sec-label">perguntas frequentes</div>
+      <h2 class="sec-title">Dúvidas? <em>Tô aqui.</em></h2>
+    </div>
+    <div class="faq-grid">
+      <details class="qa">
+        <summary>O TikTok não bane quem usa áudio gravado?</summary>
+        <div class="body">Não. Quick Test não falsifica nada — você está usando seu próprio áudio gravado por você. É exatamente igual a tocar uma playlist de música ou ler um teleprompter. Milhares de sellers fazem isso. O que o TikTok pune é áudio com direito autoral de terceiros, conteúdo proibido, ou bots automatizados — nada disso aqui.</div>
+      </details>
+      <details class="qa">
+        <summary>Tem manual de uso completo?</summary>
+        <div class="body">Sim. <a href="/quick-test/manual/" style="color:var(--accent);">qyvolive.com.br/quick-test/manual/</a> — passo a passo do zero: criar perfil, gerar roteiro com IA, gravar áudios, subir na extensão, configurar Live Studio. Cobre tudo que cliente precisa saber.</div>
+      </details>
+      <details class="qa">
+        <summary>Funciona no Mac e no Windows?</summary>
+        <div class="body">Sim, em ambos. No Mac você usa <strong>BlackHole 2ch</strong> (grátis) como cabo virtual. No Windows, <strong>VB-Cable</strong> (grátis). <a href="/quick-test/instalacao/" style="color:var(--accent);">Tutorial completo de instalação aqui →</a><br>A extensão roda em qualquer Chrome MV3, então também funciona no Brave, Edge e Arc.</div>
+      </details>
+      <details class="qa">
+        <summary>Preciso saber gravar áudio ou usar software técnico?</summary>
+        <div class="body">Não. Você grava direto no celular (qualquer Voice Recorder), salva como mp3 ou m4a, e arrasta pra dentro do Quick Test. Se quiser, o gerador de IA embutido escreve as frases pra você só falar.</div>
+      </details>
+      <details class="qa">
+        <summary>Tem mensalidade? Como funciona a renovação?</summary>
+        <div class="body">Zero mensalidade. Você paga <strong>R$ 197 hoje e usa por 12 meses</strong> — sem débito automático, sem cartão preso. Depois de 1 ano, se quiser continuar usando, renova por mais R$ 197 (preço de early adopter trava pra você). Se não renovar, a extensão para de funcionar mas seus dados ficam preservados. Esse preço é só pras 10 primeiras licenças — depois sobe pra R$ 247/ano.</div>
+      </details>
+      <details class="qa">
+        <summary>Como funciona o limite de 2 máquinas?</summary>
+        <div class="body">A chave funciona em até 2 dispositivos diferentes (ex: notebook + PC casa). Se você usa <strong>Sandboxie pra rodar 7 lives na mesma máquina física</strong>, todas contam como <strong>1 dispositivo só</strong> — porque o hardware é o mesmo. Se trocar de PC, é só me chamar que reseto.</div>
+      </details>
+      <details class="qa">
+        <summary>E se eu não gostar?</summary>
+        <div class="body">7 dias de garantia incondicional pela Kiwify. Testou, não curtiu, pede reembolso e devolvo 100% do valor. Sem perguntas.</div>
+      </details>
+      <details class="qa">
+        <summary>O suporte é mesmo direto com você?</summary>
+        <div class="body">Direto comigo, Carol. WhatsApp pessoal pra cliente Quick Test. Respondo até em horário de live (mas se eu tiver vendendo, demoro 1-2h pra responder).</div>
+      </details>
+      <details class="qa">
+        <summary>A extensão está na Chrome Web Store?</summary>
+        <div class="body">Sim, listada oficialmente. Você instala pelo link que mando após a compra. Update automático pela Store.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FINAL CTA ═══ -->
+<section class="final">
+  <div class="final-eyebrow">▸ ÚLTIMA CHAMADA</div>
+  <h2>Sua live não <em>precisa</em><br>da sua voz.</h2>
+  <p>Ela precisa do seu pitch. E ele já tá pronto na sua cabeça. Só falta a ferramenta que toca em loop infinito.</p>
+  <a href="https://pay.kiwify.com.br/geJVKFP" class="btn-primary">
+    Quero ON AIR 24/7 <span class="arrow">→</span>
+  </a>
+</section>
+
+<footer>
+  <div>© 2026 QYVO · TODOS OS DIREITOS RESERVADOS</div>
+  <div class="links">
+    <a href="https://qyvoaudio.github.io/quicktest-policy/" target="_blank">Política de privacidade</a>
+    <a href="mailto:contato@qyvolive.com.br">contato@qyvolive.com.br</a>
+  </div>
+</footer>
+
+</body>
+</html>
