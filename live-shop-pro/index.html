@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Shop Pro — Qyvo Live</title>
+<meta name="description" content="Comando central da sua live no TikTok Shop. Flash sale automatizada, IA no chat, moderação anti-bot e alertas no Telegram — tudo num painel só.">
+<meta property="og:title" content="Live Shop Pro — Qyvo Live">
+<meta property="og:description" content="Comando central da sua live no TikTok Shop. Flash sale, IA no chat, moderação e alertas — tudo num painel.">
+<meta property="og:type" content="website">
+<link rel="icon" href="/assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0E0B14;
+  --bg-2: #14101D;
+  --panel: #1A1424;
+  --panel-hi: #221733;
+  --border: #2B2238;
+  --border-hi: #3D3148;
+  --text: #F5EFE5;
+  --muted: #7A6F84;
+  --muted-hi: #A89DB5;
+  --accent: #FF1F8E;
+  --accent2: #9B5CFF;
+  --accent-glow: rgba(255, 31, 142, 0.25);
+  --soft: #E4B8C9;
+  --serif: "Fraunces", Georgia, serif;
+  --sans: "Inter", system-ui, sans-serif;
+  --mono: "JetBrains Mono", monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+body::before {
+  content: "";
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 1000;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  mix-blend-mode: overlay;
+}
+a { color: inherit; text-decoration: none; transition: color .2s; }
+::selection { background: var(--accent); color: var(--bg); }
+
+/* ═══════════════════════════════════════════════════════════════
+   NAV
+══════════════════════════════════════════════════════════════ */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 22px 40px;
+  display: flex; align-items: center; gap: 28px;
+  background: rgba(14, 11, 20, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(43, 34, 56, 0.5);
+}
+.brand {
+  font-family: var(--serif);
+  font-size: 22px; font-weight: 600;
+  letter-spacing: -0.01em;
+  font-style: italic;
+}
+.brand .y { color: var(--accent); font-style: normal; }
+.breadcrumb {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.breadcrumb .sep { margin: 0 10px; color: var(--border-hi); }
+.breadcrumb .here { color: var(--accent); }
+.nav .spacer { flex: 1; }
+.nav-cta {
+  font-family: var(--mono);
+  font-size: 12px; letter-spacing: 0.08em;
+  color: var(--bg);
+  background: var(--accent);
+  padding: 8px 18px;
+  border-radius: 6px;
+  transition: transform .2s;
+}
+.nav-cta:hover { transform: translateY(-1px); }
+
+@media (max-width: 720px) {
+  .nav { padding: 16px 20px; gap: 14px; }
+  .breadcrumb { display: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HERO
+══════════════════════════════════════════════════════════════ */
+.hero {
+  padding: 160px 40px 80px;
+  max-width: 1100px;
+  margin: 0 auto;
+  position: relative;
+}
+.hero::before {
+  content: "";
+  position: absolute;
+  top: 60px; right: -200px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, var(--accent-glow), transparent 60%);
+  pointer-events: none; filter: blur(80px); z-index: 0;
+}
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 60px;
+  align-items: center;
+  position: relative; z-index: 1;
+}
+@media (max-width: 880px) {
+  .hero { padding: 130px 24px 60px; }
+  .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+}
+
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 12px;
+  font-family: var(--mono);
+  font-size: 11px; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--accent);
+  margin-bottom: 32px;
+}
+.eyebrow::before {
+  content: ""; width: 32px; height: 1px; background: var(--accent);
+}
+.hero h1 {
+  font-family: var(--serif);
+  font-size: clamp(40px, 6.5vw, 76px);
+  font-weight: 400;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.hero h1 em {
+  font-style: italic; font-weight: 600;
+  background: linear-gradient(95deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+}
+.hero-sub {
+  font-size: 18px;
+  color: var(--muted-hi);
+  margin: 28px 0 36px;
+  max-width: 540px;
+  line-height: 1.55;
+}
+.hero-ctas {
+  display: flex; flex-wrap: wrap; gap: 14px; align-items: center;
+}
+.cta-primary {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--accent);
+  color: var(--bg);
+  font-family: var(--sans);
+  font-weight: 600; font-size: 15px;
+  padding: 16px 26px;
+  border-radius: 10px;
+  letter-spacing: -0.005em;
+  transition: transform .2s, box-shadow .2s;
+  box-shadow: 0 10px 32px -10px var(--accent-glow);
+}
+.cta-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 40px -8px rgba(255,31,142,.5);
+}
+.cta-primary .arrow { transition: transform .2s; }
+.cta-primary:hover .arrow { transform: translateX(3px); }
+.cta-secondary {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: var(--muted-hi);
+  font-family: var(--mono); font-size: 13px;
+  letter-spacing: 0.06em;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+  transition: border-color .2s, color .2s;
+}
+.cta-secondary:hover { color: var(--accent); border-color: var(--accent); }
+
+.cupom-badge {
+  display: inline-flex; align-items: baseline; gap: 12px;
+  margin-top: 28px;
+  padding: 12px 18px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--muted-hi);
+}
+.cupom-badge code {
+  font-family: var(--mono); font-size: 13px;
+  color: var(--accent); font-weight: 500;
+  letter-spacing: 0.05em;
+}
+.cupom-badge em {
+  font-family: var(--serif); font-style: italic;
+  color: var(--soft); font-size: 13.5px;
+}
+
+/* Hero visual */
+.hero-visual {
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.hero-icon {
+  width: 100%; max-width: 320px;
+  aspect-ratio: 1/1;
+  border-radius: 32px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  box-shadow: 0 30px 80px -30px rgba(255,31,142,.4);
+}
+.hero-icon svg { width: 60%; height: 60%; }
+.hero-icon::before {
+  content: '';
+  position: absolute; inset: -1px;
+  border-radius: 32px;
+  padding: 1px;
+  background: linear-gradient(135deg, var(--accent), transparent 50%, var(--accent2));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  pointer-events: none;
+  opacity: .5;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION COMMONS
+══════════════════════════════════════════════════════════════ */
+section { padding: 100px 40px; max-width: 1100px; margin: 0 auto; position: relative; }
+@media (max-width: 720px) { section { padding: 70px 24px; } }
+.sec-label {
+  font-family: var(--mono);
+  font-size: 11px; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 18px;
+}
+.sec-title {
+  font-family: var(--serif);
+  font-size: clamp(32px, 5vw, 54px);
+  font-weight: 400; line-height: 1.05;
+  letter-spacing: -0.015em;
+  margin-bottom: 60px;
+  max-width: 780px;
+}
+.sec-title em {
+  font-style: italic; font-weight: 600;
+  color: var(--accent);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FEATURES
+══════════════════════════════════════════════════════════════ */
+.features-section { border-top: 1px solid var(--border); }
+.features {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+@media (max-width: 720px) { .features { grid-template-columns: 1fr; } }
+.feat {
+  padding: 28px 26px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  transition: border-color .25s, transform .25s;
+}
+.feat:hover { border-color: var(--border-hi); transform: translateY(-2px); }
+.feat-icon {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255, 31, 142, 0.08);
+  border-radius: 9px;
+  margin-bottom: 18px;
+  color: var(--accent);
+}
+.feat-icon svg { width: 18px; height: 18px; }
+.feat-name {
+  font-family: var(--serif);
+  font-size: 22px; font-weight: 600;
+  font-style: italic;
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+.feat-desc {
+  font-size: 14.5px;
+  color: var(--muted-hi);
+  line-height: 1.55;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COMO FUNCIONA
+══════════════════════════════════════════════════════════════ */
+.how-section { border-top: 1px solid var(--border); }
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  counter-reset: step;
+}
+@media (max-width: 720px) { .steps { grid-template-columns: 1fr; } }
+.step {
+  position: relative;
+  padding: 32px 26px 26px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  counter-increment: step;
+}
+.step::before {
+  content: "0" counter(step);
+  display: block;
+  font-family: var(--mono);
+  font-size: 11px; letter-spacing: 0.22em;
+  color: var(--accent);
+  margin-bottom: 18px;
+}
+.step h3 {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 600; font-style: italic;
+  margin-bottom: 10px;
+  letter-spacing: -0.01em;
+}
+.step p {
+  font-size: 14.5px;
+  color: var(--muted-hi);
+  line-height: 1.55;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PREÇO
+══════════════════════════════════════════════════════════════ */
+.preco-section { border-top: 1px solid var(--border); }
+.preco-card {
+  max-width: 580px;
+  margin: 0 auto;
+  padding: 50px 44px;
+  background: linear-gradient(180deg, var(--panel) 0%, var(--bg-2) 100%);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.preco-card::before {
+  content: '';
+  position: absolute; top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 60%; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+}
+.preco-tag {
+  display: inline-block;
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 22px;
+}
+.preco-num {
+  font-family: var(--serif);
+  font-size: clamp(56px, 9vw, 82px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.025em;
+}
+.preco-num .moeda {
+  font-size: 0.55em;
+  font-style: italic;
+  font-weight: 400;
+  margin-right: 8px;
+  color: var(--muted-hi);
+  vertical-align: top;
+  position: relative; top: 0.25em;
+}
+.preco-period {
+  font-family: var(--serif); font-style: italic;
+  font-size: 18px; color: var(--muted-hi);
+  margin-top: 8px;
+}
+.preco-features {
+  list-style: none; padding: 0;
+  margin: 36px 0 32px;
+  text-align: left;
+  display: inline-block;
+}
+.preco-features li {
+  padding: 9px 0 9px 28px;
+  font-size: 14.5px;
+  color: var(--muted-hi);
+  position: relative;
+  border-top: 1px dashed var(--border);
+}
+.preco-features li:first-child { border-top: 0; padding-top: 0; }
+.preco-features li::before {
+  content: "✓";
+  position: absolute; left: 0;
+  color: var(--accent);
+  font-weight: 600;
+}
+.preco-meta {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 18px;
+  font-family: var(--mono);
+  letter-spacing: 0.05em;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FAQ
+══════════════════════════════════════════════════════════════ */
+.faq-section { border-top: 1px solid var(--border); }
+.faqs { max-width: 780px; }
+.faq {
+  border-top: 1px solid var(--border);
+  padding: 24px 0;
+}
+.faq:last-child { border-bottom: 1px solid var(--border); }
+.faq summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 24px;
+  font-family: var(--serif);
+  font-size: 20px; font-weight: 600;
+  font-style: italic;
+  letter-spacing: -0.005em;
+  transition: color .2s;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary:hover { color: var(--accent); }
+.faq summary::after {
+  content: "+";
+  font-family: var(--sans);
+  font-style: normal;
+  font-size: 24px;
+  font-weight: 400;
+  color: var(--accent);
+  flex-shrink: 0;
+  transition: transform .2s;
+}
+.faq[open] summary::after { content: "−"; }
+.faq p {
+  margin-top: 18px;
+  color: var(--muted-hi);
+  font-size: 15px;
+  line-height: 1.65;
+  max-width: 640px;
+}
+.faq p code {
+  font-family: var(--mono);
+  font-size: 13px;
+  background: var(--panel);
+  padding: 2px 7px;
+  border-radius: 4px;
+  color: var(--accent);
+  border: 1px solid var(--border);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FINAL CTA
+══════════════════════════════════════════════════════════════ */
+.final-cta-section {
+  padding: 80px 40px 40px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  position: relative;
+}
+.final-cta-section::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px; height: 400px;
+  background: radial-gradient(circle, var(--accent-glow), transparent 65%);
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+.final-cta-section > * { position: relative; z-index: 1; }
+.final-headline {
+  font-family: var(--serif);
+  font-size: clamp(32px, 5.5vw, 56px);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  max-width: 720px;
+  margin: 0 auto 32px;
+}
+.final-headline em {
+  font-style: italic; font-weight: 600;
+  color: var(--accent);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════════════════════════ */
+footer {
+  padding: 40px 40px 60px;
+  border-top: 1px solid var(--border);
+  display: flex; flex-wrap: wrap; gap: 24px;
+  justify-content: space-between; align-items: center;
+  max-width: 1100px; margin: 0 auto;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+footer a:hover { color: var(--accent); }
+footer .links { display: flex; gap: 24px; flex-wrap: wrap; }
+@media (max-width: 720px) { footer { padding: 30px 24px 48px; flex-direction: column; align-items: flex-start; gap: 16px; } }
+
+</style>
+</head>
+<body>
+
+<!-- ═════════ NAV ═════════ -->
+<nav class="nav">
+  <div class="brand"><span class="y">q</span>yvo · live</div>
+  <div class="breadcrumb">
+    <a href="/">Home</a>
+    <span class="sep">/</span>
+    <span class="here">Live Shop Pro</span>
+  </div>
+  <div class="spacer"></div>
+  <a href="mailto:caroldepaz@gmail.com?subject=Quero%20ser%20avisada%20do%20lan%C3%A7amento%20do%20Live%20Shop%20Pro" class="nav-cta">Avise-me</a>
+</nav>
+
+<!-- ═════════ HERO ═════════ -->
+<section class="hero">
+  <div class="hero-grid">
+    <div>
+      <div class="eyebrow">Em breve · Chrome Web Store em revisão</div>
+      <h1>Comando <em>central</em><br>da sua live<br>no TikTok Shop.</h1>
+      <p class="hero-sub">
+        Painel que cuida da operação enquanto você foca em vender. Flash sale automática,
+        IA respondendo no chat, moderação anti-bot e alertas no Telegram — tudo num lugar só.
+      </p>
+      <div class="hero-ctas">
+        <a href="mailto:caroldepaz@gmail.com?subject=Quero%20ser%20avisada%20do%20lan%C3%A7amento%20do%20Live%20Shop%20Pro" class="cta-primary">
+          Em breve — me avisa <span class="arrow">→</span>
+        </a>
+        <a href="#como-funciona" class="cta-secondary">Como funciona</a>
+      </div>
+      <div class="cupom-badge">
+        <em>50% OFF</em> pras 10 primeiras compras do lançamento — <a href="mailto:caroldepaz@gmail.com?subject=Quero%20entrar%20na%20fila%20do%20Live%20Shop%20Pro" style="color:var(--accent);border-bottom:1px solid var(--accent);">entre na fila</a>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="hero-icon">
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="heroHook" x1="100%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#FF1F8E"/>
+              <stop offset="100%" stop-color="#9B5CFF"/>
+            </linearGradient>
+          </defs>
+          <path d="M 150 52 Q 150 92 100 92 Q 50 92 50 132 Q 50 156 80 156 L 150 156"
+                fill="none" stroke="url(#heroHook)" stroke-width="22" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════ FEATURES ═════════ -->
+<section class="features-section" id="features">
+  <div class="sec-label">o que ela faz</div>
+  <h2 class="sec-title">Cada coisa <em>repetitiva</em> da sua live<br>vira tarefa da extensão.</h2>
+
+  <div class="features">
+
+    <div class="feat">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      </div>
+      <h3 class="feat-name">Flash sale automática</h3>
+      <p class="feat-desc">Quando a oferta relâmpago acaba, a extensão duplica e reinicia sozinha. Você não precisa ficar de olho no relógio.</p>
+    </div>
+
+    <div class="feat">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <h3 class="feat-name">IA no chat</h3>
+      <p class="feat-desc">Respostas automáticas em 11 categorias. Liga sua chave Gemini e ela responde qualquer pergunta usando o briefing que você cadastrou.</p>
+    </div>
+
+    <div class="feat">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <h3 class="feat-name">Moderação anti-bot</h3>
+      <p class="feat-desc">Bloqueia espectadores com palavras suspeitas no nome ("shop", "achadinhos", "indica") antes que poluam o chat.</p>
+    </div>
+
+    <div class="feat">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <h3 class="feat-name">Auto-encerramento por violação</h3>
+      <p class="feat-desc">Detecta o aviso de violação que o TikTok exibe e fecha a live na mesma hora. Você protege a conta sem precisar estar olhando.</p>
+    </div>
+
+    <div class="feat">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+      </div>
+      <h3 class="feat-name">Alertas no Telegram</h3>
+      <p class="feat-desc">Saiu venda, deu violação ou a live encerrou? Você recebe aviso direto no celular. Dá pra fechar a live de qualquer lugar com um toque.</p>
+    </div>
+
+    <div class="feat">
+      <div class="feat-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <h3 class="feat-name">Setup em 30 segundos</h3>
+      <p class="feat-desc">Marca, produto, tempo, tom de voz — preenche uma vez e dá Iniciar. Cada live nova, mesmo painel, dois cliques.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═════════ COMO FUNCIONA ═════════ -->
+<section class="how-section" id="como-funciona">
+  <div class="sec-label">como funciona</div>
+  <h2 class="sec-title">Três cliques <em>e tá rodando.</em></h2>
+
+  <div class="steps">
+    <div class="step">
+      <h3>Instala</h3>
+      <p>Compra a chave aqui, instala a extensão na Chrome Web Store, cola a chave e ativa. Leva 2 minutos.</p>
+    </div>
+    <div class="step">
+      <h3>Configura</h3>
+      <p>Abre o TikTok Live Studio, clica no ícone, preenche os dados da live (produto, tom, tempo). 30 segundos.</p>
+    </div>
+    <div class="step">
+      <h3>Esquece</h3>
+      <p>Inicia a live e some. A extensão segura o chat, duplica flash sale e te avisa no Telegram quando precisar.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════ PREÇO ═════════ -->
+<section class="preco-section" id="preco">
+  <div class="sec-label">preço</div>
+  <h2 class="sec-title">Uma assinatura.<br><em>Tudo incluído.</em></h2>
+
+  <div class="preco-card">
+    <div class="preco-tag">Plano único · Anual</div>
+    <div class="preco-num"><span class="moeda">R$</span>797</div>
+    <div class="preco-period">por ano · renovação manual</div>
+
+    <ul class="preco-features">
+      <li>Extensão completa, com tudo liberado</li>
+      <li>Funciona em até 2 dispositivos por chave</li>
+      <li>Atualizações dentro do ciclo anual</li>
+      <li>IA Gemini opcional (você usa sua chave)</li>
+      <li>Suporte direto por email</li>
+      <li>Garantia de 7 dias (lei brasileira)</li>
+    </ul>
+
+    <a href="mailto:caroldepaz@gmail.com?subject=Quero%20ser%20avisada%20do%20lan%C3%A7amento%20do%20Live%20Shop%20Pro" class="cta-primary">
+      Em breve — entrar na fila <span class="arrow">→</span>
+    </a>
+
+    <div class="preco-meta">PAGAMENTO VIA KIWIFY · CHAVE ENTREGUE POR EMAIL</div>
+  </div>
+</section>
+
+<!-- ═════════ FAQ ═════════ -->
+<section class="faq-section" id="faq">
+  <div class="sec-label">dúvidas frequentes</div>
+  <h2 class="sec-title">Respostas <em>diretas</em>.</h2>
+
+  <div class="faqs">
+    <details class="faq">
+      <summary>Preciso saber programar pra usar?</summary>
+      <p>Não. Você instala a extensão, cola a chave e configura tudo num painel visual. Quem usa TikTok Live Studio consegue usar isso.</p>
+    </details>
+
+    <details class="faq">
+      <summary>Funciona em Mac e Windows?</summary>
+      <p>Sim. É uma extensão pro navegador Chrome (e Brave/Edge/qualquer Chromium). Como o TikTok Live Studio só roda em desktop, a extensão também é só desktop.</p>
+    </details>
+
+    <details class="faq">
+      <summary>Posso usar em mais de um computador?</summary>
+      <p>Sim. Sua chave funciona em até <strong>2 dispositivos</strong> simultâneos. Se precisar trocar de máquina, é só pedir reset por email.</p>
+    </details>
+
+    <details class="faq">
+      <summary>A IA Gemini é paga? Vou ter que pagar Google também?</summary>
+      <p>A extensão é independente da IA. Se você QUER usar respostas geradas por IA, cria uma chave gratuita no Google AI Studio (Gemini) e cola na extensão. O Gemini tem um free tier generoso que cobre uso normal de live. Sem essa chave, a extensão continua respondendo com as 11 categorias prontas — só não tem o "responde qualquer pergunta sozinha".</p>
+    </details>
+
+    <details class="faq">
+      <summary>Como recebo a chave depois de comprar?</summary>
+      <p>Compra processada na Kiwify → automação dispara → email com a chave no formato <code>LS-XXXX-XXXX-XXXX</code> chega em segundos. Você cola na extensão, ativa, pronto.</p>
+    </details>
+
+    <details class="faq">
+      <summary>Posso pagar mensal?</summary>
+      <p>Por enquanto só anual. Faz sentido pra quem trabalha com live como profissão — o investimento se paga numa semana de live boa. Se mensal aparecer no futuro, quem já é cliente anual continua no anual.</p>
+    </details>
+
+    <details class="faq">
+      <summary>Tem reembolso?</summary>
+      <p>Sim. 7 dias após a compra, sem fazer pergunta, por lei do consumidor brasileiro. Solicita pela Kiwify ou me manda email.</p>
+    </details>
+
+    <details class="faq">
+      <summary>A extensão coleta meus dados?</summary>
+      <p>Não vendemos dado pra ninguém. O processamento da live é local, no seu navegador. As únicas transmissões externas são: nosso servidor de licença (pra validar a chave), Telegram (se você ativar, pro seu próprio bot) e Gemini (se você ativar, com sua chave). Detalhes completos na <a href="https://qyvoaudio.github.io/liveshop-policy/" target="_blank" rel="noopener" style="color:var(--accent);border-bottom:1px solid var(--accent);">política de privacidade</a>.</p>
+    </details>
+  </div>
+</section>
+
+<!-- ═════════ FINAL CTA ═════════ -->
+<section class="final-cta-section">
+  <h2 class="final-headline">Sua próxima live <em>já podia</em><br>estar rodando sozinha.</h2>
+  <a href="mailto:caroldepaz@gmail.com?subject=Quero%20ser%20avisada%20do%20lan%C3%A7amento%20do%20Live%20Shop%20Pro" class="cta-primary">
+    Em breve — me avisa <span class="arrow">→</span>
+  </a>
+  <div class="cupom-badge" style="margin: 28px auto 0;">
+    <em>50% OFF</em> pras 10 primeiras compras do lançamento — <a href="mailto:caroldepaz@gmail.com?subject=Quero%20entrar%20na%20fila%20do%20Live%20Shop%20Pro" style="color:var(--accent);border-bottom:1px solid var(--accent);">entre na fila</a>
+  </div>
+</section>
+
+<!-- ═════════ FOOTER ═════════ -->
+<footer>
+  <div>QYVO LIVE · LIVE SHOP PRO · 2026</div>
+  <div class="links">
+    <a href="https://qyvoaudio.github.io/liveshop-policy/" target="_blank" rel="noopener">Política</a>
+    <a href="mailto:caroldepaz@gmail.com">Contato</a>
+    <a href="/">Voltar</a>
+  </div>
+</footer>
+
+</body>
+</html>
