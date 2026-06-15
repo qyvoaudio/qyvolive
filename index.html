@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qyvo Live — Ferramentas pra TikTok Shop sellers</title>
+<meta name="description" content="A Qyvo Live constrói ferramentas que liberam o tempo de quem vive em live no TikTok Shop. Quick Test, Live Shop Pro, e o que vem aí.">
+<link rel="icon" href="assets/logo.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #0E0B14;
+  --bg-2: #14101D;
+  --panel: #1A1424;
+  --border: #2B2238;
+  --border-hi: #3D3148;
+  --text: #F5EFE5;
+  --muted: #7A6F84;
+  --muted-hi: #A89DB5;
+  --accent: #FF1F8E;
+  --accent-glow: rgba(255, 31, 142, 0.25);
+  --soft: #E4B8C9;
+
+  --serif: "Fraunces", Georgia, serif;
+  --sans: "Inter", system-ui, sans-serif;
+  --mono: "JetBrains Mono", monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Soft noise */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  mix-blend-mode: overlay;
+}
+
+/* ═══ HEADER ═══ */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 22px 40px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  background: rgba(14, 11, 20, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(43, 34, 56, 0.5);
+}
+.brand {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-style: italic;
+}
+.brand .y { color: var(--accent); font-style: normal; }
+.nav .spacer { flex: 1; }
+.nav-links { display: flex; gap: 32px; font-size: 14px; }
+.nav-links a {
+  color: var(--muted-hi);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--text); }
+
+/* ═══ HERO ═══ */
+.hero {
+  padding: 180px 40px 100px;
+  max-width: 1100px;
+  margin: 0 auto;
+  position: relative;
+}
+.hero::before {
+  content: "";
+  position: absolute;
+  top: 100px;
+  right: -100px;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, var(--accent-glow), transparent 60%);
+  pointer-events: none;
+  filter: blur(60px);
+  z-index: 0;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  margin-bottom: 32px;
+  position: relative;
+  z-index: 1;
+}
+.eyebrow::before {
+  content: "";
+  width: 28px;
+  height: 1px;
+  background: var(--accent);
+}
+
+h1 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(48px, 7vw, 88px);
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  margin-bottom: 32px;
+  max-width: 920px;
+  position: relative;
+  z-index: 1;
+}
+h1 em {
+  font-style: italic;
+  color: var(--soft);
+  font-weight: 400;
+}
+h1 .accent {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.hero-sub {
+  font-size: 20px;
+  line-height: 1.5;
+  color: var(--muted-hi);
+  max-width: 580px;
+  margin-bottom: 48px;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-meta {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  position: relative;
+  z-index: 1;
+}
+.hero-meta::before {
+  content: "▸ ";
+  color: var(--accent);
+}
+
+/* ═══ PRODUTOS ═══ */
+.produtos-section {
+  padding: 80px 40px 100px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.sec-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sec-label::before {
+  content: "";
+  width: 28px;
+  height: 1px;
+  background: var(--accent);
+}
+.sec-title {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(36px, 5vw, 56px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin-bottom: 64px;
+  max-width: 720px;
+}
+.sec-title em { font-style: italic; color: var(--soft); }
+
+.produtos {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 28px;
+}
+.prod {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 40px;
+  position: relative;
+  transition: all 0.3s;
+  overflow: hidden;
+}
+.prod::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.prod:hover {
+  border-color: var(--border-hi);
+  transform: translateY(-4px);
+}
+.prod:hover::before { opacity: 1; }
+.prod.disponivel:hover { border-color: var(--accent); }
+
+.prod-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+.prod-name {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 32px;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+.prod-status {
+  font-family: var(--mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  padding: 5px 11px;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+.prod.disponivel .prod-status {
+  background: rgba(255, 31, 142, 0.12);
+  color: var(--accent);
+  border: 1px solid rgba(255, 31, 142, 0.3);
+}
+.prod.breve .prod-status {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+.prod-tagline {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 18px;
+  color: var(--soft);
+  margin-bottom: 20px;
+  line-height: 1.3;
+}
+.prod-desc {
+  color: var(--muted-hi);
+  font-size: 15px;
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+.prod-features {
+  list-style: none;
+  margin-bottom: 32px;
+}
+.prod-features li {
+  padding: 7px 0;
+  font-size: 14px;
+  color: var(--muted-hi);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.prod-features li::before {
+  content: "—";
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.prod-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 14px 24px;
+  border-radius: 100px;
+  background: var(--accent);
+  color: white;
+  transition: all 0.2s;
+  font-family: var(--sans);
+}
+.prod-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px var(--accent-glow);
+}
+.prod-cta .arrow { transition: transform 0.2s; }
+.prod-cta:hover .arrow { transform: translateX(3px); }
+
+.prod.breve .prod-cta {
+  background: transparent;
+  border: 1px solid var(--border-hi);
+  color: var(--muted-hi);
+  cursor: not-allowed;
+}
+.prod.breve .prod-cta:hover { transform: none; box-shadow: none; }
+
+/* ═══ MANIFESTO ═══ */
+.manifesto {
+  padding: 100px 40px;
+  background: var(--bg-2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.manifesto-wrap {
+  max-width: 880px;
+  margin: 0 auto;
+}
+.manifesto-text {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(28px, 4vw, 42px);
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  margin-top: 40px;
+}
+.manifesto-text em { font-style: italic; color: var(--accent); }
+.manifesto-text .soft { color: var(--soft); font-style: italic; }
+
+/* ═══ SOBRE ═══ */
+.sobre {
+  padding: 100px 40px;
+  max-width: 880px;
+  margin: 0 auto;
+}
+.sobre p {
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--muted-hi);
+  margin-bottom: 20px;
+  max-width: 700px;
+}
+.sobre p strong { color: var(--text); font-weight: 500; }
+.sobre .quote {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 22px;
+  color: var(--soft);
+  border-left: 2px solid var(--accent);
+  padding-left: 24px;
+  margin: 32px 0;
+  line-height: 1.4;
+}
+
+/* ═══ FOOTER ═══ */
+footer {
+  padding: 48px 40px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+footer .brand-foot {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 28px;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+footer .brand-foot .y { color: var(--accent); font-style: normal; }
+footer .links {
+  display: flex;
+  gap: 28px;
+  justify-content: center;
+  margin-top: 16px;
+  text-transform: uppercase;
+}
+footer a {
+  color: var(--muted-hi);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+footer a:hover { color: var(--accent); }
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width: 880px) {
+  .nav { padding: 16px 20px; gap: 16px; }
+  .nav-links { display: none; }
+  .hero { padding: 130px 20px 70px; }
+  .produtos-section { padding: 60px 20px; }
+  .produtos { grid-template-columns: 1fr; gap: 20px; }
+  .prod { padding: 32px 28px; }
+  .manifesto, .sobre { padding: 70px 20px; }
+}
+
+/* ═══ Entrance ═══ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.hero > * { animation: fadeUp 0.8s ease-out backwards; }
+.hero .eyebrow { animation-delay: 0.1s; }
+.hero h1 { animation-delay: 0.2s; }
+.hero .hero-sub { animation-delay: 0.35s; }
+.hero .hero-meta { animation-delay: 0.5s; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="brand"><span class="y">q</span>yvo · live</div>
+  <div class="spacer"></div>
+  <div class="nav-links">
+    <a href="#produtos">Produtos</a>
+    <a href="#manifesto">Por quê</a>
+    <a href="#sobre">Sobre</a>
+    <a href="mailto:contato@qyvolive.com.br">Contato</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="eyebrow">QYVO · LIVE — DESDE 2026</div>
+  <h1>
+    A gente constrói <em>ferramentas</em><br>
+    pra quem <span class="accent">vive em live</span><br>
+    no TikTok Shop.
+  </h1>
+  <p class="hero-sub">
+    Software pra live seller que entende a rotina maluca de quem vende 8h por dia
+    falando direto pra câmera. Liberamos o tempo de quem produz.
+  </p>
+  <div class="hero-meta">Fundada por uma live seller, pra live sellers</div>
+</section>
+
+<section class="produtos-section" id="produtos">
+  <div class="sec-label">portfólio</div>
+  <h2 class="sec-title">As <em>ferramentas</em> que fazem<br>sua live trabalhar por você.</h2>
+
+  <div class="produtos">
+    <div class="prod disponivel">
+      <div class="prod-head">
+        <div class="prod-name">Quick Test</div>
+        <div class="prod-status">▸ Disponível</div>
+      </div>
+      <p class="prod-tagline">Pitch infinito no Live Studio</p>
+      <p class="prod-desc">
+        Toca seu roteiro de venda em loop inteligente direto na live.
+        Você grava 1 vez, deixa rolando 8h, só aparece pra fechar venda.
+      </p>
+      <ul class="prod-features">
+        <li>Mix automático sem repetição</li>
+        <li>Gerador de roteiro com IA (Claude / GPT / Gemini)</li>
+        <li>Multi-conta via cabos virtuais</li>
+        <li>Licença anual · R$ 197/ano</li>
+      </ul>
+      <a href="/quick-test/" class="prod-cta">
+        Conhecer Quick Test <span class="arrow">→</span>
+      </a>
+    </div>
+
+    <div class="prod breve">
+      <div class="prod-head">
+        <div class="prod-name">Live Shop Pro</div>
+        <div class="prod-status">Em breve</div>
+      </div>
+      <p class="prod-tagline">Comando central da sua live</p>
+      <p class="prod-desc">
+        Painel pra gerenciar lives em paralelo no TikTok Shop.
+        Flash sale, respostas no chat, alertas no Telegram — tudo num lugar.
+      </p>
+      <ul class="prod-features">
+        <li>Flash sale automatizada</li>
+        <li>Respostas inteligentes no chat (com IA opcional)</li>
+        <li>Alertas em tempo real no Telegram</li>
+        <li>Encerramento automático por violação</li>
+      </ul>
+      <a href="/live-shop-pro/" class="prod-cta">
+        Conhecer Live Shop Pro <span class="arrow">→</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="manifesto" id="manifesto">
+  <div class="manifesto-wrap">
+    <div class="sec-label">por quê</div>
+    <p class="manifesto-text">
+      Live seller bom <em>queima a voz</em>.<br>
+      Live seller esperto <span class="soft">queima a tela.</span><br>
+      A gente faz a tela queimar <em>melhor</em>.
+    </p>
+  </div>
+</section>
+
+<section class="sobre" id="sobre">
+  <div class="sec-label">sobre a Qyvo Live</div>
+  <h2 class="sec-title" style="font-size: 42px; margin-bottom: 40px;">A gente <em>já viveu isso</em>.</h2>
+  <p>
+    A Qyvo Live nasceu da necessidade de uma live seller — pelo barulho da própria voz
+    rouca depois de 7 lives por semana, pela fadiga de repetir o mesmo pitch sem parar,
+    pela vontade de existir como ser humano fora da câmera.
+  </p>
+  <div class="quote">
+    "Quem vende ao vivo não devia precisar viver ao vivo. Construímos as ferramentas
+    que a gente mesma queria ter quando estava começando."
+  </div>
+  <p>
+    Cada ferramenta da Qyvo Live é feita pra <strong>liberar tempo</strong>, não pra adicionar tarefa.
+    A gente prioriza simples, leve, e que funcione no primeiro clique.
+  </p>
+  <p>
+    Não vendemos pra agência, marketplace, ou empresa Fortune 500.
+    Vendemos pra <strong>você, live seller</strong>, que sabe o que é fechar venda na unha.
+  </p>
+</section>
+
+<footer>
+  <div class="brand-foot"><span class="y">q</span>yvo · live</div>
+  <div>© 2026 Qyvo Live · Todos os direitos reservados</div>
+  <div class="links">
+    <a href="/quick-test/">Quick Test</a>
+    <a href="https://qyvoaudio.github.io/quicktest-policy/" target="_blank">Privacidade</a>
+    <a href="mailto:contato@qyvolive.com.br">Contato</a>
+  </div>
+</footer>
+
+</body>
+</html>
