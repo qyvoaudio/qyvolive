@@ -68,22 +68,40 @@ a { color: inherit; text-decoration: none; transition: color .2s; }
   border-bottom: 1px solid rgba(43, 34, 56, 0.5);
 }
 .brand {
-  font-family: var(--serif);
-  font-size: 22px; font-weight: 600;
-  letter-spacing: -0.01em;
-  font-style: italic;
-}
-.brand .y { color: var(--accent); font-style: normal; }
-.breadcrumb {
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.brand .mark { color: var(--accent); margin: 0 1px; }
+.nav .logo-img {
+  width: 30px; height: 30px;
+  filter: drop-shadow(0 0 6px rgba(255,31,142,0.35));
+  flex-shrink: 0;
+}
+.nav .led {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--mono);
+  font-size: 10px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
+  color: #00FFAA;
+  padding: 4px 10px;
+  background: rgba(0, 255, 170, 0.08);
+  border: 1px solid rgba(0, 255, 170, 0.25);
+  border-radius: 999px;
+}
+.nav .led::before { content: "●"; font-size: 8px; color: #00FFAA; }
+.nav .spacer { flex: 1; }
+.nav .links {
+  display: flex; gap: 22px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
   color: var(--muted);
 }
-.breadcrumb .sep { margin: 0 10px; color: var(--border-hi); }
-.breadcrumb .here { color: var(--accent); }
-.nav .spacer { flex: 1; }
+.nav .links a:hover { color: var(--text); }
 .nav-cta {
   font-family: var(--mono);
   font-size: 12px; letter-spacing: 0.08em;
@@ -699,13 +717,16 @@ footer .links { display: flex; gap: 24px; flex-wrap: wrap; }
 
 <!-- ═════════ NAV ═════════ -->
 <nav class="nav">
-  <div class="brand"><span class="y">q</span>yvo · live</div>
-  <div class="breadcrumb">
-    <a href="/">Home</a>
-    <span class="sep">/</span>
-    <span class="here">Live Shop Pro</span>
-  </div>
+  <img src="assets/logo.svg" alt="Live Shop Pro" class="logo-img">
+  <div class="brand">LIVE<span class="mark">·</span>SHOP<span class="mark">·</span>PRO</div>
+  <span class="led">ATIVO</span>
   <div class="spacer"></div>
+  <div class="links">
+    <a href="/">Home</a>
+    <a href="#features">Features</a>
+    <a href="#preco">Preço</a>
+    <a href="#faq">FAQ</a>
+  </div>
   <a href="https://pay.kiwify.com.br/NRFYiZs" class="nav-cta">Comprar</a>
 </nav>
 
