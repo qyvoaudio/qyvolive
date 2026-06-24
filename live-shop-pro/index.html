@@ -3,15 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Live Shop Pro — Qyvo Live</title>
-<meta name="description" content="Comando central da sua live no TikTok Shop. Flash sale automatizada, IA no chat, moderação anti-bot e alertas no Telegram — tudo num painel só.">
-<meta property="og:title" content="Live Shop Pro — Qyvo Live">
-<meta property="og:description" content="Comando central da sua live no TikTok Shop. Flash sale, IA no chat, moderação e alertas — tudo num painel.">
-<meta property="og:type" content="website">
-<link rel="icon" href="/assets/logo.png">
+<title>Live Shop Pro — Comando central pra sua live no TikTok</title>
+<meta name="description" content="Sua voz sustenta a venda. Não você. Extensão Chrome que toca seu pitch em loop infinito direto no Live Studio. Gravou 1x, vende todo dia.">
+<meta property="og:title" content="Live Shop Pro — Comando central pra TikTok Live">
+<meta property="og:description" content="Gravou 1x. Toca o dia inteiro. Você só aparece pra fechar a venda.">
+<meta property="og:image" content="https://qyvolive.com.br/assets/01-popup-principal.png">
+<link rel="icon" href="assets/logo.png">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
 <style>
 :root {
   --bg: #0A0A0E;
@@ -24,1029 +26,1101 @@
   --muted: #6B6B7A;
   --muted-hi: #9B9AA8;
   --accent: #FF1F8E;
-  --accent2: #9B5CFF;
-  --accent-glow: rgba(255, 31, 142, 0.25);
-  --soft: #E4B8C9;
-  --display: "Anton", "Bebas Neue", "Impact", sans-serif;
-  --body: "DM Sans", system-ui, sans-serif;
+  --accent-2: #FF4D9F;
+  --accent-glow: rgba(255, 31, 142, 0.35);
   --signal: #00FF9D;
   --signal-glow: rgba(0, 255, 157, 0.25);
-  --mono: "JetBrains Mono", monospace;
+  --warn: #FFB800;
+
+  --display: "Anton", "Bebas Neue", "Impact", sans-serif;
+  --body: "DM Sans", system-ui, sans-serif;
+  --mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
 }
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
+
 body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--body);
-  font-size: 16px;
-  line-height: 1.6;
+  font-size: 17px;
+  line-height: 1.55;
   overflow-x: hidden;
   position: relative;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
 }
+
+/* Grain noise overlay — adds texture */
 body::before {
   content: "";
-  position: fixed; inset: 0;
-  pointer-events: none; z-index: 1000;
-  opacity: 0.025;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
   mix-blend-mode: overlay;
 }
-a { color: inherit; text-decoration: none; transition: color .2s; }
-::selection { background: var(--accent); color: var(--bg); }
 
-/* ═══════════════════════════════════════════════════════════════
-   NAV
-══════════════════════════════════════════════════════════════ */
-.nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  padding: 22px 40px;
-  display: flex; align-items: center; gap: 28px;
-  background: rgba(14, 11, 20, 0.7);
+/* Subtle scan lines for broadcast feel */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255,255,255,0.012) 2px,
+    rgba(255,255,255,0.012) 4px
+  );
+}
+
+/* ═══ HEADER STRIP (broadcast console) ═══ */
+.strip {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  background: rgba(10, 10, 14, 0.85);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(43, 34, 56, 0.5);
-}
-.brand {
-  font-family: var(--mono);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-.brand .mark { color: var(--accent); margin: 0 1px; }
-.nav .logo-img {
-  width: 30px; height: 30px;
-  filter: drop-shadow(0 0 6px rgba(255,31,142,0.35));
-  flex-shrink: 0;
-}
-.nav .led {
-  display: inline-flex; align-items: center; gap: 6px;
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: #00FFAA;
-  padding: 4px 10px;
-  background: rgba(0, 255, 170, 0.08);
-  border: 1px solid rgba(0, 255, 170, 0.25);
-  border-radius: 999px;
-}
-.nav .led::before { content: "●"; font-size: 8px; color: #00FFAA; }
-.nav .spacer { flex: 1; }
-.nav .links {
-  display: flex; gap: 22px;
+  border-bottom: 1px solid var(--border);
+  z-index: 100;
+  padding: 14px 32px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
   font-family: var(--mono);
   font-size: 12px;
+  text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--muted);
 }
-.nav .links a:hover { color: var(--text); }
-.nav-cta {
-  font-family: var(--mono);
-  font-size: 12px; letter-spacing: 0.08em;
-  color: var(--bg);
+.strip .logo {
+  width: 28px; height: 28px;
   background: var(--accent);
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  filter: drop-shadow(0 0 8px var(--accent-glow));
+}
+.strip .logo-img {
+  width: 30px; height: 30px;
+  filter: drop-shadow(0 0 6px var(--accent-glow));
+  flex-shrink: 0;
+}
+.strip .brand { font-weight: 700; font-size: 13px; letter-spacing: 0.12em; }
+.strip .brand .mark { color: var(--accent); margin: 0 1px; }
+.strip .led {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px;
+  background: rgba(255, 31, 142, 0.1);
+  border: 1px solid rgba(255, 31, 142, 0.3);
+  border-radius: 100px;
+  color: var(--accent);
+  font-weight: 700;
+}
+.strip .led::before {
+  content: "";
+  width: 6px; height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+  box-shadow: 0 0 6px var(--accent);
+  animation: blink 1.4s ease-in-out infinite;
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+.strip .spacer { flex: 1; }
+.strip nav { display: flex; gap: 22px; }
+.strip nav a { color: var(--muted-hi); text-decoration: none; }
+.strip nav a:hover { color: var(--text); }
+.strip .cta {
+  background: var(--accent);
+  color: white;
   padding: 8px 18px;
-  border-radius: 6px;
-  transition: transform .2s;
+  border-radius: 100px;
+  text-decoration: none;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  transition: all 0.2s;
 }
-.nav-cta:hover { transform: translateY(-1px); }
-
-@media (max-width: 720px) {
-  .nav { padding: 16px 20px; gap: 14px; }
-  .breadcrumb { display: none; }
+.strip .cta:hover {
+  background: var(--accent-2);
+  box-shadow: 0 0 20px var(--accent-glow);
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   HERO
-══════════════════════════════════════════════════════════════ */
+/* ═══ HERO ═══ */
 .hero {
-  padding: 160px 40px 80px;
-  max-width: 1100px;
+  min-height: 100vh;
+  padding: 140px 32px 80px;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 80px;
+  max-width: 1400px;
   margin: 0 auto;
+  align-items: center;
   position: relative;
 }
+
 .hero::before {
   content: "";
   position: absolute;
-  top: 60px; right: -200px;
-  width: 600px; height: 600px;
-  background: radial-gradient(circle, var(--accent-glow), transparent 60%);
-  pointer-events: none; filter: blur(80px); z-index: 0;
-}
-.hero-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 60px;
-  align-items: center;
-  position: relative; z-index: 1;
-}
-@media (max-width: 880px) {
-  .hero { padding: 130px 24px 60px; }
-  .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+  top: 200px;
+  right: -200px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(40px);
 }
 
+.hero-content { position: relative; z-index: 1; }
+
 .eyebrow {
-  display: inline-flex; align-items: center; gap: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   font-family: var(--mono);
-  font-size: 11px; letter-spacing: 0.22em;
-  text-transform: uppercase; color: var(--accent);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--signal);
   margin-bottom: 32px;
+  padding: 8px 16px;
+  background: rgba(0, 255, 157, 0.07);
+  border: 1px solid rgba(0, 255, 157, 0.25);
+  border-radius: 100px;
 }
 .eyebrow::before {
-  content: ""; width: 32px; height: 1px; background: var(--accent);
+  content: "";
+  width: 6px; height: 6px;
+  background: var(--signal);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--signal-glow);
 }
-.hero h1 {
+
+h1 {
   font-family: var(--display);
   font-size: clamp(56px, 9vw, 120px);
-  font-weight: 400;
   line-height: 0.9;
   letter-spacing: -0.01em;
   text-transform: uppercase;
-  color: var(--text);
   margin-bottom: 28px;
+  position: relative;
 }
-.hero h1 em {
-  font-style: italic; font-weight: 600;
+h1 .magenta {
+  color: var(--accent);
+  text-shadow: 0 0 40px var(--accent-glow);
+}
+h1 .strike {
+  position: relative;
   display: inline-block;
-  padding-right: 0.08em;
-  background: linear-gradient(95deg, var(--accent), var(--accent2));
-  -webkit-background-clip: text; background-clip: text;
-  -webkit-text-fill-color: transparent; color: transparent;
+  color: var(--muted);
 }
-.hero-sub {
-  font-size: 18px;
-  color: var(--muted-hi);
-  margin: 28px 0 36px;
-  max-width: 540px;
-  line-height: 1.55;
-}
-.hero-ctas {
-  display: flex; flex-wrap: wrap; gap: 14px; align-items: center;
-}
-.cta-primary {
-  display: inline-flex; align-items: center; gap: 10px;
+h1 .strike::after {
+  content: "";
+  position: absolute;
+  top: 50%; left: -4%;
+  width: 108%;
+  height: 6px;
   background: var(--accent);
-  color: var(--bg);
+  transform: rotate(-3deg);
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+
+.hero-sub {
+  font-size: 22px;
+  line-height: 1.45;
+  color: var(--muted-hi);
+  max-width: 520px;
+  margin-bottom: 40px;
+}
+.hero-sub strong { color: var(--text); font-weight: 500; }
+
+.hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-bottom: 50px; }
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--accent);
+  color: white;
+  padding: 18px 32px;
+  border-radius: 100px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.02em;
+  transition: all 0.2s;
+  box-shadow: 0 8px 32px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,0.2);
   font-family: var(--body);
-  font-weight: 600; font-size: 15px;
-  padding: 16px 26px;
-  border-radius: 10px;
-  letter-spacing: -0.005em;
-  transition: transform .2s, box-shadow .2s;
-  box-shadow: 0 10px 32px -10px var(--accent-glow);
 }
-.cta-primary:hover {
+.btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 14px 40px -8px rgba(255,31,142,.5);
+  box-shadow: 0 12px 48px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,0.2);
 }
-.cta-primary .arrow { transition: transform .2s; }
-.cta-primary:hover .arrow { transform: translateX(3px); }
-.cta-secondary {
-  display: inline-flex; align-items: center; gap: 8px;
-  color: var(--muted-hi);
-  font-family: var(--mono); font-size: 13px;
-  letter-spacing: 0.06em;
-  padding: 14px 0;
-  border-bottom: 1px solid var(--border);
-  transition: border-color .2s, color .2s;
-}
-.cta-secondary:hover { color: var(--accent); border-color: var(--accent); }
+.btn-primary .arrow { transition: transform 0.2s; }
+.btn-primary:hover .arrow { transform: translateX(4px); }
 
-.cupom-badge {
-  display: inline-flex; align-items: baseline; gap: 12px;
-  margin-top: 28px;
-  padding: 12px 18px;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--accent);
-  border-radius: 8px;
-  font-size: 13px;
-  color: var(--muted-hi);
-}
-.cupom-badge code {
-  font-family: var(--mono); font-size: 13px;
-  color: var(--accent); font-weight: 500;
-  letter-spacing: 0.05em;
-}
-.cupom-badge em {
-  font-family: var(--display); font-style: italic;
-  color: var(--soft); font-size: 13.5px;
-}
-
-/* Hero visual */
-.hero-visual {
-  display: flex; align-items: center; justify-content: center;
-  position: relative;
-}
-.hero-icon {
-  width: 100%; max-width: 320px;
-  aspect-ratio: 1/1;
-  border-radius: 32px;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-  position: relative;
-  box-shadow: 0 30px 80px -30px rgba(255,31,142,.4);
-}
-.hero-icon svg { width: 60%; height: 60%; }
-.hero-icon::before {
-  content: '';
-  position: absolute; inset: -1px;
-  border-radius: 32px;
-  padding: 1px;
-  background: linear-gradient(135deg, var(--accent), transparent 50%, var(--accent2));
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor; mask-composite: exclude;
-  pointer-events: none;
-  opacity: .5;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   SECTION COMMONS
-══════════════════════════════════════════════════════════════ */
-section { padding: 100px 40px; max-width: 1100px; margin: 0 auto; position: relative; }
-@media (max-width: 720px) { section { padding: 70px 24px; } }
-.sec-label {
-  font-family: var(--mono);
-  font-size: 11px; letter-spacing: 0.22em;
-  text-transform: uppercase; color: var(--muted);
-  margin-bottom: 18px;
-}
-.sec-title {
-  font-family: var(--display);
-  font-size: clamp(32px, 5vw, 54px);
-  font-weight: 400; line-height: 1.05;
-  letter-spacing: -0.015em;
-  margin-bottom: 60px;
-  max-width: 780px;
-}
-.sec-title em {
-  font-style: italic; font-weight: 600;
-  color: var(--accent);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   FEATURES
-══════════════════════════════════════════════════════════════ */
-.features-section { border-top: 1px solid var(--border); }
-.features {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-}
-@media (max-width: 720px) { .features { grid-template-columns: 1fr; } }
-.feat {
-  padding: 28px 26px;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  transition: border-color .25s, transform .25s;
-}
-.feat:hover { border-color: var(--border-hi); transform: translateY(-2px); }
-.feat-icon {
-  width: 36px; height: 36px;
-  display: flex; align-items: center; justify-content: center;
-  background: rgba(255, 31, 142, 0.08);
-  border-radius: 9px;
-  margin-bottom: 18px;
-  color: var(--accent);
-}
-.feat-icon svg { width: 18px; height: 18px; }
-.feat-name {
-  font-family: var(--display);
-  font-size: 22px; font-weight: 600;
-  font-style: italic;
-  letter-spacing: -0.01em;
-  margin-bottom: 8px;
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   color: var(--text);
+  padding: 16px 26px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 15px;
+  border: 1px solid var(--border-hi);
+  border-radius: 100px;
+  transition: all 0.2s;
 }
-.feat-desc {
-  font-size: 14.5px;
-  color: var(--muted-hi);
-  line-height: 1.55;
-}
+.btn-ghost:hover { border-color: var(--text); }
 
-/* ═══════════════════════════════════════════════════════════════
-   COMO FUNCIONA
-══════════════════════════════════════════════════════════════ */
-.how-section { border-top: 1px solid var(--border); }
-.steps {
+.hero-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
-  counter-reset: step;
+  border-top: 1px solid var(--border);
+  padding-top: 32px;
 }
-@media (max-width: 720px) { .steps { grid-template-columns: 1fr; } }
+.stat .num {
+  font-family: var(--display);
+  font-size: 44px;
+  line-height: 1;
+  color: var(--accent);
+}
+.stat .lbl {
+  font-family: var(--mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+/* ═══ HERO mockup (right side) ═══ */
+.hero-mockup {
+  position: relative;
+  z-index: 1;
+  perspective: 1500px;
+}
+.mockup-frame {
+  position: relative;
+  background: var(--panel);
+  border: 1px solid var(--border-hi);
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 80px rgba(255,31,142,0.15);
+  transform: rotate(-3deg);
+  transition: transform 0.4s ease;
+}
+.mockup-frame:hover { transform: rotate(0deg) translateY(-8px); }
+.mockup-frame::before {
+  content: "● ● ●";
+  position: absolute;
+  top: -22px; left: 14px;
+  font-size: 12px;
+  letter-spacing: 4px;
+  color: var(--muted);
+  opacity: 0.4;
+}
+.mockup-frame img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 6px;
+}
+.mockup-tag {
+  position: absolute;
+  bottom: -16px; right: -16px;
+  background: var(--signal);
+  color: var(--bg);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 10px 18px;
+  border-radius: 100px;
+  box-shadow: 0 0 20px var(--signal-glow);
+}
+
+/* ═══ Section base ═══ */
+section.block {
+  padding: 100px 32px;
+  position: relative;
+}
+.wrap { max-width: 1280px; margin: 0 auto; }
+
+.sec-header { margin-bottom: 60px; }
+.sec-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sec-label::before {
+  content: "";
+  width: 24px;
+  height: 1px;
+  background: var(--accent);
+}
+.sec-title {
+  font-family: var(--display);
+  font-size: clamp(40px, 6vw, 72px);
+  line-height: 0.95;
+  text-transform: uppercase;
+  max-width: 900px;
+  letter-spacing: -0.01em;
+}
+.sec-title em {
+  color: var(--accent);
+  font-style: normal;
+}
+.sec-sub {
+  font-size: 18px;
+  color: var(--muted-hi);
+  max-width: 640px;
+  margin-top: 18px;
+}
+
+/* ═══ PROBLEMA — "antes / depois" ═══ */
+.contrast {
+  background: var(--bg-2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.contrast-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-top: 60px;
+}
+.contrast-card {
+  padding: 36px;
+  border-radius: 14px;
+  position: relative;
+}
+.contrast-card.before {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+}
+.contrast-card.after {
+  background: linear-gradient(135deg, rgba(255,31,142,0.08), rgba(255,31,142,0.02));
+  border: 1px solid rgba(255, 31, 142, 0.4);
+  box-shadow: 0 0 60px rgba(255,31,142,0.08);
+}
+.contrast-card h3 {
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  margin-bottom: 24px;
+  color: var(--muted);
+}
+.contrast-card.after h3 { color: var(--accent); }
+.contrast-card ul { list-style: none; }
+.contrast-card li {
+  padding: 14px 0;
+  border-bottom: 1px dashed var(--border);
+  font-size: 16px;
+  line-height: 1.5;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.contrast-card li:last-child { border-bottom: 0; }
+.contrast-card.before li::before {
+  content: "✗";
+  color: var(--muted);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.contrast-card.after li::before {
+  content: "→";
+  color: var(--accent);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ═══ COMO FUNCIONA — timeline ═══ */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  margin-top: 60px;
+  position: relative;
+}
+.steps::before {
+  content: "";
+  position: absolute;
+  top: 32px;
+  left: 16%;
+  right: 16%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  z-index: 0;
+}
 .step {
   position: relative;
-  padding: 32px 26px 26px;
-  background: var(--bg-2);
+  z-index: 1;
+  padding: 32px 28px;
+  background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 14px;
-  counter-increment: step;
+  transition: all 0.3s;
 }
-.step::before {
-  content: "0" counter(step);
-  display: block;
-  font-family: var(--mono);
-  font-size: 11px; letter-spacing: 0.22em;
+.step:hover {
+  border-color: var(--accent);
+  transform: translateY(-4px);
+}
+.step-num {
+  font-family: var(--display);
+  font-size: 48px;
   color: var(--accent);
+  line-height: 1;
   margin-bottom: 18px;
+  position: relative;
+}
+.step-num::after {
+  content: "";
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  background: var(--bg);
+  border: 1px solid var(--accent);
+  border-radius: 50%;
+  vertical-align: super;
+  margin-left: 6px;
+  box-shadow: 0 0 12px var(--accent-glow);
 }
 .step h3 {
   font-family: var(--display);
   font-size: 24px;
-  font-weight: 600; font-style: italic;
-  margin-bottom: 10px;
-  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  letter-spacing: 0.01em;
 }
 .step p {
-  font-size: 14.5px;
-  color: var(--muted-hi);
-  line-height: 1.55;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   PREÇO
-══════════════════════════════════════════════════════════════ */
-.preco-section { border-top: 1px solid var(--border); }
-.preco-card {
-  max-width: 580px;
-  margin: 0 auto;
-  padding: 50px 44px;
-  background: linear-gradient(180deg, var(--panel) 0%, var(--bg-2) 100%);
-  border: 1px solid var(--border);
-  border-radius: 22px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-.preco-card::before {
-  content: '';
-  position: absolute; top: 0; left: 50%;
-  transform: translateX(-50%);
-  width: 60%; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--accent), transparent);
-}
-.preco-tag {
-  display: inline-block;
-  font-family: var(--mono); font-size: 11px;
-  letter-spacing: 0.22em; text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 22px;
-}
-.preco-num {
-  font-family: var(--display);
-  font-size: clamp(56px, 9vw, 82px);
-  font-weight: 600;
-  line-height: 1;
-  letter-spacing: -0.025em;
-}
-.preco-num .moeda {
-  font-size: 0.55em;
-  font-style: italic;
-  font-weight: 400;
-  margin-right: 8px;
-  color: var(--muted-hi);
-  vertical-align: top;
-  position: relative; top: 0.25em;
-}
-.preco-period {
-  font-family: var(--display); font-style: italic;
-  font-size: 18px; color: var(--muted-hi);
-  margin-top: 8px;
-}
-.preco-features {
-  list-style: none; padding: 0;
-  margin: 36px 0 32px;
-  text-align: left;
-  display: inline-block;
-}
-.preco-features li {
-  padding: 9px 0 9px 28px;
-  font-size: 14.5px;
-  color: var(--muted-hi);
-  position: relative;
-  border-top: 1px dashed var(--border);
-}
-.preco-features li:first-child { border-top: 0; padding-top: 0; }
-.preco-features li::before {
-  content: "✓";
-  position: absolute; left: 0;
-  color: var(--accent);
-  font-weight: 600;
-}
-.preco-meta {
-  font-size: 12px;
-  color: var(--muted);
-  margin-top: 18px;
-  font-family: var(--mono);
-  letter-spacing: 0.05em;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   FAQ
-══════════════════════════════════════════════════════════════ */
-.faq-section { border-top: 1px solid var(--border); }
-.faqs { max-width: 780px; }
-.faq {
-  border-top: 1px solid var(--border);
-  padding: 24px 0;
-}
-.faq:last-child { border-bottom: 1px solid var(--border); }
-.faq summary {
-  list-style: none;
-  cursor: pointer;
-  display: flex; justify-content: space-between; align-items: center;
-  gap: 24px;
-  font-family: var(--display);
-  font-size: 20px; font-weight: 600;
-  font-style: italic;
-  letter-spacing: -0.005em;
-  transition: color .2s;
-}
-.faq summary::-webkit-details-marker { display: none; }
-.faq summary:hover { color: var(--accent); }
-.faq summary::after {
-  content: "+";
-  font-family: var(--body);
-  font-style: normal;
-  font-size: 24px;
-  font-weight: 400;
-  color: var(--accent);
-  flex-shrink: 0;
-  transition: transform .2s;
-}
-.faq[open] summary::after { content: "−"; }
-.faq p {
-  margin-top: 18px;
   color: var(--muted-hi);
   font-size: 15px;
-  line-height: 1.65;
-  max-width: 640px;
-}
-.faq p code {
-  font-family: var(--mono);
-  font-size: 13px;
-  background: var(--panel);
-  padding: 2px 7px;
-  border-radius: 4px;
-  color: var(--accent);
-  border: 1px solid var(--border);
+  line-height: 1.6;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   FINAL CTA
-══════════════════════════════════════════════════════════════ */
-.final-cta-section {
-  padding: 80px 40px 40px;
+/* ═══ SCREENSHOTS — broadcast monitor stack ═══ */
+.shots {
+  background: var(--bg-2);
   border-top: 1px solid var(--border);
-  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+.shot-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 24px;
+  margin-top: 60px;
+}
+.shot {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
   position: relative;
 }
-.final-cta-section::before {
-  content: '';
+.shot::before {
+  content: "REC";
   position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 800px; height: 400px;
-  background: radial-gradient(circle, var(--accent-glow), transparent 65%);
-  filter: blur(80px);
-  pointer-events: none;
-  z-index: 0;
+  top: -10px;
+  left: 16px;
+  background: var(--accent);
+  color: white;
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.1em;
 }
-.final-cta-section > * { position: relative; z-index: 1; }
-.final-headline {
-  font-family: var(--display);
-  font-size: clamp(32px, 5.5vw, 56px);
-  font-weight: 400;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-  max-width: 720px;
-  margin: 0 auto 32px;
+.shot img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 6px;
 }
-.final-headline em {
-  font-style: italic; font-weight: 600;
-  color: var(--accent);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   FOOTER
-══════════════════════════════════════════════════════════════ */
-footer {
-  padding: 40px 40px 60px;
-  border-top: 1px solid var(--border);
-  display: flex; flex-wrap: wrap; gap: 24px;
-  justify-content: space-between; align-items: center;
-  max-width: 1100px; margin: 0 auto;
+.shot .cap {
+  margin-top: 14px;
+  padding: 0 4px 4px;
   font-family: var(--mono);
   font-size: 11px;
-  letter-spacing: 0.18em;
   text-transform: uppercase;
+  letter-spacing: 0.1em;
   color: var(--muted);
 }
-footer a:hover { color: var(--accent); }
-footer .links { display: flex; gap: 24px; flex-wrap: wrap; }
-@media (max-width: 720px) { footer { padding: 30px 24px 48px; flex-direction: column; align-items: flex-start; gap: 16px; } }
+.shot .cap strong { color: var(--text); font-weight: 500; }
+.shot.s1 { grid-column: span 7; }
+.shot.s2 { grid-column: span 5; }
+.shot.s3 { grid-column: span 5; }
+.shot.s4 { grid-column: span 7; }
 
-/* ═══════════════════════════════════════════════════════════════
-   MODAL DA FILA
-══════════════════════════════════════════════════════════════ */
-.modal-overlay {
-  position: fixed; inset: 0;
-  background: rgba(14, 11, 20, 0.78);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  display: none;
-  align-items: center; justify-content: center;
-  z-index: 200;
-  padding: 20px;
-  animation: fadeIn .25s ease-out;
+/* ═══ PRA QUEM É ═══ */
+.audience {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-top: 60px;
 }
-.modal-overlay.open { display: flex; }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-.modal {
+.aud-card {
+  padding: 28px 24px;
   background: var(--panel);
   border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 36px 32px 32px;
-  max-width: 440px; width: 100%;
-  position: relative;
-  animation: slideUp .3s cubic-bezier(.2,.8,.2,1);
-  box-shadow: 0 30px 80px -30px rgba(255,31,142,.4);
+  border-radius: 12px;
+  transition: all 0.3s;
 }
-.modal::before {
-  content: '';
-  position: absolute; top: 0; left: 50%;
-  transform: translateX(-50%);
-  width: 60%; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+.aud-card:hover {
+  border-color: var(--accent);
+  background: var(--panel-hi);
 }
-
-.modal-close {
-  position: absolute;
-  top: 16px; right: 18px;
-  background: transparent;
-  border: 0;
-  color: var(--muted);
-  font-size: 24px;
-  cursor: pointer;
-  line-height: 1;
-  width: 32px; height: 32px;
-  display: flex; align-items: center; justify-content: center;
-  border-radius: 8px;
-  transition: background .15s, color .15s;
+.aud-card .ic {
+  font-size: 32px;
+  display: block;
+  margin-bottom: 16px;
+  filter: grayscale(1);
+  transition: filter 0.3s;
 }
-.modal-close:hover { color: var(--accent); background: rgba(255,31,142,.08); }
-
-.modal-eyebrow {
-  font-family: var(--mono);
-  font-size: 10.5px; letter-spacing: .22em;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 10px;
-}
-.modal-title {
+.aud-card:hover .ic { filter: none; }
+.aud-card h4 {
   font-family: var(--display);
-  font-style: italic; font-weight: 600;
-  font-size: 28px;
-  letter-spacing: -0.015em;
+  font-size: 22px;
+  text-transform: uppercase;
   margin-bottom: 8px;
-  line-height: 1.08;
+  letter-spacing: 0.01em;
 }
-.modal-title em { color: var(--accent); font-style: italic; }
-.modal-sub {
+.aud-card p {
   font-size: 14px;
   color: var(--muted-hi);
-  margin-bottom: 22px;
   line-height: 1.5;
 }
 
-.modal-form { display: flex; flex-direction: column; gap: 10px; }
-.modal-form input {
-  width: 100%;
-  padding: 13px 14px;
-  background: var(--bg-2);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  color: var(--text);
-  font-family: var(--body);
-  font-size: 15px;
-  transition: border-color .2s;
+/* ═══ PREÇO ═══ */
+.pricing {
+  background:
+    radial-gradient(ellipse at top, rgba(255,31,142,0.12), transparent 60%),
+    var(--bg);
+  text-align: center;
 }
-.modal-form input::placeholder { color: var(--muted); }
-.modal-form input:focus { outline: none; border-color: var(--accent); }
-.modal-form button {
-  width: 100%;
-  padding: 14px;
+.price-card {
+  max-width: 540px;
+  margin: 60px auto 0;
+  background: var(--panel);
+  border: 1px solid var(--border-hi);
+  border-radius: 20px;
+  padding: 48px 40px;
+  position: relative;
+  box-shadow: 0 30px 80px rgba(255,31,142,0.15);
+  text-align: left;
+}
+.price-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  padding: 1px;
+  background: linear-gradient(135deg, var(--accent), transparent 40%, transparent 60%, var(--accent));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+.price-badge {
+  display: inline-block;
   background: var(--accent);
-  color: var(--bg);
-  border: 0;
-  border-radius: 10px;
-  font-family: var(--body);
-  font-weight: 600;
-  font-size: 15px;
-  cursor: pointer;
-  margin-top: 4px;
-  letter-spacing: -0.005em;
-  transition: transform .15s, box-shadow .2s;
-}
-.modal-form button:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 12px 28px -10px rgba(255,31,142,.5);
-}
-.modal-form button:disabled { opacity: .55; cursor: not-allowed; transform: none; }
-
-.modal-status {
-  font-size: 13px;
-  color: var(--soft);
-  text-align: center;
-  margin-top: 12px;
-  min-height: 18px;
-}
-
-.modal-success {
-  display: none;
-  text-align: center;
-  padding: 8px 0 4px;
-}
-.modal-success.open { display: block; }
-.modal-success-icon {
-  width: 64px; height: 64px;
-  margin: 0 auto 18px;
-  border-radius: 50%;
-  background: rgba(255,31,142,.1);
-  display: flex; align-items: center; justify-content: center;
-  border: 1px solid rgba(255,31,142,.3);
-}
-.modal-success h3 {
-  font-family: var(--display);
-  font-style: italic; font-weight: 600;
-  font-size: 26px;
-  margin-bottom: 10px;
-  letter-spacing: -0.01em;
-}
-.modal-success h3 em { color: var(--accent); font-style: italic; }
-.modal-success p {
-  color: var(--muted-hi);
-  font-size: 14.5px;
-  line-height: 1.55;
+  color: white;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  padding: 6px 14px;
+  border-radius: 100px;
   margin-bottom: 22px;
 }
-.modal-success button {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 11px 22px;
-  border-radius: 9px;
-  font-family: var(--body);
+.price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.price-from {
+  font-family: var(--mono);
   font-size: 14px;
+  color: var(--muted);
+  text-decoration: line-through;
+}
+.price-now {
+  font-family: var(--display);
+  font-size: 72px;
+  line-height: 1;
+  color: var(--accent);
+  letter-spacing: -0.02em;
+}
+.price-cents { font-size: 28px; color: var(--accent); }
+.price-period {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 28px;
+}
+.price-features { list-style: none; margin: 24px 0; }
+.price-features li {
+  padding: 10px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 15px;
+  border-top: 1px dashed var(--border);
+}
+.price-features li:first-child { border-top: 0; }
+.price-features li::before {
+  content: "▸";
+  color: var(--accent);
+  font-weight: 700;
+}
+.price-card .btn-primary {
+  width: 100%;
+  justify-content: center;
+  margin-top: 12px;
+  padding: 22px;
+  font-size: 17px;
+}
+.price-foot {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 18px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* ═══ FAQ ═══ */
+.faq {
+  background: var(--bg-2);
+  border-top: 1px solid var(--border);
+}
+.faq-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 60px;
+}
+details.qa {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+details.qa[open] { border-color: var(--accent); }
+details.qa summary {
+  padding: 22px 26px;
   cursor: pointer;
-  transition: border-color .2s, color .2s;
+  list-style: none;
+  font-family: var(--display);
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
 }
-.modal-success button:hover { border-color: var(--accent); color: var(--accent); }
-
-@media (max-width: 480px) {
-  .modal { padding: 30px 24px 26px; }
-  .modal-title { font-size: 24px; }
+details.qa summary::-webkit-details-marker { display: none; }
+details.qa summary::after {
+  content: "+";
+  font-family: var(--display);
+  font-size: 28px;
+  color: var(--accent);
+  transition: transform 0.2s;
+  line-height: 1;
+}
+details.qa[open] summary::after { transform: rotate(45deg); }
+details.qa .body {
+  padding: 0 26px 24px;
+  color: var(--muted-hi);
+  font-size: 15px;
+  line-height: 1.65;
 }
 
+/* ═══ Final CTA strip ═══ */
+.final {
+  padding: 120px 32px;
+  text-align: center;
+  background: var(--bg);
+  position: relative;
+}
+.final::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, var(--accent-glow), transparent 60%);
+  opacity: 0.3;
+  pointer-events: none;
+}
+.final-eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  margin-bottom: 24px;
+}
+.final h2 {
+  font-family: var(--display);
+  font-size: clamp(48px, 8vw, 96px);
+  line-height: 0.92;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+  position: relative;
+  z-index: 1;
+}
+.final h2 em { color: var(--accent); font-style: normal; }
+.final p {
+  font-size: 19px;
+  color: var(--muted-hi);
+  max-width: 540px;
+  margin: 0 auto 40px;
+  position: relative;
+  z-index: 1;
+}
+.final .btn-primary {
+  position: relative;
+  z-index: 1;
+  padding: 22px 44px;
+  font-size: 18px;
+}
+
+/* ═══ Footer ═══ */
+footer {
+  padding: 40px 32px;
+  border-top: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+footer a { color: var(--muted-hi); text-decoration: none; }
+footer a:hover { color: var(--accent); }
+footer .links { display: flex; gap: 22px; flex-wrap: wrap; }
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width: 980px) {
+  .strip { padding: 12px 18px; gap: 12px; }
+  .strip nav { display: none; }
+  .hero { padding: 110px 20px 60px; grid-template-columns: 1fr; gap: 60px; }
+  .hero-mockup { max-width: 480px; margin: 0 auto; }
+  section.block { padding: 70px 20px; }
+  .contrast-grid { grid-template-columns: 1fr; }
+  .steps { grid-template-columns: 1fr; }
+  .steps::before { display: none; }
+  .shot-grid > * { grid-column: 1 / -1 !important; }
+  .audience { grid-template-columns: repeat(2, 1fr); }
+  .faq-grid { grid-template-columns: 1fr; }
+  .final { padding: 80px 20px; }
+}
+@media (max-width: 520px) {
+  .audience { grid-template-columns: 1fr; }
+  .hero-stats { grid-template-columns: 1fr; gap: 18px; }
+}
+
+/* ═══ Entrance animations ═══ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.hero-content > * { animation: fadeUp 0.7s ease-out backwards; }
+.hero-content .eyebrow { animation-delay: 0.05s; }
+.hero-content h1 { animation-delay: 0.15s; }
+.hero-content .hero-sub { animation-delay: 0.3s; }
+.hero-content .hero-ctas { animation-delay: 0.45s; }
+.hero-content .hero-stats { animation-delay: 0.6s; }
+.hero-mockup { animation: fadeUp 0.9s 0.4s ease-out backwards; }
 </style>
 </head>
 <body>
 
-<!-- ═════════ NAV ═════════ -->
-<nav class="nav">
-  <img src="assets/logo.svg" alt="Live Shop Pro" class="logo-img">
+<!-- ═══ HEADER STRIP ═══ -->
+<div class="strip">
+  <div class="logo"></div>
   <div class="brand">LIVE<span class="mark">·</span>SHOP<span class="mark">·</span>PRO</div>
   <span class="led">ATIVO</span>
   <div class="spacer"></div>
-  <div class="links">
+  <nav>
     <a href="/">Home</a>
     <a href="/argos/">Argos</a>
-    <a href="/quick-test/">Quick Test</a>
+    <a href="/live-shop-pro/">Live Shop Pro</a>
     <a href="#preco">Preço</a>
     <a href="#faq">FAQ</a>
-  </div>
-  <a href="https://pay.kiwify.com.br/NRFYiZs" class="nav-cta">Comprar</a>
-</nav>
-
-<!-- ═════════ HERO ═════════ -->
-<section class="hero">
-  <div class="hero-grid">
-    <div>
-      <div class="eyebrow">Disponível · Chrome Web Store</div>
-      <h1>Comando <em>central</em><br>da sua live<br>no TikTok Shop.</h1>
-      <p class="hero-sub">
-        Painel que cuida da operação enquanto você foca em vender. Flash sale automática,
-        IA respondendo no chat, moderação anti-bot e alertas no Telegram — tudo num lugar só.
-      </p>
-      <div class="hero-ctas">
-        <a href="https://pay.kiwify.com.br/NRFYiZs" class="cta-primary">
-          Comprar — R$ 797 / ano <span class="arrow">→</span>
-        </a>
-        <a href="#como-funciona" class="cta-secondary">Como funciona</a>
-      </div>
-      <div class="cupom-badge">
-        <em>50% OFF</em> nas 10 primeiras compras com o cupom <code style="font-family:var(--mono);color:var(--accent);background:rgba(255,31,142,.08);padding:2px 8px;border-radius:5px;letter-spacing:.04em">PRIMEIROS10</code>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<!-- ═════════ FEATURES ═════════ -->
-<section class="features-section" id="features">
-  <div class="sec-label">o que ela faz</div>
-  <h2 class="sec-title">Cada coisa <em>repetitiva</em> da sua live<br>vira tarefa da extensão.</h2>
-
-  <div class="features">
-
-    <div class="feat">
-      <div class="feat-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-      </div>
-      <h3 class="feat-name">Flash sale automática</h3>
-      <p class="feat-desc">Quando a oferta relâmpago acaba, a extensão duplica e reinicia sozinha. Você não precisa ficar de olho no relógio.</p>
-    </div>
-
-    <div class="feat">
-      <div class="feat-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      </div>
-      <h3 class="feat-name">IA no chat</h3>
-      <p class="feat-desc">Respostas automáticas em 11 categorias. Liga sua chave Gemini e ela responde qualquer pergunta usando o briefing que você cadastrou.</p>
-    </div>
-
-    <div class="feat">
-      <div class="feat-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      </div>
-      <h3 class="feat-name">Moderação anti-bot</h3>
-      <p class="feat-desc">Bloqueia espectadores com palavras suspeitas no nome ("shop", "achadinhos", "indica") antes que poluam o chat.</p>
-    </div>
-
-    <div class="feat">
-      <div class="feat-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      </div>
-      <h3 class="feat-name">Auto-encerramento por violação</h3>
-      <p class="feat-desc">Detecta o aviso de violação que o TikTok exibe e fecha a live na mesma hora. Você protege a conta sem precisar estar olhando.</p>
-    </div>
-
-    <div class="feat">
-      <div class="feat-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-      </div>
-      <h3 class="feat-name">Alertas no Telegram</h3>
-      <p class="feat-desc">Saiu venda, deu violação ou a live encerrou? Você recebe aviso direto no celular. Dá pra fechar a live de qualquer lugar com um toque.</p>
-    </div>
-
-    <div class="feat">
-      <div class="feat-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      </div>
-      <h3 class="feat-name">Setup em 30 segundos</h3>
-      <p class="feat-desc">Marca, produto, tempo, tom de voz — preenche uma vez e dá Iniciar. Cada live nova, mesmo painel, dois cliques.</p>
-    </div>
-
-  </div>
-</section>
-
-<!-- ═════════ COMO FUNCIONA ═════════ -->
-<section class="how-section" id="como-funciona">
-  <div class="sec-label">como funciona</div>
-  <h2 class="sec-title">Três cliques <em>e tá rodando.</em></h2>
-
-  <div class="steps">
-    <div class="step">
-      <h3>Instala</h3>
-      <p>Compra a chave aqui, instala a extensão na Chrome Web Store, cola a chave e ativa. Leva 2 minutos.</p>
-    </div>
-    <div class="step">
-      <h3>Configura</h3>
-      <p>Abre o TikTok Live Studio, clica no ícone, preenche os dados da live (produto, tom, tempo). 30 segundos.</p>
-    </div>
-    <div class="step">
-      <h3>Esquece</h3>
-      <p>Inicia a live e some. A extensão segura o chat, duplica flash sale e te avisa no Telegram quando precisar.</p>
-    </div>
-  </div>
-</section>
-
-<!-- ═════════ PREÇO ═════════ -->
-<section class="preco-section" id="preco">
-  <div class="sec-label">preço</div>
-  <h2 class="sec-title">Uma assinatura.<br><em>Tudo incluído.</em></h2>
-
-  <div class="preco-card">
-    <div class="preco-tag">Plano único · Anual</div>
-    <div class="preco-num"><span class="moeda">R$</span>797</div>
-    <div class="preco-period">por ano · renovação manual</div>
-
-    <ul class="preco-features">
-      <li>Extensão completa, com tudo liberado</li>
-      <li>Funciona em até 2 dispositivos por chave</li>
-      <li>Atualizações dentro do ciclo anual</li>
-      <li>IA Gemini opcional (você usa sua chave)</li>
-      <li>Suporte direto por email</li>
-      <li>Garantia de 7 dias (lei brasileira)</li>
-    </ul>
-
-    <a href="https://pay.kiwify.com.br/NRFYiZs" class="cta-primary">
-      Comprar agora <span class="arrow">→</span>
-    </a>
-
-    <div class="preco-meta">PAGAMENTO VIA KIWIFY · CHAVE ENTREGUE POR EMAIL</div>
-  </div>
-</section>
-
-<!-- ═════════ FAQ ═════════ -->
-<section class="faq-section" id="faq">
-  <div class="sec-label">dúvidas frequentes</div>
-  <h2 class="sec-title">Respostas <em>diretas</em>.</h2>
-
-  <div class="faqs">
-    <details class="faq">
-      <summary>Preciso saber programar pra usar?</summary>
-      <p>Não. Você instala a extensão, cola a chave e configura tudo num painel visual. Quem usa TikTok Live Studio consegue usar isso.</p>
-    </details>
-
-    <details class="faq">
-      <summary>Funciona em Mac e Windows?</summary>
-      <p>Sim. É uma extensão pro navegador Chrome (e Brave/Edge/qualquer Chromium). Como o TikTok Live Studio só roda em desktop, a extensão também é só desktop.</p>
-    </details>
-
-    <details class="faq">
-      <summary>Posso usar em mais de um computador?</summary>
-      <p>Sim. Sua chave funciona em até <strong>2 dispositivos</strong> simultâneos. Se precisar trocar de máquina, é só pedir reset por email.</p>
-    </details>
-
-    <details class="faq">
-      <summary>A IA Gemini é paga? Vou ter que pagar Google também?</summary>
-      <p>A extensão é independente da IA. Se você QUER usar respostas geradas por IA, cria uma chave gratuita no Google AI Studio (Gemini) e cola na extensão. O Gemini tem um free tier generoso que cobre uso normal de live. Sem essa chave, a extensão continua respondendo com as 11 categorias prontas — só não tem o "responde qualquer pergunta sozinha".</p>
-    </details>
-
-    <details class="faq">
-      <summary>Como recebo a chave depois de comprar?</summary>
-      <p>Compra processada na Kiwify → automação dispara → email com a chave no formato <code>LS-XXXX-XXXX-XXXX</code> chega em segundos. Você cola na extensão, ativa, pronto.</p>
-    </details>
-
-    <details class="faq">
-      <summary>Posso pagar mensal?</summary>
-      <p>Por enquanto só anual. Faz sentido pra quem trabalha com live como profissão — o investimento se paga numa semana de live boa. Se mensal aparecer no futuro, quem já é cliente anual continua no anual.</p>
-    </details>
-
-    <details class="faq">
-      <summary>Tem reembolso?</summary>
-      <p>Sim. 7 dias após a compra, sem fazer pergunta, por lei do consumidor brasileiro. Solicita pela Kiwify ou me manda email.</p>
-    </details>
-
-    <details class="faq">
-      <summary>A extensão coleta meus dados?</summary>
-      <p>Não vendemos dado pra ninguém. O processamento da live é local, no seu navegador. As únicas transmissões externas são: nosso servidor de licença (pra validar a chave), Telegram (se você ativar, pro seu próprio bot) e Gemini (se você ativar, com sua chave). Detalhes completos na <a href="https://qyvoaudio.github.io/liveshop-policy/" target="_blank" rel="noopener" style="color:var(--accent);border-bottom:1px solid var(--accent);">política de privacidade</a>.</p>
-    </details>
-  </div>
-</section>
-
-<!-- ═════════ FINAL CTA ═════════ -->
-<section class="final-cta-section">
-  <h2 class="final-headline">Sua próxima live <em>já podia</em><br>estar rodando sozinha.</h2>
-  <a href="https://pay.kiwify.com.br/NRFYiZs" class="cta-primary">
-    Comprar — R$ 797 / ano <span class="arrow">→</span>
-  </a>
-  <div class="cupom-badge" style="margin: 28px auto 0;">
-    <em>50% OFF</em> nas 10 primeiras compras com o cupom <code style="font-family:var(--mono);color:var(--accent);background:rgba(255,31,142,.08);padding:2px 8px;border-radius:5px;letter-spacing:.04em">PRIMEIROS10</code>
-  </div>
-</section>
-
-<!-- ═════════ FOOTER ═════════ -->
-<footer>
-  <div>QYVO LIVE · LIVE SHOP PRO · 2026</div>
-  <div class="links">
-    <a href="https://qyvoaudio.github.io/liveshop-policy/" target="_blank" rel="noopener">Política</a>
-    <a href="mailto:caroldepaz@gmail.com">Contato</a>
-    <a href="/">Voltar</a>
-  </div>
-</footer>
-
-<!-- ═════════ MODAL DA FILA ═════════ -->
-<div class="modal-overlay" id="waitlistModal" role="dialog" aria-modal="true" aria-labelledby="waitlistTitle">
-  <div class="modal">
-    <button class="modal-close" id="modalClose" aria-label="Fechar">×</button>
-
-    <div id="waitlistFormBlock">
-      <div class="modal-eyebrow">Entrar na fila</div>
-      <h2 class="modal-title" id="waitlistTitle">Te aviso quando <em>abrir</em>.</h2>
-      <p class="modal-sub">Sem spam. Você só recebe o aviso de lançamento e o cupom de 50% OFF se estiver entre as 10 primeiras.</p>
-
-      <form class="modal-form" id="waitlistForm" novalidate>
-        <input type="text" name="nome" placeholder="Seu nome" required autocomplete="name" maxlength="100">
-        <input type="email" name="email" placeholder="Seu melhor email" required autocomplete="email" maxlength="200">
-        <button type="submit">Entrar na fila</button>
-      </form>
-      <div class="modal-status" id="modalStatus"></div>
-    </div>
-
-    <div class="modal-success" id="waitlistSuccess">
-      <div class="modal-success-icon">
-        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#FF1F8E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="20 6 9 17 4 12"/>
-        </svg>
-      </div>
-      <h3><em>Tá na fila.</em></h3>
-      <p>Acabei de mandar um email confirmando. Te aviso por lá assim que o Live Shop Pro abrir.</p>
-      <button type="button" id="modalCloseSuccess">Fechar</button>
-    </div>
-  </div>
+  </nav>
+  <a href="#preco" class="cta">Comprar</a>
 </div>
 
-<script>
-(function () {
-  const WORKER_URL = "https://liveshop-license.caroldepaz.workers.dev";
-  const overlay = document.getElementById('waitlistModal');
-  const form = document.getElementById('waitlistForm');
-  const submitBtn = form.querySelector('button[type="submit"]');
-  const statusEl = document.getElementById('modalStatus');
-  const formBlock = document.getElementById('waitlistFormBlock');
-  const successBlock = document.getElementById('waitlistSuccess');
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="eyebrow">EXTENSÃO CHROME · TIKTOK LIVE STUDIO</div>
+    <h1>
+      Comando<br>
+      <span class="magenta">central</span><br>
+      <span style="color: var(--text);">da sua live.</span>
+    </h1>
+    <p class="hero-sub">
+      <strong>Live Shop Pro</strong> cuida da operação inteira da sua live no TikTok Shop.
+      Flash sale automática, IA respondendo no chat, moderação anti-bot, alertas no Telegram —
+      <strong>tudo num painel só</strong>.
+    </p>
+    <div class="hero-ctas">
+      <a href="#preco" class="btn-primary">
+        Quero o Live Shop Pro <span class="arrow">→</span>
+      </a>
+      <a href="#como-funciona" class="btn-ghost">
+        ▸ Ver como funciona
+      </a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="num">∞</div>
+        <div class="lbl">flash sales por live</div>
+      </div>
+      <div class="stat">
+        <div class="num">24/7</div>
+        <div class="lbl">IA respondendo chat</div>
+      </div>
+      <div class="stat">
+        <div class="num">0</div>
+        <div class="lbl">bots passando</div>
+      </div>
+    </div>
+  </div>
+  <!-- TODO: print do painel principal do Live Shop Pro -->
 
-  function openModal() {
-    overlay.classList.add('open');
-    formBlock.style.display = '';
-    successBlock.classList.remove('open');
-    statusEl.textContent = '';
-    form.reset();
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'Entrar na fila';
-    document.body.style.overflow = 'hidden';
-    setTimeout(() => form.nome.focus(), 100);
-  }
-  function closeModal() {
-    overlay.classList.remove('open');
-    document.body.style.overflow = '';
-  }
+</section>
 
-  document.querySelectorAll('a[href="#fila"]').forEach(el => {
-    el.addEventListener('click', (e) => { e.preventDefault(); openModal(); });
-  });
-  document.getElementById('modalClose').addEventListener('click', closeModal);
-  document.getElementById('modalCloseSuccess').addEventListener('click', closeModal);
-  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal();
-  });
+<!-- ═══ PROBLEMA / SOLUÇÃO ═══ -->
+<section class="block contrast">
+  <div class="wrap">
+    <div class="sec-header">
+      <div class="sec-label">o problema real</div>
+      <h2 class="sec-title">Live seller bom <em>controla tudo.</em><br>Live seller esperto <em>delega tudo.</em></h2>
+    </div>
+    <div class="contrast-grid">
+      <div class="contrast-card before">
+        <h3>▸ Sem Live Shop Pro</h3>
+        <ul>
+          <li>Flash sale acaba, você só descobre depois — perdeu uma hora de venda</li>
+          <li>Pergunta no chat fica sem resposta enquanto você apresenta produto</li>
+          <li>Bot xingando ou floodando spam — moderador humano dorme</li>
+          <li>Venda fechou? Você só vai ver no e-mail do Kiwify depois</li>
+          <li>Toda decisão na sua mão: olhar oferta, ler chat, banir, ver venda</li>
+          <li>Sua cabeça em 5 lugares ao mesmo tempo. Resultado: cansaço e erro</li>
+        </ul>
+      </div>
+      <div class="contrast-card after">
+        <h3>▸ Com Live Shop Pro</h3>
+        <ul>
+          <li>Flash sale termina → duplica e reinicia sozinha. Nenhum minuto sem oferta</li>
+          <li>IA responde dúvida frequente no chat enquanto você vende</li>
+          <li>Anti-bot detecta spam e ban automático — chat limpo</li>
+          <li>Venda fechou? Alerta no Telegram em segundos</li>
+          <li>Painel mostra tudo num lugar: status, chat, vendas, moderação</li>
+          <li>Você foca em <strong>vender</strong>. Tudo operacional roda sozinho</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const nome = form.nome.value.trim();
-    const email = form.email.value.trim();
-    if (!nome || !email) {
-      statusEl.textContent = 'Preenche os 2 campos.';
-      return;
-    }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      statusEl.textContent = 'Esse email não parece válido. Confere.';
-      return;
-    }
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Enviando…';
-    statusEl.textContent = '';
+<!-- ═══ COMO FUNCIONA ═══ -->
+<section class="block" id="como-funciona">
+  <div class="wrap">
+    <div class="sec-header">
+      <div class="sec-label">4 frentes · 1 painel</div>
+      <h2 class="sec-title">Cada coisa repetitiva<br>vira <em>tarefa da extensão.</em></h2>
+      <p class="sec-sub">Você vende. Ela cuida do resto.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <h3>Flash sale automática</h3>
+        <p>Configura uma oferta relâmpago. Quando acaba, a extensão duplica e reinicia sozinha. Você nunca fica sem oferta no ar.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <h3>IA respondendo o chat</h3>
+        <p>Cliente pergunta "qual o tamanho?", "tem desconto?", "como funciona?" — a IA responde automaticamente enquanto você apresenta o produto.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <h3>Moderação anti-bot</h3>
+        <p>Detecta spam, palavrão, conta suspeita — ban automático sem você precisar parar de falar. Chat limpo o tempo inteiro.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <h3>Alertas no Telegram</h3>
+        <p>Venda fechou, chat com pergunta importante, moderação suspeita? Notificação no seu Telegram em segundos.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-    try {
-      const r = await fetch(WORKER_URL + '/v1/waitlist', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nome, email }),
-      });
-      const data = await r.json();
+<!-- TODO: prints reais do painel Live Shop Pro depois -->
 
-      if (data.ok) {
-        formBlock.style.display = 'none';
-        successBlock.classList.add('open');
-      } else {
-        const msgs = {
-          invalid_email: 'Esse email não parece válido. Confere.',
-          missing_fields: 'Preenche os 2 campos.',
-        };
-        statusEl.textContent = msgs[data.reason] || 'Erro ao enviar. Tenta de novo em 1 minuto.';
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Entrar na fila';
-      }
-    } catch (err) {
-      statusEl.textContent = 'Sem conexão. Confere internet e tenta de novo.';
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Entrar na fila';
-    }
-  });
-})();
-</script>
+<!-- ═══ PRA QUEM É ═══ -->
+<section class="block">
+  <div class="wrap">
+    <div class="sec-header">
+      <div class="sec-label">público</div>
+      <h2 class="sec-title">Feito pra <em>quem vive em live.</em></h2>
+    </div>
+    <div class="audience">
+      <div class="aud-card">
+        <span class="ic">🛒</span>
+        <h4>TikTok Shop seller</h4>
+        <p>Quer focar em apresentar produto e deixar moderação, IA e oferta no piloto automático</p>
+      </div>
+      <div class="aud-card">
+        <span class="ic">📈</span>
+        <h4>Quem faz live alta</h4>
+        <p>Chat é tão movimentado que perde venda porque não consegue responder e vender ao mesmo tempo</p>
+      </div>
+      <div class="aud-card">
+        <span class="ic">🎯</span>
+        <h4>Operação enxuta</h4>
+        <p>Não tem moderador / assistente próprio mas precisa de qualidade de chat e atendimento</p>
+      </div>
+      <div class="aud-card">
+        <span class="ic">📊</span>
+        <h4>Agência / equipe</h4>
+        <p>Padroniza operação de múltiplos sellers num painel único, com alertas centralizados</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PREÇO ═══ -->
+<section class="block pricing" id="preco">
+  <div class="wrap">
+    <div class="sec-header" style="text-align: center;">
+      <div class="sec-label" style="justify-content: center;">oferta de lançamento</div>
+      <h2 class="sec-title" style="margin: 0 auto;">Paga 1 vez por ano. <em>Sem mensalidade.</em></h2>
+    </div>
+    <div class="price-card">
+      <div class="price-badge">▸ 50% OFF NAS 10 PRIMEIRAS · CUPOM PRIMEIROS10</div>
+      <div class="price-row" style="margin-bottom: 8px; align-items: baseline;">
+        <span style="color: var(--muted); font-family: var(--mono); font-size: 14px;">R$</span>
+        <span class="price-now">797</span>
+        <span style="color: var(--muted-hi); font-family: var(--mono); font-size: 16px; margin-left: 4px;">/ ano</span>
+      </div>
+      <div class="price-period">12 meses · operação completa · sem mensalidade</div>
+      <ul class="price-features">
+        <li>Flash sale automática (duplica e reinicia sozinha)</li>
+        <li>IA respondendo dúvidas frequentes no chat 24/7</li>
+        <li>Moderação anti-bot, anti-spam, anti-palavrão</li>
+        <li>Alertas no Telegram pra venda, chat e moderação</li>
+        <li>2 máquinas por licença (PC casa + notebook trabalho)</li>
+        <li>Updates inclusos durante o período ativo</li>
+        <li>Suporte por WhatsApp direto com a Carol</li>
+      </ul>
+      <a href="https://pay.kiwify.com.br/NRFYiZs" class="btn-primary">
+        ▸ Garantir minha licença anual <span class="arrow">→</span>
+      </a>
+      <div class="price-foot">
+        🔒 Pagamento seguro Kiwify · 7 dias de garantia
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FAQ ═══ -->
+<section class="block faq" id="faq">
+  <div class="wrap">
+    <div class="sec-header">
+      <div class="sec-label">perguntas frequentes</div>
+      <h2 class="sec-title">Dúvidas? <em>Tô aqui.</em></h2>
+    </div>
+    <div class="faq-grid">
+      <details class="qa">
+        <summary>A IA responde de verdade? Não fica robótica?</summary>
+        <div class="body">A IA é configurada com SEU tom, suas respostas frequentes, seus produtos. Ela só responde dúvidas frequentes (tamanho, frete, garantia) — quando aparece pergunta mais difícil, ela passa pra você. Não substitui você, complementa.</div>
+      </details>
+      <details class="qa">
+        <summary>Como funciona a flash sale automática?</summary>
+        <div class="body">Você configura uma flash sale com tempo X. Quando acaba, em vez de você ter que fechar e abrir outra, a extensão duplica a oferta e reinicia o timer. Resultado: <strong>oferta no ar continuamente</strong> sem você precisar parar de apresentar.</div>
+      </details>
+      <details class="qa">
+        <summary>O que a moderação anti-bot detecta?</summary>
+        <div class="body">Conta com nome aleatório, mensagens repetidas em sequência, palavrão, spam de links, tentativa de redirecionar pra fora do TikTok. Ban automático, chat limpo.</div>
+      </details>
+      <details class="qa">
+        <summary>Funciona no Mac e no Windows?</summary>
+        <div class="body">Sim, em ambos. É extensão Chrome MV3, roda em qualquer navegador moderno (Chrome, Brave, Edge, Arc). Você instala pela Chrome Web Store e funciona igual nos 2 sistemas.</div>
+      </details>
+      <details class="qa">
+        <summary>Tem mensalidade? Como funciona a renovação?</summary>
+        <div class="body">Zero mensalidade. Você paga <strong>1 vez por ano</strong> — sem débito automático, sem cartão preso. Renovação opcional depois dos 12 meses. Se não renovar, a extensão para de funcionar mas suas configurações ficam salvas pra quando voltar.</div>
+      </details>
+      <details class="qa">
+        <summary>Como funciona o limite de 2 máquinas?</summary>
+        <div class="body">A chave funciona em até 2 dispositivos diferentes (ex: notebook + PC casa). Se trocar de PC, é só me chamar que reseto.</div>
+      </details>
+      <details class="qa">
+        <summary>E se eu não gostar?</summary>
+        <div class="body">7 dias de garantia incondicional pela Kiwify. Testou, não curtiu, pede reembolso e devolvo 100% do valor. Sem perguntas.</div>
+      </details>
+      <details class="qa">
+        <summary>O suporte é mesmo direto com você?</summary>
+        <div class="body">Direto comigo, Carol. WhatsApp pessoal pra cliente Live Shop Pro. Respondo até em horário de live (mas se eu tiver vendendo, demoro 1-2h pra responder).</div>
+      </details>
+      <details class="qa">
+        <summary>A extensão está na Chrome Web Store?</summary>
+        <div class="body">Sim, listada oficialmente. Você instala pelo link que mando após a compra. Update automático pela Store.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FINAL CTA ═══ -->
+<section class="final">
+  <div class="final-eyebrow">▸ ÚLTIMA CHAMADA</div>
+  <h2>Você vende.<br>Ela cuida do <em>resto.</em></h2>
+  <p>Flash sale automática, IA no chat, moderação e alertas no Telegram. Sua live no piloto automático, você no foco do que importa.</p>
+  <a href="https://pay.kiwify.com.br/NRFYiZs" class="btn-primary">
+    Quero o Live Shop Pro <span class="arrow">→</span>
+  </a>
+</section>
+
+<footer>
+  <div>© 2026 QYVO · TODOS OS DIREITOS RESERVADOS</div>
+  <div class="links">
+    <a href="https://qyvoaudio.github.io/liveshoppro-policy/" target="_blank">Política de privacidade</a>
+    <a href="mailto:contato@qyvolive.com.br">contato@qyvolive.com.br</a>
+  </div>
+</footer>
 
 </body>
 </html>
