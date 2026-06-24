@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Início rápido · Quick Test · Qyvo Live</title>
+<meta name="description" content="Começa a usar o Quick Test em 5 minutos. 4 passos simples — sem detalhes técnicos, só o essencial pra rodar sua primeira live.">
+<link rel="icon" href="../assets/logo.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #0A0A0E;
+  --bg-2: #11111A;
+  --panel: #14141C;
+  --panel-hi: #1B1B26;
+  --border: #2A2A35;
+  --border-hi: #3A3A48;
+  --text: #F5F2E8;
+  --muted: #6B6B7A;
+  --muted-hi: #9B9AA8;
+  --accent: #FF1F8E;
+  --accent-glow: rgba(255, 31, 142, 0.35);
+  --signal: #00FF9D;
+  --warn: #FFB800;
+
+  --display: "Anton", "Impact", sans-serif;
+  --body: "DM Sans", system-ui, sans-serif;
+  --mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+html { scroll-padding-top: 80px; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.65;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  mix-blend-mode: overlay;
+}
+
+/* HEADER */
+.strip {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  background: rgba(10, 10, 14, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  z-index: 100;
+  padding: 14px 32px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.strip .logo {
+  width: 28px; height: 28px;
+  background: var(--accent);
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  filter: drop-shadow(0 0 8px var(--accent-glow));
+}
+.strip .brand { font-weight: 700; font-size: 13px; letter-spacing: 0.12em; }
+.strip .brand .mark { color: var(--accent); margin: 0 1px; }
+.strip a {
+  color: var(--muted-hi);
+  text-decoration: none;
+  margin-left: auto;
+}
+.strip a:hover { color: var(--accent); }
+
+/* HERO */
+.hero {
+  padding: 130px 32px 40px;
+  max-width: 1100px;
+  margin: 0 auto;
+  text-align: center;
+}
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--signal);
+  padding: 8px 16px;
+  background: rgba(0, 255, 157, 0.07);
+  border: 1px solid rgba(0, 255, 157, 0.25);
+  border-radius: 100px;
+  margin-bottom: 28px;
+}
+.eyebrow::before {
+  content: "";
+  width: 6px; height: 6px;
+  background: var(--signal);
+  border-radius: 50%;
+}
+h1 {
+  font-family: var(--display);
+  font-size: clamp(44px, 7vw, 84px);
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  margin-bottom: 22px;
+}
+h1 em { font-style: normal; color: var(--accent); }
+.lead {
+  color: var(--muted-hi);
+  font-size: 18px;
+  max-width: 720px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* TOC */
+.toc-wrap {
+  max-width: 880px;
+  margin: 50px auto 80px;
+  padding: 0 32px;
+}
+.toc {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 32px;
+}
+.toc h2 {
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.toc h2::before {
+  content: "";
+  width: 24px;
+  height: 1px;
+  background: var(--accent);
+}
+.toc-list {
+  list-style: none;
+  counter-reset: toc;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.toc-list li {
+  counter-increment: toc;
+}
+.toc-list a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  color: var(--muted-hi);
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.2s;
+  font-size: 14.5px;
+}
+.toc-list a:hover {
+  background: var(--panel-hi);
+  color: var(--text);
+}
+.toc-list a::before {
+  content: counter(toc, decimal-leading-zero);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* SECTION */
+.sec {
+  max-width: 880px;
+  margin: 0 auto 80px;
+  padding: 0 32px;
+  scroll-margin-top: 80px;
+}
+.sec-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sec-label::before {
+  content: "";
+  width: 28px;
+  height: 1px;
+  background: var(--accent);
+}
+.sec h2 {
+  font-family: var(--display);
+  font-size: clamp(38px, 5.5vw, 56px);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.sec h2 em { font-style: normal; color: var(--accent); }
+.sec h3 {
+  font-family: var(--display);
+  font-size: 24px;
+  text-transform: uppercase;
+  margin: 36px 0 16px;
+  letter-spacing: 0;
+}
+.sec p {
+  color: var(--muted-hi);
+  font-size: 16px;
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+.sec p strong { color: var(--text); font-weight: 600; }
+.sec code {
+  font-family: var(--mono);
+  background: var(--panel-hi);
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 13.5px;
+  color: var(--signal);
+}
+
+/* STEPS */
+.steps {
+  list-style: none;
+  counter-reset: steps;
+  margin: 20px 0 28px;
+  padding: 0;
+}
+.steps li {
+  counter-increment: steps;
+  padding: 14px 0 14px 42px;
+  position: relative;
+  color: var(--muted-hi);
+  font-size: 16px;
+  line-height: 1.6;
+  border-bottom: 1px dashed var(--border);
+}
+.steps li:last-child { border-bottom: 0; }
+.steps li::before {
+  content: counter(steps);
+  position: absolute;
+  left: 0;
+  top: 14px;
+  width: 28px;
+  height: 28px;
+  background: var(--panel);
+  border: 1px solid var(--border-hi);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+}
+.steps li strong { color: var(--text); }
+
+/* CALLOUT */
+.callout {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  padding: 22px 26px;
+  margin: 28px 0;
+  font-size: 15px;
+  color: var(--muted-hi);
+  line-height: 1.65;
+}
+.callout strong { color: var(--text); }
+.callout.signal { border-left-color: var(--signal); }
+.callout.warn { border-left-color: var(--warn); }
+.callout-title {
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 10px;
+  color: var(--accent);
+}
+.callout.signal .callout-title { color: var(--signal); }
+.callout.warn .callout-title { color: var(--warn); }
+
+/* TABLE */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+  font-size: 14.5px;
+}
+table th, table td {
+  text-align: left;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+table th {
+  background: var(--panel);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+table td { color: var(--muted-hi); }
+table td strong { color: var(--text); }
+
+/* CATEGORIA GRID */
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin: 20px 0;
+}
+.cat-item {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-size: 14px;
+}
+.cat-item strong {
+  display: block;
+  color: var(--text);
+  font-size: 13px;
+  margin-bottom: 4px;
+  font-family: var(--mono);
+  letter-spacing: 0.05em;
+}
+.cat-item span { color: var(--muted); font-size: 13px; line-height: 1.5; }
+.cat-item .ic { float: right; font-size: 16px; opacity: 0.6; }
+
+/* FOOTER */
+.footer-cta {
+  background: var(--bg-2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 70px 32px;
+  text-align: center;
+}
+.footer-cta h2 {
+  font-family: var(--display);
+  font-size: clamp(32px, 5vw, 48px);
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  line-height: 1;
+}
+.footer-cta h2 em { font-style: normal; color: var(--accent); }
+.footer-cta p {
+  color: var(--muted-hi);
+  font-size: 16px;
+  max-width: 540px;
+  margin: 0 auto 28px;
+}
+.footer-cta a {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--accent);
+  color: white;
+  padding: 16px 30px;
+  border-radius: 100px;
+  text-decoration: none;
+  font-weight: 700;
+  transition: all 0.2s;
+}
+.footer-cta a:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--accent-glow); }
+
+footer {
+  padding: 36px 32px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+  text-transform: uppercase;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+footer a { color: var(--muted-hi); text-decoration: none; }
+footer a:hover { color: var(--accent); }
+footer .links { display: flex; gap: 22px; flex-wrap: wrap; }
+
+@media (max-width: 720px) {
+  .strip { padding: 12px 18px; }
+  .hero { padding: 110px 20px 30px; }
+  .toc-wrap, .sec { padding: 0 20px; }
+  .toc { padding: 24px; }
+  .toc-list { grid-template-columns: 1fr; }
+  .cat-grid { grid-template-columns: 1fr; }
+  .footer-cta { padding: 50px 20px; }
+}
+</style>
+</head>
+<body>
+
+<div class="strip">
+  <div class="logo"></div>
+  <div class="brand">QUICK<span class="mark">·</span>TEST · MANUAL</div>
+  <a href="/quick-test/">← Voltar pro produto</a>
+</div>
+
+<section class="hero">
+  <div class="eyebrow">DO ZERO À PRIMEIRA LIVE · 30 MINUTOS</div>
+  <h1>Como usar o<br><em>Quick Test</em>.</h1>
+  <p class="lead">
+<body>
+
+<div class="strip">
+  <div class="logo"></div>
+  <div class="brand">QUICK<span class="mark">·</span>TEST · INÍCIO RÁPIDO</div>
+  <a href="/quick-test/">← Voltar pro produto</a>
+</div>
+
+<section class="hero">
+  <div class="eyebrow">SEU PRIMEIRO ÁUDIO TOCANDO · 5 MINUTOS</div>
+  <h1>Quero <em>só começar</em>.<br>Sem detalhes técnicos.</h1>
+  <p class="lead">
+    4 passos. Sem 17 categorias. Sem explicar tudo.
+    Só o caminho mais curto pra você ver o Quick Test tocando o teu áudio numa live.
+    Depois, quando quiser entender melhor, tem o <a href="/quick-test/manual/" style="color:var(--accent);">manual completo</a>.
+  </p>
+</section>
+
+<!-- ═══ PASSO 1 ═══ -->
+<section class="sec" id="cabo">
+  <div class="sec-label">PASSO 1 · 2 MIN</div>
+  <h2>Instalar o <em>"cabo virtual"</em></h2>
+  <p>
+    É um programinha grátis que conecta o áudio que o Quick Test gera com o Live Studio.
+    Você instala uma vez e nunca mais mexe.
+  </p>
+  <ul class="steps">
+    <li><strong>Mac:</strong> baixa <a href="https://existential.audio/blackhole/" target="_blank" style="color:var(--accent);">BlackHole 2ch</a>, instala (Next, Next, Concluir).</li>
+    <li><strong>Windows:</strong> baixa <a href="https://vb-audio.com/Cable/" target="_blank" style="color:var(--accent);">VB-Cable</a>, instala, reinicia.</li>
+  </ul>
+  <div class="callout signal">
+    <div class="callout-title">▸ COMO SABER QUE INSTALOU CERTO</div>
+    Abre Configurações → Som do seu sistema. Tem que aparecer "<strong>BlackHole 2ch</strong>" (Mac)
+    ou "<strong>CABLE Input</strong>" (Windows) na lista de saídas. Se aparecer, tá pronto.
+  </div>
+</section>
+
+<!-- ═══ PASSO 2 ═══ -->
+<section class="sec" id="ativar">
+  <div class="sec-label">PASSO 2 · 1 MIN</div>
+  <h2>Ativar a <em>extensão</em></h2>
+  <ul class="steps">
+    <li>Instala o Quick Test pelo link que te mandei após a compra (Chrome Web Store).</li>
+    <li>Clica no ícone do Quick Test no canto superior direito do Chrome.</li>
+    <li>Cola sua chave de ativação (recebeu por email) → <strong>Ativar</strong>.</li>
+    <li>Cria um perfil — qualquer nome serve (ex: <code>Teste</code>).</li>
+  </ul>
+</section>
+
+<!-- ═══ PASSO 3 ═══ -->
+<section class="sec" id="audios">
+  <div class="sec-label">PASSO 3 · 2 MIN</div>
+  <h2>Subir <em>3 áudios</em> de teste</h2>
+  <p>
+    Pra ver o Quick Test rodando, não precisa preencher 17 categorias. Sobe 3 áudios em 1 categoria só.
+  </p>
+  <ul class="steps">
+    <li>Grava 3 áudios curtos no celular (qualquer app de gravador — 10-15 segundos cada).</li>
+    <li>No popup do Quick Test, clica em <strong>⚙ Abrir configuração</strong>.</li>
+    <li>Vai na categoria <strong>Gancho</strong> → arrasta os 3 áudios pra dentro.</li>
+    <li>Salva.</li>
+  </ul>
+  <div class="callout">
+    <div class="callout-title">▸ FRASE PRA TESTAR</div>
+    "Bom dia pessoal, tudo bem?" / "Hoje a gente tem oferta boa." / "Fica aí no live que vai ter promo."
+    Não precisa ser elaborado — é só pra ver o Quick Test funcionando.
+  </div>
+</section>
+
+<!-- ═══ PASSO 4 ═══ -->
+<section class="sec" id="play">
+  <div class="sec-label">PASSO 4 · 1 MIN</div>
+  <h2>Apertar <em>play</em></h2>
+  <ul class="steps">
+    <li>No popup do Quick Test, no campo <strong>"Saída de áudio"</strong>, escolhe <code>BlackHole 2ch</code> (Mac) ou <code>CABLE Input</code> (Windows).</li>
+    <li>Abre o <strong>TikTok Live Studio</strong>. Em Configurações → Microfone, escolhe a MESMA saída.</li>
+    <li>Volta no Quick Test, aperta <strong>▶ INICIAR TRANSMISSÃO</strong>.</li>
+    <li>Pronto — você vai escutar seus áudios tocando, e o Live Studio também.</li>
+  </ul>
+</section>
+
+<!-- ═══ FIM ═══ -->
+<section class="sec final-cta">
+  <div class="sec-label">FUNCIONOU?</div>
+  <h2>Agora <em>se aprofunda.</em></h2>
+  <p>
+    Se você quer aproveitar tudo — gerar roteiro com IA, organizar nas 17 categorias,
+    sininho de prova social, ambiente, multi-perfil — o
+    <a href="/quick-test/manual/" style="color:var(--accent);">manual completo</a>
+    te mostra tudo.
+  </p>
+  <p style="margin-top:24px">
+    Não funcionou em algum passo?
+    <a href="https://wa.me/5511999999999" style="color:var(--accent);">Me chama no WhatsApp</a>
+    que resolvo em 5 minutos.
+  </p>
+</section>
+
+<footer>
+  <div>© 2026 QYVO LIVE</div>
+  <div class="links">
+    <a href="/">Home</a>
+    <a href="/quick-test/">Produto</a>
+    <a href="/quick-test/manual/">Manual completo</a>
+    <a href="https://qyvoaudio.github.io/quicktest-policy/" target="_blank">Privacidade</a>
+  </div>
+</footer>
+
+</body>
+</html>
