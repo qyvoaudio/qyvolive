@@ -1,7 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
-  <rect width="256" height="256" rx="56" fill="#0B0B0F"/>
-  <rect x="56"  y="56"  width="64" height="64" rx="8" fill="#FF1F8E" opacity="0.45"/>
-  <rect x="136" y="56"  width="64" height="64" rx="8" fill="#FF1F8E" opacity="0.7"/>
-  <rect x="56"  y="136" width="64" height="64" rx="8" fill="#FF1F8E" opacity="0.7"/>
-  <rect x="136" y="136" width="64" height="64" rx="8" fill="#FF1F8E"/>
+  <rect width="256" height="256" rx="56" fill="#0E0B14"/>
+  <!-- broadcast waves -->
+  <path d="M 60 128 Q 128 80, 196 128" stroke="#FF1F8E" stroke-width="6" fill="none" opacity="0.4" stroke-linecap="round"/>
+  <path d="M 76 128 Q 128 96, 180 128" stroke="#FF1F8E" stroke-width="6" fill="none" opacity="0.6" stroke-linecap="round"/>
+  <path d="M 92 128 Q 128 112, 164 128" stroke="#FF1F8E" stroke-width="6" fill="none" opacity="0.85" stroke-linecap="round"/>
+  <!-- central dot -->
+  <circle cx="128" cy="128" r="14" fill="#FF1F8E"/>
 </svg>
