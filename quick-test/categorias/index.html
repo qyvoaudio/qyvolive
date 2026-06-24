@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>As 17 categorias · Quick Test · Qyvo Live</title>
+<meta name="description" content="Guia completo das 17 categorias do Quick Test. Pra cada uma: o que é, quantas frases gravar, quando o app toca, exemplos práticos.">
+<link rel="icon" href="../assets/logo.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #0A0A0E;
+  --bg-2: #11111A;
+  --panel: #14141C;
+  --panel-hi: #1B1B26;
+  --border: #2A2A35;
+  --border-hi: #3A3A48;
+  --text: #F5F2E8;
+  --muted: #6B6B7A;
+  --muted-hi: #9B9AA8;
+  --accent: #FF1F8E;
+  --accent-glow: rgba(255, 31, 142, 0.35);
+  --signal: #00FF9D;
+  --warn: #FFB800;
+
+  --display: "Anton", "Impact", sans-serif;
+  --body: "DM Sans", system-ui, sans-serif;
+  --mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+html { scroll-padding-top: 80px; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.65;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  mix-blend-mode: overlay;
+}
+
+/* HEADER */
+.strip {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  background: rgba(10, 10, 14, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  z-index: 100;
+  padding: 14px 32px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.strip .logo {
+  width: 28px; height: 28px;
+  background: var(--accent);
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  filter: drop-shadow(0 0 8px var(--accent-glow));
+}
+.strip .brand { font-weight: 700; font-size: 13px; letter-spacing: 0.12em; }
+.strip .brand .mark { color: var(--accent); margin: 0 1px; }
+.strip a {
+  color: var(--muted-hi);
+  text-decoration: none;
+  margin-left: auto;
+}
+.strip a:hover { color: var(--accent); }
+
+/* HERO */
+.hero {
+  padding: 130px 32px 40px;
+  max-width: 1100px;
+  margin: 0 auto;
+  text-align: center;
+}
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--signal);
+  padding: 8px 16px;
+  background: rgba(0, 255, 157, 0.07);
+  border: 1px solid rgba(0, 255, 157, 0.25);
+  border-radius: 100px;
+  margin-bottom: 28px;
+}
+.eyebrow::before {
+  content: "";
+  width: 6px; height: 6px;
+  background: var(--signal);
+  border-radius: 50%;
+}
+h1 {
+  font-family: var(--display);
+  font-size: clamp(44px, 7vw, 84px);
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  margin-bottom: 22px;
+}
+h1 em { font-style: normal; color: var(--accent); }
+.lead {
+  color: var(--muted-hi);
+  font-size: 18px;
+  max-width: 720px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* TOC */
+.toc-wrap {
+  max-width: 880px;
+  margin: 50px auto 80px;
+  padding: 0 32px;
+}
+.toc {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 32px;
+}
+.toc h2 {
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.toc h2::before {
+  content: "";
+  width: 24px;
+  height: 1px;
+  background: var(--accent);
+}
+.toc-list {
+  list-style: none;
+  counter-reset: toc;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.toc-list li {
+  counter-increment: toc;
+}
+.toc-list a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  color: var(--muted-hi);
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.2s;
+  font-size: 14.5px;
+}
+.toc-list a:hover {
+  background: var(--panel-hi);
+  color: var(--text);
+}
+.toc-list a::before {
+  content: counter(toc, decimal-leading-zero);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* SECTION */
+.sec {
+  max-width: 880px;
+  margin: 0 auto 80px;
+  padding: 0 32px;
+  scroll-margin-top: 80px;
+}
+.sec-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sec-label::before {
+  content: "";
+  width: 28px;
+  height: 1px;
+  background: var(--accent);
+}
+.sec h2 {
+  font-family: var(--display);
+  font-size: clamp(38px, 5.5vw, 56px);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.sec h2 em { font-style: normal; color: var(--accent); }
+.sec h3 {
+  font-family: var(--display);
+  font-size: 24px;
+  text-transform: uppercase;
+  margin: 36px 0 16px;
+  letter-spacing: 0;
+}
+.sec p {
+  color: var(--muted-hi);
+  font-size: 16px;
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+.sec p strong { color: var(--text); font-weight: 600; }
+.sec code {
+  font-family: var(--mono);
+  background: var(--panel-hi);
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 13.5px;
+  color: var(--signal);
+}
+
+/* STEPS */
+.steps {
+  list-style: none;
+  counter-reset: steps;
+  margin: 20px 0 28px;
+  padding: 0;
+}
+.steps li {
+  counter-increment: steps;
+  padding: 14px 0 14px 42px;
+  position: relative;
+  color: var(--muted-hi);
+  font-size: 16px;
+  line-height: 1.6;
+  border-bottom: 1px dashed var(--border);
+}
+.steps li:last-child { border-bottom: 0; }
+.steps li::before {
+  content: counter(steps);
+  position: absolute;
+  left: 0;
+  top: 14px;
+  width: 28px;
+  height: 28px;
+  background: var(--panel);
+  border: 1px solid var(--border-hi);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+}
+.steps li strong { color: var(--text); }
+
+/* CALLOUT */
+.callout {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  padding: 22px 26px;
+  margin: 28px 0;
+  font-size: 15px;
+  color: var(--muted-hi);
+  line-height: 1.65;
+}
+.callout strong { color: var(--text); }
+.callout.signal { border-left-color: var(--signal); }
+.callout.warn { border-left-color: var(--warn); }
+.callout-title {
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 10px;
+  color: var(--accent);
+}
+.callout.signal .callout-title { color: var(--signal); }
+.callout.warn .callout-title { color: var(--warn); }
+
+/* TABLE */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+  font-size: 14.5px;
+}
+table th, table td {
+  text-align: left;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+table th {
+  background: var(--panel);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+table td { color: var(--muted-hi); }
+table td strong { color: var(--text); }
+
+/* CATEGORIA GRID */
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin: 20px 0;
+}
+.cat-item {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-size: 14px;
+}
+.cat-item strong {
+  display: block;
+  color: var(--text);
+  font-size: 13px;
+  margin-bottom: 4px;
+  font-family: var(--mono);
+  letter-spacing: 0.05em;
+}
+.cat-item span { color: var(--muted); font-size: 13px; line-height: 1.5; }
+.cat-item .ic { float: right; font-size: 16px; opacity: 0.6; }
+
+/* FOOTER */
+.footer-cta {
+  background: var(--bg-2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 70px 32px;
+  text-align: center;
+}
+.footer-cta h2 {
+  font-family: var(--display);
+  font-size: clamp(32px, 5vw, 48px);
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  line-height: 1;
+}
+.footer-cta h2 em { font-style: normal; color: var(--accent); }
+.footer-cta p {
+  color: var(--muted-hi);
+  font-size: 16px;
+  max-width: 540px;
+  margin: 0 auto 28px;
+}
+.footer-cta a {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--accent);
+  color: white;
+  padding: 16px 30px;
+  border-radius: 100px;
+  text-decoration: none;
+  font-weight: 700;
+  transition: all 0.2s;
+}
+.footer-cta a:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--accent-glow); }
+
+footer {
+  padding: 36px 32px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+  text-transform: uppercase;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+footer a { color: var(--muted-hi); text-decoration: none; }
+footer a:hover { color: var(--accent); }
+footer .links { display: flex; gap: 22px; flex-wrap: wrap; }
+
+@media (max-width: 720px) {
+  .strip { padding: 12px 18px; }
+  .hero { padding: 110px 20px 30px; }
+  .toc-wrap, .sec { padding: 0 20px; }
+  .toc { padding: 24px; }
+  .toc-list { grid-template-columns: 1fr; }
+  .cat-grid { grid-template-columns: 1fr; }
+  .footer-cta { padding: 50px 20px; }
+}
+</style>
+</head>
+<body>
+
+<div class="strip">
+  <div class="logo"></div>
+  <div class="brand">QUICK<span class="mark">·</span>TEST · MANUAL</div>
+  <a href="/quick-test/">← Voltar pro produto</a>
+</div>
+
+<section class="hero">
+  <div class="eyebrow">DO ZERO À PRIMEIRA LIVE · 30 MINUTOS</div>
+  <h1>Como usar o<br><em>Quick Test</em>.</h1>
+  <p class="lead">
+<body>
+
+<div class="strip">
+  <div class="logo"></div>
+  <div class="brand">QUICK<span class="mark">·</span>TEST · CATEGORIAS</div>
+  <a href="/quick-test/manual/">← Voltar pro manual</a>
+</div>
+
+<section class="hero">
+  <div class="eyebrow">GUIA DAS 17 CATEGORIAS · COMPLETO</div>
+  <h1>O que cada<br>categoria <em>faz</em>.</h1>
+  <p class="lead">
+    Pra cada uma das 17: o que significa, quantas frases gravar, quando o Quick Test toca,
+    e <strong>exemplos práticos</strong> que você pode copiar e adaptar.
+  </p>
+</section>
+
+<!-- ═══ SUMÁRIO ═══ -->
+<div class="toc-wrap">
+  <nav class="toc">
+    <h2>Grupos</h2>
+    <ol class="toc-list">
+      <li><a href="#grupo-a">Grupo A — 10 categorias genéricas</a></li>
+      <li><a href="#grupo-b">Grupo B — 7 categorias por produto</a></li>
+      <li><a href="#minimo">O mínimo viável pra começar</a></li>
+    </ol>
+  </nav>
+</div>
+
+<!-- ═══ GRUPO A ═══ -->
+<section class="sec" id="grupo-a">
+  <div class="sec-label">GRUPO A · GENÉRICAS</div>
+  <h2>10 categorias que <em>servem pra qualquer produto</em>.</h2>
+  <p>
+    Você grava 1 vez e reusa em todas as lives. Não precisam citar nome de produto.
+    <strong>Recomendo de 8 a 15 frases por categoria</strong> pra ter variação boa sem repetir.
+  </p>
+
+  <h3>🎯 GANCHO_GERAL</h3>
+  <p><strong>O que é:</strong> abertura genérica pra chamar atenção do chat. Sem citar produto.</p>
+  <p><strong>Quando toca:</strong> entre apresentações, pra reativar quem entrou agora.</p>
+  <p><strong>Quantas frases:</strong> 10-15.</p>
+  <ul class="steps">
+    <li>"Pessoal, presta atenção aqui."</li>
+    <li>"Olha gente, quem chegou agora vai querer ver isso."</li>
+    <li>"Galera, vem pra cá um segundinho."</li>
+    <li>"Quem tá vendo a live, manda um oi pra eu saber."</li>
+    <li>"Atenção pra quem tá querendo aproveitar o dia de hoje."</li>
+  </ul>
+
+  <h3>💰 OFERTA_LIVE</h3>
+  <p><strong>O que é:</strong> reforço de que a oferta é exclusiva da live. Sem mencionar preço específico.</p>
+  <p><strong>Quando toca:</strong> ao longo da live, lembrando que tem vantagem ali.</p>
+  <p><strong>Quantas frases:</strong> 8-12.</p>
+  <ul class="steps">
+    <li>"Esse preço só na live de hoje, gente."</li>
+    <li>"Lá fora paga mais caro, aqui a gente segura."</li>
+    <li>"Em kit sai melhor do que comprando separado."</li>
+    <li>"Quem comprar agora pega no preço de lançamento."</li>
+  </ul>
+
+  <h3>📦 ESCASSEZ</h3>
+  <p><strong>O que é:</strong> gatilho de escassez sem número fixo (pra não desatualizar).</p>
+  <p><strong>Quando toca:</strong> meio pro fim da live, pra acelerar decisão.</p>
+  <p><strong>Quantas frases:</strong> 6-10.</p>
+  <ul class="steps">
+    <li>"Restam poucas unidades no estoque, viu."</li>
+    <li>"Estoque tá acabando rápido hoje."</li>
+    <li>"Quem deixar pra depois, corre risco de não pegar."</li>
+    <li>"Já tô vendo a barrinha de estoque descendo aqui."</li>
+  </ul>
+
+  <h3>🎟 CUPOM</h3>
+  <p><strong>O que é:</strong> menção genérica de cupom — sem dizer o código (você fala manualmente quando quiser).</p>
+  <p><strong>Quando toca:</strong> ao longo da live, lembrando do desconto.</p>
+  <p><strong>Quantas frases:</strong> 6-8.</p>
+  <ul class="steps">
+    <li>"Cupom só na live, verifica embaixo se tá liberado."</li>
+    <li>"Olha aí na descrição da live se o cupom tá ativo."</li>
+    <li>"Liberei cupom pra quem tá aqui agora."</li>
+  </ul>
+
+  <h3>🛡 GARANTIA</h3>
+  <p><strong>O que é:</strong> reforço de segurança da compra. Confiança.</p>
+  <p><strong>Quando toca:</strong> qualquer momento — sempre cabe.</p>
+  <p><strong>Quantas frases:</strong> 6-10.</p>
+  <ul class="steps">
+    <li>"7 dias de garantia, viu? Você compra tranquila."</li>
+    <li>"Loja oficial, nota fiscal sai direitinho."</li>
+    <li>"Compra segura pelo TikTok Shop, garantia do app."</li>
+    <li>"Não gostou? Devolve em 7 dias, sem dor de cabeça."</li>
+  </ul>
+
+  <h3>🛒 CTA_VISUAL</h3>
+  <p><strong>O que é:</strong> direciona pra onde clicar — sacola, barrinha, link.</p>
+  <p><strong>Quando toca:</strong> várias vezes — é o que converte.</p>
+  <p><strong>Quantas frases:</strong> 10-15.</p>
+  <ul class="steps">
+    <li>"Vai na sacola laranja embaixo, clica lá."</li>
+    <li>"Tem uma barrinha branca embaixo da tela, clica nela."</li>
+    <li>"Link da descrição, abre direto no app."</li>
+    <li>"Sacola laranja, clica, escolhe sua quantidade."</li>
+  </ul>
+
+  <h3>💬 INTERACAO</h3>
+  <p><strong>O que é:</strong> chama o chat — pede comentário, like, emoji.</p>
+  <p><strong>Quando toca:</strong> pra manter algoritmo feliz.</p>
+  <p><strong>Quantas frases:</strong> 8-12.</p>
+  <ul class="steps">
+    <li>"Manda 🛒 no chat se você quer comprar."</li>
+    <li>"Dá um like na live, ajuda a gente."</li>
+    <li>"Comenta aí o seu tamanho, deixa eu ver."</li>
+    <li>"Quem tá curtindo, manda emoji de coração."</li>
+  </ul>
+
+  <h3>🎉 PARABENS</h3>
+  <p><strong>O que é:</strong> celebra venda recém-feita. Usa junto com sininho 🔔 pra prova social.</p>
+  <p><strong>Quando toca:</strong> quando você ver venda nova entrando.</p>
+  <p><strong>Quantas frases:</strong> 6-10.</p>
+  <ul class="steps">
+    <li>"Parabéns pelo novo cliente que acabou de fechar!"</li>
+    <li>"Mais uma venda fechada agora, parabéns!"</li>
+    <li>"Bem-vinda pra família, obrigada pela confiança."</li>
+  </ul>
+
+  <h3>😱 MEDO_PERDA</h3>
+  <p><strong>O que é:</strong> FOMO genérico — vai perder se sair.</p>
+  <p><strong>Quando toca:</strong> ao longo da live, mantendo pessoa engajada.</p>
+  <p><strong>Quantas frases:</strong> 6-8.</p>
+  <ul class="steps">
+    <li>"Sai daqui agora você vai querer voltar."</li>
+    <li>"Quem fechar o app vai se arrepender."</li>
+    <li>"Esse preço não volta amanhã, fica atenta."</li>
+  </ul>
+
+  <h3>😩 DOR_FINANCEIRA</h3>
+  <p><strong>O que é:</strong> aproxima com a realidade da pessoa — sem citar produto específico.</p>
+  <p><strong>Quando toca:</strong> momento mais reflexivo da live.</p>
+  <p><strong>Quantas frases:</strong> 5-8.</p>
+  <ul class="steps">
+    <li>"Gasta R$200 em delivery e hesita em investir em você?"</li>
+    <li>"Você merece coisa boa, não merece?"</li>
+    <li>"Trabalha o mês inteiro, dá pra você esse mimo."</li>
+  </ul>
+</section>
+
+<!-- ═══ GRUPO B ═══ -->
+<section class="sec" id="grupo-b">
+  <div class="sec-label">GRUPO B · POR PRODUTO</div>
+  <h2>7 categorias que <em>regrava por produto</em>.</h2>
+  <p>
+    Essas citam o nome do produto, então cada produto vai ter as próprias frases.
+    Crie um <strong>perfil novo por produto</strong>, regrave essas 7 categorias.
+    <strong>Recomendo de 8 a 12 frases por categoria</strong>.
+  </p>
+
+  <h3>🆕 APRESENTACAO</h3>
+  <p><strong>O que é:</strong> apresenta o produto: nome + categoria + oferta. <strong>Frases LONGAS</strong> (15-25 segundos).</p>
+  <p><strong>Quando toca:</strong> abertura de um produto novo na live.</p>
+  <p><strong>Quantas frases:</strong> 5-8 (longas).</p>
+  <ul class="steps">
+    <li>"Galera, agora a gente entra com o [NOME DO PRODUTO]. Esse aqui é [categoria/funcionalidade]. Hoje na live a gente tá com um preço especial — só pra quem tá aqui agora."</li>
+    <li>"Quem chegou agora, presta atenção: esse é o [NOME DO PRODUTO]. É [o que faz/diferencial]. E hoje a gente tem condição exclusiva da live."</li>
+  </ul>
+  <div class="callout">
+    Como são longas, sirva pra dar tempo de você pegar o produto, mostrar e respirar.
+  </div>
+
+  <h3>🩹 DOR_PRODUTO</h3>
+  <p><strong>O que é:</strong> dor específica que o produto resolve. Bem concreto.</p>
+  <p><strong>Quando toca:</strong> depois da apresentação, conectando com o porquê.</p>
+  <p><strong>Quantas frases:</strong> 8-12.</p>
+  <ul class="steps">
+    <li>"Aquele cabelo que cai na escova toda manhã, sabe?" (pra suplemento capilar)</li>
+    <li>"Você se olha no espelho e o corpo já não responde?" (pra suplemento)</li>
+    <li>"Quem aí já passou nervoso por causa de cabelo no banheiro?"</li>
+  </ul>
+
+  <h3>✨ CONCEITO_BENEFICIO</h3>
+  <p><strong>O que é:</strong> diferencial + o que entrega. Pool grande pra repetir menos.</p>
+  <p><strong>Quando toca:</strong> várias vezes — argumento principal.</p>
+  <p><strong>Quantas frases:</strong> 12-18.</p>
+  <ul class="steps">
+    <li>"[Produto] tem [ingrediente/diferencial], então age direto no [problema]."</li>
+    <li>"O que faz o [produto] diferente? [Diferencial específico]."</li>
+    <li>"Pelo [ativo/tecnologia], ele consegue [resultado], coisa que outros não fazem."</li>
+  </ul>
+
+  <h3>📖 MODO_USO</h3>
+  <p><strong>O que é:</strong> como usa + protocolo + comparação.</p>
+  <p><strong>Quando toca:</strong> tirando dúvida frequente.</p>
+  <p><strong>Quantas frases:</strong> 6-10.</p>
+  <ul class="steps">
+    <li>"Você toma [dose] [quando], todo dia, pelo [tempo]."</li>
+    <li>"O protocolo é simples: [como usa]."</li>
+    <li>"Compara com [opção mais cara/comum], ele faz a mesma coisa por bem menos."</li>
+  </ul>
+
+  <h3>🔥 OFERTA_PRODUTO</h3>
+  <p><strong>O que é:</strong> oferta específica do produto. Kit, leve mais, etc.</p>
+  <p><strong>Quando toca:</strong> reforçando vantagem do dia.</p>
+  <p><strong>Quantas frases:</strong> 8-12.</p>
+  <ul class="steps">
+    <li>"Compra 2 e leva 3 só hoje na live."</li>
+    <li>"Kit do [produto] sai mais em conta do que comprando avulso."</li>
+    <li>"Hoje rola o combo [X] do [produto]."</li>
+  </ul>
+
+  <h3>🙌 PROVA_SOCIAL</h3>
+  <p><strong>O que é:</strong> avaliações, vendidos, registro ANVISA, marca, autoridade.</p>
+  <p><strong>Quando toca:</strong> validando confiança.</p>
+  <p><strong>Quantas frases:</strong> 10-15.</p>
+  <ul class="steps">
+    <li>"Mais de [número que VOCÊ TEM, não inventa] vendidos no app."</li>
+    <li>"Avaliação 4.9 de [número] clientes."</li>
+    <li>"Produto com registro na ANVISA."</li>
+    <li>"Marca consagrada, tá há [X] anos no mercado."</li>
+  </ul>
+  <div class="callout warn">
+    <div class="callout-title">▸ ATENÇÃO</div>
+    Só fala número que você TEM. Não inventa "1000 vendidos" se não vendeu. ANVISA é só pra produto com registro. Cliente checa.
+  </div>
+
+  <h3>🛒 CTA_PRODUTO</h3>
+  <p><strong>O que é:</strong> CTA específico citando o nome do produto.</p>
+  <p><strong>Quando toca:</strong> várias vezes pra puxar conversão.</p>
+  <p><strong>Quantas frases:</strong> 10-15.</p>
+  <ul class="steps">
+    <li>"Garante o [produto] antes que acabe."</li>
+    <li>"Vai na sacola, escolhe o [produto], fecha agora."</li>
+    <li>"[Produto] tá lá na sacola laranja, clica."</li>
+  </ul>
+</section>
+
+<!-- ═══ MÍNIMO VIÁVEL ═══ -->
+<section class="sec" id="minimo">
+  <div class="sec-label">PRA COMEÇAR</div>
+  <h2>O <em>mínimo viável</em>: 5 categorias.</h2>
+  <p>
+    Não precisa preencher tudo no primeiro dia. Pra rodar uma live decente, basta:
+  </p>
+  <ul class="steps">
+    <li><strong>GANCHO_GERAL</strong> — 8 frases</li>
+    <li><strong>APRESENTACAO</strong> — 5 frases longas</li>
+    <li><strong>OFERTA_PRODUTO</strong> — 8 frases</li>
+    <li><strong>PROVA_SOCIAL</strong> — 10 frases (números reais)</li>
+    <li><strong>CTA_PRODUTO</strong> — 10 frases</li>
+  </ul>
+  <p>Total: <strong>41 frases</strong>. Em 1-2h de gravação você fecha tudo e já tá no ar.</p>
+  <div class="callout signal">
+    <div class="callout-title">▸ DICA</div>
+    Quando o Quick Test embala, você sente quais categorias estão "ralas" demais (repete muito).
+    Aí você volta nessa página e enche aos poucos.
+  </div>
+</section>
+
+<footer>
+  <div>© 2026 QYVO LIVE</div>
+  <div class="links">
+    <a href="/">Home</a>
+    <a href="/quick-test/">Produto</a>
+    <a href="/quick-test/comecar/">Início rápido</a>
+    <a href="/quick-test/manual/">Manual completo</a>
+    <a href="https://qyvoaudio.github.io/quicktest-policy/" target="_blank">Privacidade</a>
+  </div>
+</footer>
+
+</body>
+</html>
