@@ -11,24 +11,26 @@
 <link rel="icon" href="/assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700" rel="stylesheet">
 <style>
 :root {
-  --bg: #0E0B14;
-  --bg-2: #14101D;
-  --panel: #1A1424;
-  --panel-hi: #221733;
-  --border: #2B2238;
-  --border-hi: #3D3148;
-  --text: #F5EFE5;
-  --muted: #7A6F84;
-  --muted-hi: #A89DB5;
+  --bg: #0A0A0E;
+  --bg-2: #11111A;
+  --panel: #14141C;
+  --panel-hi: #1B1B26;
+  --border: #2A2A35;
+  --border-hi: #3A3A48;
+  --text: #F5F2E8;
+  --muted: #6B6B7A;
+  --muted-hi: #9B9AA8;
   --accent: #FF1F8E;
   --accent2: #9B5CFF;
   --accent-glow: rgba(255, 31, 142, 0.25);
   --soft: #E4B8C9;
-  --serif: "Fraunces", Georgia, serif;
-  --sans: "Inter", system-ui, sans-serif;
+  --display: "Anton", "Bebas Neue", "Impact", sans-serif;
+  --body: "DM Sans", system-ui, sans-serif;
+  --signal: #00FF9D;
+  --signal-glow: rgba(0, 255, 157, 0.25);
   --mono: "JetBrains Mono", monospace;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -36,7 +38,7 @@ html { scroll-behavior: smooth; }
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: var(--sans);
+  font-family: var(--body);
   font-size: 16px;
   line-height: 1.6;
   overflow-x: hidden;
@@ -158,7 +160,7 @@ a { color: inherit; text-decoration: none; transition: color .2s; }
   content: ""; width: 32px; height: 1px; background: var(--accent);
 }
 .hero h1 {
-  font-family: var(--serif);
+  font-family: var(--display);
   font-size: clamp(40px, 6.5vw, 76px);
   font-weight: 400;
   line-height: 1.02;
@@ -185,7 +187,7 @@ a { color: inherit; text-decoration: none; transition: color .2s; }
   display: inline-flex; align-items: center; gap: 10px;
   background: var(--accent);
   color: var(--bg);
-  font-family: var(--sans);
+  font-family: var(--body);
   font-weight: 600; font-size: 15px;
   padding: 16px 26px;
   border-radius: 10px;
@@ -227,7 +229,7 @@ a { color: inherit; text-decoration: none; transition: color .2s; }
   letter-spacing: 0.05em;
 }
 .cupom-badge em {
-  font-family: var(--serif); font-style: italic;
+  font-family: var(--display); font-style: italic;
   color: var(--soft); font-size: 13.5px;
 }
 
@@ -271,7 +273,7 @@ section { padding: 100px 40px; max-width: 1100px; margin: 0 auto; position: rela
   margin-bottom: 18px;
 }
 .sec-title {
-  font-family: var(--serif);
+  font-family: var(--display);
   font-size: clamp(32px, 5vw, 54px);
   font-weight: 400; line-height: 1.05;
   letter-spacing: -0.015em;
@@ -311,7 +313,7 @@ section { padding: 100px 40px; max-width: 1100px; margin: 0 auto; position: rela
 }
 .feat-icon svg { width: 18px; height: 18px; }
 .feat-name {
-  font-family: var(--serif);
+  font-family: var(--display);
   font-size: 22px; font-weight: 600;
   font-style: italic;
   letter-spacing: -0.01em;
@@ -352,7 +354,7 @@ section { padding: 100px 40px; max-width: 1100px; margin: 0 auto; position: rela
   margin-bottom: 18px;
 }
 .step h3 {
-  font-family: var(--serif);
+  font-family: var(--display);
   font-size: 24px;
   font-weight: 600; font-style: italic;
   margin-bottom: 10px;
@@ -394,7 +396,7 @@ section { padding: 100px 40px; max-width: 1100px; margin: 0 auto; position: rela
   margin-bottom: 22px;
 }
 .preco-num {
-  font-family: var(--serif);
+  font-family: var(--display);
   font-size: clamp(56px, 9vw, 82px);
   font-weight: 600;
   line-height: 1;
@@ -410,7 +412,7 @@ section { padding: 100px 40px; max-width: 1100px; margin: 0 auto; position: rela
   position: relative; top: 0.25em;
 }
 .preco-period {
-  font-family: var(--serif); font-style: italic;
+  font-family: var(--display); font-style: italic;
   font-size: 18px; color: var(--muted-hi);
   margin-top: 8px;
 }
@@ -457,7 +459,7 @@ section { padding: 100px 40px; max-width: 1100px; margin: 0 auto; position: rela
   cursor: pointer;
   display: flex; justify-content: space-between; align-items: center;
   gap: 24px;
-  font-family: var(--serif);
+  font-family: var(--display);
   font-size: 20px; font-weight: 600;
   font-style: italic;
   letter-spacing: -0.005em;
@@ -467,7 +469,7 @@ section { padding: 100px 40px; max-width: 1100px; margin: 0 auto; position: rela
 .faq summary:hover { color: var(--accent); }
 .faq summary::after {
   content: "+";
-  font-family: var(--sans);
+  font-family: var(--body);
   font-style: normal;
   font-size: 24px;
   font-weight: 400;
@@ -515,7 +517,7 @@ section { padding: 100px 40px; max-width: 1100px; margin: 0 auto; position: rela
 }
 .final-cta-section > * { position: relative; z-index: 1; }
 .final-headline {
-  font-family: var(--serif);
+  font-family: var(--display);
   font-size: clamp(32px, 5.5vw, 56px);
   font-weight: 400;
   line-height: 1.05;
@@ -607,7 +609,7 @@ footer .links { display: flex; gap: 24px; flex-wrap: wrap; }
   margin-bottom: 10px;
 }
 .modal-title {
-  font-family: var(--serif);
+  font-family: var(--display);
   font-style: italic; font-weight: 600;
   font-size: 28px;
   letter-spacing: -0.015em;
@@ -630,7 +632,7 @@ footer .links { display: flex; gap: 24px; flex-wrap: wrap; }
   border: 1px solid var(--border);
   border-radius: 10px;
   color: var(--text);
-  font-family: var(--sans);
+  font-family: var(--body);
   font-size: 15px;
   transition: border-color .2s;
 }
@@ -643,7 +645,7 @@ footer .links { display: flex; gap: 24px; flex-wrap: wrap; }
   color: var(--bg);
   border: 0;
   border-radius: 10px;
-  font-family: var(--sans);
+  font-family: var(--body);
   font-weight: 600;
   font-size: 15px;
   cursor: pointer;
@@ -680,7 +682,7 @@ footer .links { display: flex; gap: 24px; flex-wrap: wrap; }
   border: 1px solid rgba(255,31,142,.3);
 }
 .modal-success h3 {
-  font-family: var(--serif);
+  font-family: var(--display);
   font-style: italic; font-weight: 600;
   font-size: 26px;
   margin-bottom: 10px;
@@ -699,7 +701,7 @@ footer .links { display: flex; gap: 24px; flex-wrap: wrap; }
   color: var(--text);
   padding: 11px 22px;
   border-radius: 9px;
-  font-family: var(--sans);
+  font-family: var(--body);
   font-size: 14px;
   cursor: pointer;
   transition: border-color .2s, color .2s;
