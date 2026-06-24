@@ -103,6 +103,11 @@ body::after {
   clip-path: polygon(0 0, 100% 50%, 0 100%);
   filter: drop-shadow(0 0 8px var(--accent-glow));
 }
+.strip .logo-img {
+  width: 30px; height: 30px;
+  filter: drop-shadow(0 0 6px var(--accent-glow));
+  flex-shrink: 0;
+}
 .strip .brand { font-weight: 700; font-size: 13px; letter-spacing: 0.12em; }
 .strip .brand .mark { color: var(--accent); margin: 0 1px; }
 .strip .led {
@@ -861,13 +866,12 @@ footer .links { display: flex; gap: 22px; flex-wrap: wrap; }
 
 <!-- ═══ HEADER STRIP ═══ -->
 <div class="strip">
-  <div class="logo"></div>
-  <div class="brand">QUICK<span class="mark">·</span>TEST</div>
-  <span class="led">ON AIR</span>
+  <img src="assets/logo.svg" alt="Argos" class="logo-img">
+  <div class="brand">ARGOS</div>
+  <span class="led">ON GUARD</span>
   <div class="spacer"></div>
   <nav>
     <a href="#como-funciona">Como funciona</a>
-    <a href="#shots">Por dentro</a>
     <a href="#preco">Preço</a>
     <a href="#faq">FAQ</a>
   </nav>
@@ -879,9 +883,9 @@ footer .links { display: flex; gap: 22px; flex-wrap: wrap; }
   <div class="hero-content">
     <div class="eyebrow">APP WINDOWS · TIKTOK LIVE STUDIO</div>
     <h1>
-      Cansada de live cair<br>
-      por <span class="magenta">captcha</span>?<br>
-      <span style="color: var(--text);">Reduz <em>muito</em>.</span>
+      Sua live <span class="strike">cai por</span><br>
+      <span class="magenta">captcha</span> toda hora?<br>
+      <span style="color: var(--text);">Reduz drasticamente.</span>
     </h1>
     <p class="hero-sub">
       <strong>Argos</strong> simula atividade real na sua Live Studio — passa o mouse no chat,
