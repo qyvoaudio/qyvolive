@@ -4,14 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>Qyvo · logo direções v6 · digitech exato</title>
+<title>Qyvo · logo v7 · metaball</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#0A0A10;
-  --bg-2:#0F0F17;
   --panel:#141420;
   --border:#22222E;
   --border-hi:#2D2D3A;
@@ -19,16 +18,13 @@
   --muted:#6B6B7A;
   --muted-hi:#9C9CAA;
   --accent:#FF1F8E;
-  --accent-2:#FF4D9F;
-  --accent-3:#B8146B;
   --accent-hi:#FFE4C7;
   --accent-glow:rgba(255,31,142,.35);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{
-  background:var(--bg);
-  color:var(--text);
+  background:var(--bg);color:var(--text);
   font-family:"DM Sans",system-ui,sans-serif;
   font-size:16px;line-height:1.55;
   overflow-x:hidden;min-height:100vh;
@@ -46,210 +42,96 @@ body::before{
   font-family:"JetBrains Mono",monospace;font-size:10.5px;
   letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
   border-bottom:1px solid var(--border);
-  background:rgba(10,10,16,.75);
-  backdrop-filter:blur(20px);
+  background:rgba(10,10,16,.75);backdrop-filter:blur(20px);
   position:sticky;top:0;z-index:100;
 }
-.top .left{display:flex;align-items:center;gap:12px}
-.top .dot{width:6px;height:6px;background:var(--accent);border-radius:50%;box-shadow:0 0 8px var(--accent);animation:pulse 1.6s infinite}
+.top .dot{display:inline-block;width:6px;height:6px;background:var(--accent);border-radius:50%;box-shadow:0 0 8px var(--accent);animation:pulse 1.6s infinite;margin-right:12px;vertical-align:middle}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
-.top a{color:var(--muted);text-decoration:none;padding:4px 8px;border-radius:4px}
-.top a:hover{color:var(--accent);background:rgba(255,31,142,.08)}
 
-/* HEAD */
-.head{
-  max-width:1080px;
-  margin:0 auto;
-  padding:70px 40px 30px;
-  position:relative;
-}
-.head::before{
-  content:"";position:absolute;
-  top:-60px;right:-80px;width:520px;height:520px;
-  background:radial-gradient(circle,var(--accent-glow) 0%,transparent 60%);
-  filter:blur(50px);pointer-events:none;z-index:0;
-}
+.head{max-width:1000px;margin:0 auto;padding:70px 40px 30px;position:relative}
+.head::before{content:"";position:absolute;top:-60px;right:-80px;width:520px;height:520px;background:radial-gradient(circle,var(--accent-glow) 0%,transparent 60%);filter:blur(50px);pointer-events:none;z-index:0}
 .head .kicker{
-  font-family:"JetBrains Mono",monospace;
-  font-size:11px;letter-spacing:.22em;text-transform:uppercase;
-  color:var(--accent);margin-bottom:22px;
-  display:inline-flex;align-items:center;gap:12px;
-  padding:6px 14px;
-  background:rgba(255,31,142,.08);
-  border:1px solid rgba(255,31,142,.22);
-  border-radius:100px;
-  position:relative;z-index:1;
+  font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:22px;
+  display:inline-flex;align-items:center;gap:12px;padding:6px 14px;
+  background:rgba(255,31,142,.08);border:1px solid rgba(255,31,142,.22);
+  border-radius:100px;position:relative;z-index:1;
 }
 .head .kicker::before{content:"";width:6px;height:6px;background:var(--accent);border-radius:50%;box-shadow:0 0 6px var(--accent)}
 .head h1{
-  font-family:"Space Grotesk",sans-serif;
-  font-weight:700;
-  font-size:clamp(44px,6vw,72px);
-  line-height:1;
-  letter-spacing:-.03em;
-  margin-bottom:16px;
-  color:var(--text);
-  position:relative;z-index:1;
+  font-family:"Space Grotesk",sans-serif;font-weight:700;
+  font-size:clamp(44px,6vw,72px);line-height:1;letter-spacing:-.03em;
+  margin-bottom:16px;position:relative;z-index:1;
 }
-.head h1 em{
-  font-style:normal;
-  background:linear-gradient(135deg,var(--accent),var(--accent-hi));
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-}
-.head .lede{
-  font-size:17px;line-height:1.55;
-  color:var(--muted-hi);max-width:620px;
-  position:relative;z-index:1;
-}
+.head h1 em{font-style:normal;background:linear-gradient(135deg,var(--accent),var(--accent-hi));-webkit-background-clip:text;background-clip:text;color:transparent}
+.head .lede{font-size:17px;color:var(--muted-hi);max-width:620px;position:relative;z-index:1}
 .head .lede b{color:var(--text);font-weight:500}
 
-/* GRID */
 .grid{
-  max-width:1080px;
-  margin:32px auto 80px;
-  padding:0 40px;
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:20px;
+  max-width:1000px;margin:32px auto 60px;padding:0 40px;
+  display:grid;grid-template-columns:1fr 1fr;gap:22px;
 }
-@media (max-width:900px){.grid{grid-template-columns:1fr;padding:0 20px}}
+@media (max-width:820px){.grid{grid-template-columns:1fr;padding:0 20px}}
 
-/* CARD */
 .card{
   background:linear-gradient(180deg,#161624,var(--panel));
-  border:1px solid var(--border);
-  border-radius:20px;
-  overflow:hidden;
-  transition:all .3s ease;
-  display:flex;flex-direction:column;
+  border:1px solid var(--border);border-radius:20px;overflow:hidden;
+  transition:all .3s ease;display:flex;flex-direction:column;
 }
-.card:hover{
-  border-color:var(--border-hi);
-  transform:translateY(-3px);
-  box-shadow:0 20px 60px rgba(0,0,0,.4),0 0 40px rgba(255,31,142,.08);
-}
-
-.card-header{
-  padding:16px 22px 0;
-  display:flex;align-items:center;justify-content:space-between;
-  font-family:"JetBrains Mono",monospace;
-  font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);
-}
-.card-header .n{
-  color:var(--accent);
-  padding:3px 8px;
-  background:rgba(255,31,142,.1);
-  border:1px solid rgba(255,31,142,.25);
-  border-radius:4px;
-}
+.card:hover{border-color:var(--border-hi);transform:translateY(-3px);box-shadow:0 20px 60px rgba(0,0,0,.4),0 0 40px rgba(255,31,142,.08)}
+.card-header{padding:16px 22px 0;display:flex;align-items:center;justify-content:space-between;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.card-header .n{color:var(--accent);padding:3px 8px;background:rgba(255,31,142,.1);border:1px solid rgba(255,31,142,.25);border-radius:4px}
 
 .stage{
-  margin:12px;
-  padding:44px 24px 32px;
-  background:
-    radial-gradient(circle at center 40%,rgba(255,31,142,.08),transparent 65%),
-    #0A0A14;
-  border:1px solid var(--border);
-  border-radius:16px;
+  margin:12px;padding:44px 24px 32px;
+  background:radial-gradient(circle at center 40%,rgba(255,31,142,.08),transparent 65%),#0A0A14;
+  border:1px solid var(--border);border-radius:16px;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:22px;
-  min-height:340px;
-  position:relative;overflow:hidden;
+  gap:24px;min-height:360px;position:relative;overflow:hidden;
 }
 .stage::before{
   content:"";position:absolute;inset:0;pointer-events:none;
-  background-image:
-    linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px);
+  background-image:linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px);
   background-size:32px 32px;
   mask-image:radial-gradient(ellipse at center,#000 25%,transparent 70%);
 }
-.stage svg.mark{
-  display:block;
-  position:relative;z-index:1;
-  width:180px;height:180px;
-  filter:drop-shadow(0 8px 28px rgba(255,31,142,.28));
-}
-.stage .name-block{
-  position:relative;z-index:1;
-  display:flex;align-items:baseline;gap:0;
-}
+.stage svg.mark{display:block;position:relative;z-index:1;width:190px;height:190px;filter:drop-shadow(0 10px 32px rgba(255,31,142,.3))}
+.stage .name-block{position:relative;z-index:1;display:flex;align-items:baseline;gap:0}
 .stage .name-bold{
-  font-family:"Space Grotesk",sans-serif;
-  font-weight:700;
-  font-size:28px;
-  letter-spacing:-.02em;
-  color:var(--text);
-  text-transform:uppercase;
-  line-height:1;
+  font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:32px;
+  letter-spacing:-.02em;color:var(--text);text-transform:uppercase;line-height:1;
 }
 .stage .name-light{
-  font-family:"Space Grotesk",sans-serif;
-  font-weight:400;
-  font-size:28px;
-  letter-spacing:0;
-  color:var(--muted-hi);
-  text-transform:uppercase;
-  line-height:1;
-  margin-left:6px;
+  font-family:"Space Grotesk",sans-serif;font-weight:400;font-size:32px;
+  letter-spacing:0;color:var(--muted-hi);text-transform:uppercase;line-height:1;margin-left:6px;
 }
 .stage .tag{
-  position:relative;z-index:1;
-  font-family:"DM Sans",sans-serif;
-  font-weight:400;
-  font-size:11px;
-  letter-spacing:.42em;
-  color:var(--muted);
-  text-transform:uppercase;
-  margin-top:-14px;
+  position:relative;z-index:1;font-family:"DM Sans",sans-serif;font-weight:400;
+  font-size:11px;letter-spacing:.42em;color:var(--muted);text-transform:uppercase;margin-top:-14px;
 }
 
-.notes{
-  padding:6px 22px 18px;
-}
-.notes .desc{
-  font-size:13.5px;line-height:1.55;color:var(--muted-hi);
-}
+.notes{padding:8px 22px 18px}
+.notes .desc{font-size:13.5px;line-height:1.55;color:var(--muted-hi)}
 .notes .desc b{color:var(--text);font-weight:600}
-.notes .desc u{color:var(--accent-hi);text-decoration:none;font-weight:600}
 
 .favbar{
-  display:flex;align-items:center;gap:10px;
-  padding:12px 22px;
-  border-top:1px solid var(--border);
-  background:rgba(0,0,0,.15);
-  margin-top:auto;
+  display:flex;align-items:center;gap:10px;padding:12px 22px;
+  border-top:1px solid var(--border);background:rgba(0,0,0,.15);margin-top:auto;
 }
-.favbar .lbl{
-  font-family:"JetBrains Mono",monospace;font-size:9.5px;
-  letter-spacing:.18em;text-transform:uppercase;color:var(--muted);
-}
+.favbar .lbl{font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
 .tab-preview{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:4px 12px 4px 4px;
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:100px;
-  font-family:"DM Sans",sans-serif;
-  font-size:11px;color:var(--muted-hi);
+  display:inline-flex;align-items:center;gap:8px;padding:4px 12px 4px 4px;
+  background:var(--panel);border:1px solid var(--border);border-radius:100px;
+  font-family:"DM Sans",sans-serif;font-size:11px;color:var(--muted-hi);
 }
-.tab-preview .fav{
-  width:22px;height:22px;
-  background:#08080E;
-  border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  overflow:hidden;
-}
+.tab-preview .fav{width:22px;height:22px;background:#08080E;border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .tab-preview .fav svg{width:18px;height:18px}
 
 .foot{
-  max-width:1080px;margin:0 auto;
-  padding:28px 40px 60px;
-  border-top:1px solid var(--border);
+  max-width:1000px;margin:0 auto;padding:28px 40px 60px;border-top:1px solid var(--border);
   display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;
-  font-family:"JetBrains Mono",monospace;
-  font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;
-  color:var(--muted);
+  font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--muted);
 }
 .foot b{color:var(--accent)}
 
@@ -257,7 +139,6 @@ body::before{
 .card{animation:rise .6s ease-out backwards}
 .card:nth-child(1){animation-delay:.05s}
 .card:nth-child(2){animation-delay:.12s}
-.card:nth-child(3){animation-delay:.19s}
 .head *{animation:rise .8s ease-out backwards}
 .head .kicker{animation-delay:.05s}
 .head h1{animation-delay:.15s}
@@ -268,65 +149,77 @@ body::before{
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
-    <linearGradient id="magGrad" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#FF6BB2"/>
-      <stop offset="60%" stop-color="#FF1F8E"/>
+    <!-- Radial gradient pra criar esferas 3D -->
+    <radialGradient id="sphere1" cx="35%" cy="30%" r="75%">
+      <stop offset="0%" stop-color="#FFB1D6"/>
+      <stop offset="35%" stop-color="#FF4D9F"/>
+      <stop offset="100%" stop-color="#8A0E4E"/>
+    </radialGradient>
+    <radialGradient id="sphere2" cx="35%" cy="30%" r="75%">
+      <stop offset="0%" stop-color="#FF9BC7"/>
+      <stop offset="40%" stop-color="#FF1F8E"/>
+      <stop offset="100%" stop-color="#6D0B3E"/>
+    </radialGradient>
+    <radialGradient id="sphere3" cx="35%" cy="30%" r="75%">
+      <stop offset="0%" stop-color="#FFC5DE"/>
+      <stop offset="45%" stop-color="#FF4D9F"/>
       <stop offset="100%" stop-color="#B8146B"/>
-    </linearGradient>
-    <linearGradient id="magGradSoft" x1="0" y1="0" x2="1" y2="1">
+    </radialGradient>
+    <radialGradient id="sphereAccent" cx="35%" cy="30%" r="75%">
+      <stop offset="0%" stop-color="#FFF5E6"/>
+      <stop offset="45%" stop-color="#FFCDA0"/>
+      <stop offset="100%" stop-color="#C97F4F"/>
+    </radialGradient>
+    <!-- Blob filter pra fundir as esferas -->
+    <filter id="goo">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
+      <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -11" result="goo"/>
+      <feComposite in="SourceGraphic" in2="goo" operator="atop"/>
+    </filter>
+    <!-- gradient plano pra conexões -->
+    <linearGradient id="magFlat" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#FF4D9F"/>
-      <stop offset="100%" stop-color="#FF1F8E"/>
-    </linearGradient>
-    <linearGradient id="accentGrad" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#FFE4C7"/>
-      <stop offset="100%" stop-color="#FFB88E"/>
+      <stop offset="100%" stop-color="#B8146B"/>
     </linearGradient>
   </defs>
 </svg>
 
 <div class="top">
-  <div class="left"><span class="dot"></span><span>qyvo · brand · v6 · digitech style · linhas finas</span></div>
-  <div>
-    <a href="#p01">01</a>
-    <a href="#p02">02</a>
-    <a href="#p03">03</a>
-  </div>
+  <div><span class="dot"></span>qyvo · brand · v7 · metaball · esferas 3D</div>
+  <div><a href="#p01" style="color:var(--muted);text-decoration:none;padding:4px 8px">01</a><a href="#p02" style="color:var(--muted);text-decoration:none;padding:4px 8px">02</a></div>
 </div>
 
 <section class="head">
-  <div class="kicker">v6 · linhas finas · exato digitech</div>
-  <h1>Como o <em>digitech,</em><br>na paleta certa.</h1>
+  <div class="kicker">v7 · metaball · esferas 3D</div>
+  <h1>Esferas <em>que se fundem.</em></h1>
   <p class="lede">
-    Mesmo padrão: <b>4 círculos de tamanhos diferentes</b> conectados por linhas <b>finas</b>, um deles no
-    tom accent (o "laranjinha" vira creme). 3 variações da <b>mesma família</b>, só posicionamento diferente.
+    Refazendo: círculos com <b>gradient radial 3D</b> (parecem esferas de mercúrio) que se <b>sobrepõem e fundem</b>
+    — não linhas separadas, e sim uma forma orgânica única. Padrão real do DIGITECH.
   </p>
 </section>
 
 <main class="grid">
 
-  <!-- ═══ 01 — layout diagonal (cópia direta do digitech) ═══ -->
+  <!-- ═══ 01 — METABALL Q ═══ -->
   <section class="card" id="p01">
-    <div class="card-header"><span class="n">01</span><span style="color:var(--muted-hi)">layout diagonal</span></div>
+    <div class="card-header"><span class="n">01</span><span style="color:var(--muted-hi)">metaball · esferas fundidas</span></div>
     <div class="stage">
-      <svg class="mark" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
-        <!-- conexões finas -->
-        <g stroke="url(#magGrad)" stroke-width="9" stroke-linecap="round" fill="none">
-          <line x1="50" y1="50" x2="120" y2="50"/>
-          <line x1="120" y1="50" x2="120" y2="120"/>
-          <line x1="50" y1="50" x2="80" y2="120"/>
+      <svg class="mark" viewBox="0 0 190 190" xmlns="http://www.w3.org/2000/svg">
+        <!-- Grupo com filter goo pra fundir as esferas magenta -->
+        <g filter="url(#goo)">
+          <circle cx="60" cy="60" r="38" fill="url(#sphere1)"/>
+          <circle cx="115" cy="55" r="26" fill="url(#sphere2)"/>
+          <circle cx="135" cy="105" r="32" fill="url(#sphere3)"/>
+          <circle cx="75" cy="120" r="30" fill="url(#sphere2)"/>
         </g>
-        <!-- accent stroke (creme) -->
-        <line x1="120" y1="120" x2="150" y2="150" stroke="url(#accentGrad)" stroke-width="9" stroke-linecap="round"/>
-        <!-- círculos: 4 tamanhos diferentes -->
-        <circle cx="50" cy="50" r="28" fill="url(#magGrad)"/>
-        <circle cx="120" cy="50" r="20" fill="url(#magGrad)"/>
-        <circle cx="80" cy="120" r="24" fill="url(#magGrad)"/>
-        <circle cx="120" cy="120" r="16" fill="url(#magGrad)"/>
-        <!-- accent (creme, papel do laranja) -->
-        <circle cx="150" cy="150" r="14" fill="url(#accentGrad)"/>
-        <!-- highlights sutis -->
-        <circle cx="42" cy="42" r="6" fill="#F5F2E8" opacity=".28"/>
-        <circle cx="115" cy="45" r="4" fill="#F5F2E8" opacity=".22"/>
+        <!-- highlights de luz sobre as esferas (fora do goo pra ficar nítido) -->
+        <ellipse cx="50" cy="45" rx="12" ry="8" fill="#FFF" opacity=".35"/>
+        <ellipse cx="107" cy="45" rx="8" ry="5" fill="#FFF" opacity=".3"/>
+        <ellipse cx="128" cy="93" rx="10" ry="6" fill="#FFF" opacity=".28"/>
+        <ellipse cx="68" cy="108" rx="10" ry="6" fill="#FFF" opacity=".3"/>
+        <!-- Esfera accent creme separada -->
+        <circle cx="160" cy="150" r="14" fill="url(#sphereAccent)"/>
+        <ellipse cx="156" cy="145" rx="4" ry="3" fill="#FFF" opacity=".5"/>
       </svg>
       <div class="name-block">
         <span class="name-bold">QYVO</span>
@@ -336,8 +229,8 @@ body::before{
     </div>
     <div class="notes">
       <div class="desc">
-        <b>Cópia direta do padrão DIGITECH:</b> 4 círculos de tamanhos diferentes, linhas finas de espessura consistente,
-        dot <u>accent creme</u> no canto (papel do laranjinha).
+        <b>Esferas de mercúrio</b> com gradient radial (highlight branco em cima) que se fundem pelo filter goo.
+        Cara 3D real, o accent creme é uma esfera separada no canto. Padrão do DIGITECH.
       </div>
     </div>
     <div class="favbar">
@@ -345,17 +238,18 @@ body::before{
       <span class="tab-preview">
         <span class="fav">
           <svg viewBox="0 0 32 32">
-            <g stroke="#FF1F8E" stroke-width="2" stroke-linecap="round" fill="none">
-              <line x1="9" y1="9" x2="22" y2="9"/>
-              <line x1="22" y1="9" x2="22" y2="21"/>
-              <line x1="9" y1="9" x2="14" y2="21"/>
+            <defs>
+              <radialGradient id="fsph" cx="35%" cy="30%" r="75%"><stop offset="0%" stop-color="#FF9BC7"/><stop offset="60%" stop-color="#FF1F8E"/><stop offset="100%" stop-color="#8A0E4E"/></radialGradient>
+              <radialGradient id="fac" cx="35%" cy="30%" r="75%"><stop offset="0%" stop-color="#FFF5E6"/><stop offset="70%" stop-color="#FFCDA0"/></radialGradient>
+              <filter id="fgoo"><feGaussianBlur in="SourceGraphic" stdDeviation=".8"/><feColorMatrix mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 15 -7"/></filter>
+            </defs>
+            <g filter="url(#fgoo)">
+              <circle cx="10" cy="11" r="6.5" fill="url(#fsph)"/>
+              <circle cx="20" cy="10" r="4.5" fill="url(#fsph)"/>
+              <circle cx="22" cy="19" r="5.5" fill="url(#fsph)"/>
+              <circle cx="12" cy="21" r="5" fill="url(#fsph)"/>
             </g>
-            <line x1="22" y1="21" x2="27" y2="26" stroke="#FFE4C7" stroke-width="2" stroke-linecap="round"/>
-            <circle cx="9" cy="9" r="5" fill="#FF1F8E"/>
-            <circle cx="22" cy="9" r="3.5" fill="#FF1F8E"/>
-            <circle cx="14" cy="21" r="4" fill="#FF1F8E"/>
-            <circle cx="22" cy="21" r="3" fill="#FF1F8E"/>
-            <circle cx="27" cy="26" r="2.6" fill="#FFE4C7"/>
+            <circle cx="27" cy="26" r="2.6" fill="url(#fac)"/>
           </svg>
         </span>
         qyvo · live
@@ -363,30 +257,23 @@ body::before{
     </div>
   </section>
 
-  <!-- ═══ 02 — layout curva (Q sugerido) ═══ -->
+  <!-- ═══ 02 — 3 ESFERAS + ACCENT ═══ -->
   <section class="card" id="p02">
-    <div class="card-header"><span class="n">02</span><span style="color:var(--muted-hi)">sugere Q</span></div>
+    <div class="card-header"><span class="n">02</span><span style="color:var(--muted-hi)">3 esferas · triangular</span></div>
     <div class="stage">
-      <svg class="mark" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
-        <!-- conexões finas em arco (sugerindo Q) -->
-        <g stroke="url(#magGrad)" stroke-width="9" stroke-linecap="round" fill="none">
-          <path d="M 45 60 Q 55 30 90 30"/>
-          <path d="M 90 30 Q 130 30 135 70"/>
-          <path d="M 135 70 Q 130 115 90 120"/>
-          <path d="M 90 120 Q 55 115 45 60"/>
+      <svg class="mark" viewBox="0 0 190 190" xmlns="http://www.w3.org/2000/svg">
+        <g filter="url(#goo)">
+          <circle cx="55" cy="60" r="40" fill="url(#sphere1)"/>
+          <circle cx="130" cy="55" r="32" fill="url(#sphere2)"/>
+          <circle cx="95" cy="130" r="42" fill="url(#sphere3)"/>
         </g>
-        <!-- cauda accent (creme) saindo do canto inferior direito -->
-        <line x1="120" y1="105" x2="150" y2="150" stroke="url(#accentGrad)" stroke-width="9" stroke-linecap="round"/>
-        <!-- círculos nos vértices, tamanhos variados -->
-        <circle cx="45" cy="60" r="22" fill="url(#magGrad)"/>
-        <circle cx="90" cy="30" r="18" fill="url(#magGrad)"/>
-        <circle cx="135" cy="70" r="24" fill="url(#magGrad)"/>
-        <circle cx="90" cy="120" r="20" fill="url(#magGrad)"/>
-        <!-- accent creme na ponta -->
-        <circle cx="150" cy="150" r="13" fill="url(#accentGrad)"/>
         <!-- highlights -->
-        <circle cx="40" cy="55" r="5" fill="#F5F2E8" opacity=".26"/>
-        <circle cx="130" cy="65" r="6" fill="#F5F2E8" opacity=".22"/>
+        <ellipse cx="42" cy="45" rx="14" ry="9" fill="#FFF" opacity=".38"/>
+        <ellipse cx="120" cy="40" rx="11" ry="7" fill="#FFF" opacity=".32"/>
+        <ellipse cx="85" cy="115" rx="13" ry="8" fill="#FFF" opacity=".32"/>
+        <!-- Accent creme separado -->
+        <circle cx="165" cy="115" r="13" fill="url(#sphereAccent)"/>
+        <ellipse cx="161" cy="110" rx="4" ry="3" fill="#FFF" opacity=".5"/>
       </svg>
       <div class="name-block">
         <span class="name-bold">QYVO</span>
@@ -396,8 +283,8 @@ body::before{
     </div>
     <div class="notes">
       <div class="desc">
-        Mesmo padrão do 01, mas os 4 círculos formam um <b>ciclo fechado com cauda accent</b> — mais fácil de ler
-        como Q sem virar letra literal. Cara mais "vivo".
+        Mesmo estilo metaball, mais <b>enxuto</b>: só 3 esferas fundidas + 1 accent separado. Mais fácil de reconhecer,
+        mais forte no favicon pequeno.
       </div>
     </div>
     <div class="favbar">
@@ -405,75 +292,17 @@ body::before{
       <span class="tab-preview">
         <span class="fav">
           <svg viewBox="0 0 32 32">
-            <g stroke="#FF1F8E" stroke-width="2" stroke-linecap="round" fill="none">
-              <path d="M 8 12 Q 10 5 16 5"/>
-              <path d="M 16 5 Q 24 5 24 13"/>
-              <path d="M 24 13 Q 24 22 16 22"/>
-              <path d="M 16 22 Q 10 22 8 12"/>
+            <defs>
+              <radialGradient id="f2sph" cx="35%" cy="30%" r="75%"><stop offset="0%" stop-color="#FF9BC7"/><stop offset="60%" stop-color="#FF1F8E"/><stop offset="100%" stop-color="#8A0E4E"/></radialGradient>
+              <radialGradient id="f2ac" cx="35%" cy="30%" r="75%"><stop offset="0%" stop-color="#FFF5E6"/><stop offset="70%" stop-color="#FFCDA0"/></radialGradient>
+              <filter id="f2goo"><feGaussianBlur in="SourceGraphic" stdDeviation=".9"/><feColorMatrix mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 15 -7"/></filter>
+            </defs>
+            <g filter="url(#f2goo)">
+              <circle cx="9" cy="11" r="7" fill="url(#f2sph)"/>
+              <circle cx="22" cy="10" r="5.5" fill="url(#f2sph)"/>
+              <circle cx="16" cy="22" r="7" fill="url(#f2sph)"/>
             </g>
-            <line x1="21" y1="20" x2="27" y2="27" stroke="#FFE4C7" stroke-width="2" stroke-linecap="round"/>
-            <circle cx="8" cy="12" r="4" fill="#FF1F8E"/>
-            <circle cx="16" cy="5" r="3.2" fill="#FF1F8E"/>
-            <circle cx="24" cy="13" r="4.2" fill="#FF1F8E"/>
-            <circle cx="16" cy="22" r="3.6" fill="#FF1F8E"/>
-            <circle cx="27" cy="27" r="2.6" fill="#FFE4C7"/>
-          </svg>
-        </span>
-        qyvo · live
-      </span>
-    </div>
-  </section>
-
-  <!-- ═══ 03 — layout compacto (3 círculos + 1 accent) ═══ -->
-  <section class="card" id="p03">
-    <div class="card-header"><span class="n">03</span><span style="color:var(--muted-hi)">compacto · triangular</span></div>
-    <div class="stage">
-      <svg class="mark" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
-        <!-- conexões finas triangulares -->
-        <g stroke="url(#magGrad)" stroke-width="9" stroke-linecap="round" fill="none">
-          <line x1="55" y1="55" x2="130" y2="55"/>
-          <line x1="55" y1="55" x2="90" y2="125"/>
-          <line x1="130" y1="55" x2="90" y2="125"/>
-        </g>
-        <!-- linha accent creme saindo do lateral -->
-        <line x1="130" y1="55" x2="155" y2="30" stroke="url(#accentGrad)" stroke-width="9" stroke-linecap="round"/>
-        <!-- 3 círculos magenta -->
-        <circle cx="55" cy="55" r="26" fill="url(#magGrad)"/>
-        <circle cx="130" cy="55" r="22" fill="url(#magGrad)"/>
-        <circle cx="90" cy="125" r="28" fill="url(#magGrad)"/>
-        <!-- 1 accent creme -->
-        <circle cx="155" cy="30" r="14" fill="url(#accentGrad)"/>
-        <!-- highlights -->
-        <circle cx="48" cy="48" r="6" fill="#F5F2E8" opacity=".28"/>
-        <circle cx="83" cy="117" r="7" fill="#F5F2E8" opacity=".22"/>
-      </svg>
-      <div class="name-block">
-        <span class="name-bold">QYVO</span>
-        <span class="name-light">LIVE</span>
-      </div>
-      <div class="tag">tools · for · sellers</div>
-    </div>
-    <div class="notes">
-      <div class="desc">
-        Versão <b>mais enxuta</b>: só 3 círculos magenta + 1 accent. Layout triangular. Menos densa que a 01/02,
-        mais fácil de ler no favicon 16×16.
-      </div>
-    </div>
-    <div class="favbar">
-      <span class="lbl">preview aba</span>
-      <span class="tab-preview">
-        <span class="fav">
-          <svg viewBox="0 0 32 32">
-            <g stroke="#FF1F8E" stroke-width="2" stroke-linecap="round" fill="none">
-              <line x1="9" y1="10" x2="22" y2="10"/>
-              <line x1="9" y1="10" x2="16" y2="22"/>
-              <line x1="22" y1="10" x2="16" y2="22"/>
-            </g>
-            <line x1="22" y1="10" x2="27" y2="5" stroke="#FFE4C7" stroke-width="2" stroke-linecap="round"/>
-            <circle cx="9" cy="10" r="4.5" fill="#FF1F8E"/>
-            <circle cx="22" cy="10" r="4" fill="#FF1F8E"/>
-            <circle cx="16" cy="22" r="5" fill="#FF1F8E"/>
-            <circle cx="27" cy="5" r="2.6" fill="#FFE4C7"/>
+            <circle cx="27" cy="20" r="2.4" fill="url(#f2ac)"/>
           </svg>
         </span>
         qyvo · live
@@ -484,9 +313,9 @@ body::before{
 </main>
 
 <div class="foot">
-  <span>qyvo · brand · v6</span>
-  <span>▸ 3 variações · <b>linhas finas</b> · círculos + conexões finas · accent creme</span>
-  <span>escolhe uma pra virar oficial</span>
+  <span>qyvo · brand · v7 · metaball</span>
+  <span>▸ 2 opções · esferas 3D que <b>fundem</b> (padrão real do DIGITECH)</span>
+  <span>bateu ou ainda tá longe?</span>
 </div>
 
 </body>
