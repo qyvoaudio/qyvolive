@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Qyvo Live, Ferramentas pra TikTok Shop sellers</title>
-<meta name="description" content="A Qyvo Live constrói ferramentas que liberam o tempo de quem vive em live no TikTok Shop. Quick Test, Live Shop Pro, e o que vem aí.">
+<meta name="description" content="A Qyvo Live constrói ferramentas que liberam o tempo de quem vive em live no TikTok Shop. Argos, Quick Test, Live Shop Pro.">
 <link rel="icon" href="assets/logo.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -208,8 +208,11 @@ h1 .accent {
 
 .produtos {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 28px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+@media (max-width: 1080px) {
+  .produtos { grid-template-columns: repeat(2, 1fr); }
 }
 .prod {
   background: var(--panel);
@@ -469,6 +472,26 @@ footer a:hover { color: var(--accent); }
   <div class="produtos">
     <div class="prod disponivel">
       <div class="prod-head">
+        <div class="prod-name">Argos</div>
+        <div class="prod-status">▸ Disponível</div>
+      </div>
+      <p class="prod-tagline">Guardião da sua live</p>
+      <p class="prod-desc">
+        App Windows que vigia o Live Studio sem parar e mantém sinais de atividade humana na tela, no timing certo, sem você lembrar.
+      </p>
+      <ul class="prod-features">
+        <li>Reduz drasticamente a chance de captcha</li>
+        <li>Roda em segundo plano automaticamente</li>
+        <li>Ciclos programados por você</li>
+        <li>Licença anual · R$ 159/ano (lançamento)</li>
+      </ul>
+      <a href="/argos/" class="prod-cta">
+        Conhecer Argos <span class="arrow">→</span>
+      </a>
+    </div>
+
+    <div class="prod disponivel">
+      <div class="prod-head">
         <div class="prod-name">Quick Test</div>
         <div class="prod-status">▸ Disponível</div>
       </div>
@@ -549,7 +572,9 @@ footer a:hover { color: var(--accent); }
   <div class="brand-foot"><span class="y">q</span>yvo · live</div>
   <div>© 2026 Qyvo Live · Todos os direitos reservados</div>
   <div class="links">
+    <a href="/argos/">Argos</a>
     <a href="/quick-test/">Quick Test</a>
+    <a href="/live-shop-pro/">Live Shop Pro</a>
     <a href="https://qyvoaudio.github.io/quicktest-policy/" target="_blank">Privacidade</a>
     <a href="mailto:contato@qyvolive.com.br">Contato</a>
   </div>
