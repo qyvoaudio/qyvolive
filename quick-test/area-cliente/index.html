@@ -440,7 +440,7 @@ footer a:hover { color: var(--accent); }
     <button id="btnEntrar" onclick="entrar()">Entrar →</button>
     <div class="gate-error" id="gateError"></div>
     <div class="gate-help">
-      Perdeu a chave? Procura no seu email — chegou logo após a compra na Kiwify.
+      Perdeu a chave? Procura no seu email, chegou logo após a compra na Kiwify.
       Ainda não comprou? <a href="/quick-test/">Conhecer o Quick Test →</a>
     </div>
   </div>
@@ -462,7 +462,7 @@ footer a:hover { color: var(--accent); }
     <div class="video-wrap">
       <iframe
         src="https://www.youtube.com/embed/T0bI-PZsDKE"
-        title="Quick Test — O método em 15 minutos"
+        title="Quick Test, O método em 15 minutos"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         allowfullscreen></iframe>
     </div>
@@ -557,7 +557,7 @@ async function abrir(qual) {
     const r = await fetchProtegido(qual);
     if (!r.ok) {
       if (r.reason === "invalid" || r.reason === "expired" || r.reason === "revoked") {
-        // licença ficou inválida — força logout
+        // licença ficou inválida, força logout
         sair();
         showError(REASON_PT[r.reason] || "Sua licença não está mais ativa.");
         return;
@@ -597,7 +597,7 @@ function sair() {
       chave = "";
     }
   } catch (e) {
-    // sem rede — mostra gate normalmente
+    // sem rede, mostra gate normalmente
   }
 })();
 </script>

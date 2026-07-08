@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Argos — Guardião da sua Live no TikTok</title>
-<meta name="description" content="App pra Windows que reduz drasticamente a chance de captcha derrubar sua live no TikTok. Simula atividade real no Live Studio em background.">
-<meta property="og:title" content="Argos — Guardião da Live pra TikTok Live">
-<meta property="og:description" content="Captcha derrubando sua live? Reduz drasticamente com o Argos. App pra Windows que simula atividade real no Live Studio.">
-<meta property="og:image" content="https://qyvolive.com.br/assets/01-popup-principal.png">
+<title>Argos, o Guardião da sua Live no TikTok Shop</title>
+<meta name="description" content="App Windows que vigia o Live Studio sem parar e mantém sinais de atividade humana na tela, no timing certo. Menos captcha. Mais venda.">
+<meta property="og:title" content="Argos, o Guardião da Live">
+<meta property="og:description" content="Menos captcha. Mais venda. Argos vigia sua live enquanto você vende.">
+<meta property="og:image" content="https://qyvolive.com.br/argos/assets/logo.png">
 <link rel="icon" href="assets/logo.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -51,7 +51,6 @@ body {
   font-weight: 400;
 }
 
-/* Grain noise overlay — adds texture */
 body::before {
   content: "";
   position: fixed;
@@ -63,7 +62,6 @@ body::before {
   mix-blend-mode: overlay;
 }
 
-/* Subtle scan lines for broadcast feel */
 body::after {
   content: "";
   position: fixed;
@@ -100,31 +98,26 @@ body::after {
 .strip .logo {
   width: 28px; height: 28px;
   background: var(--accent);
-  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
   filter: drop-shadow(0 0 8px var(--accent-glow));
-}
-.strip .logo-img {
-  width: 30px; height: 30px;
-  filter: drop-shadow(0 0 6px var(--accent-glow));
-  flex-shrink: 0;
 }
 .strip .brand { font-weight: 700; font-size: 13px; letter-spacing: 0.12em; }
 .strip .brand .mark { color: var(--accent); margin: 0 1px; }
 .strip .led {
   display: inline-flex; align-items: center; gap: 6px;
   padding: 4px 10px;
-  background: rgba(255, 31, 142, 0.1);
-  border: 1px solid rgba(255, 31, 142, 0.3);
+  background: rgba(0, 255, 157, 0.1);
+  border: 1px solid rgba(0, 255, 157, 0.3);
   border-radius: 100px;
-  color: var(--accent);
+  color: var(--signal);
   font-weight: 700;
 }
 .strip .led::before {
   content: "";
   width: 6px; height: 6px;
-  background: var(--accent);
+  background: var(--signal);
   border-radius: 50%;
-  box-shadow: 0 0 6px var(--accent);
+  box-shadow: 0 0 6px var(--signal);
   animation: blink 1.4s ease-in-out infinite;
 }
 @keyframes blink {
@@ -234,7 +227,7 @@ h1 .strike::after {
   font-size: 22px;
   line-height: 1.45;
   color: var(--muted-hi);
-  max-width: 520px;
+  max-width: 540px;
   margin-bottom: 40px;
 }
 .hero-sub strong { color: var(--text); font-weight: 500; }
@@ -332,6 +325,30 @@ h1 .strike::after {
   height: auto;
   display: block;
   border-radius: 6px;
+  aspect-ratio: 4 / 3;
+  background: var(--bg-2);
+  object-fit: cover;
+}
+.mockup-frame.emblem {
+  aspect-ratio: 4 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(255,31,142,0.22), transparent 55%),
+    var(--panel);
+}
+.mockup-frame.emblem img.panoptic {
+  width: 62%;
+  height: auto;
+  aspect-ratio: auto;
+  background: transparent;
+  filter: drop-shadow(0 0 40px var(--accent-glow));
+  animation: pulse 4s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { filter: drop-shadow(0 0 40px var(--accent-glow)); }
+  50%      { filter: drop-shadow(0 0 70px var(--accent-glow)); }
 }
 .mockup-tag {
   position: absolute;
@@ -392,7 +409,7 @@ section.block {
   margin-top: 18px;
 }
 
-/* ═══ PROBLEMA — "antes / depois" ═══ */
+/* ═══ CONTRAST antes/depois ═══ */
 .contrast {
   background: var(--bg-2);
   border-top: 1px solid var(--border);
@@ -451,7 +468,7 @@ section.block {
   flex-shrink: 0;
 }
 
-/* ═══ COMO FUNCIONA — timeline ═══ */
+/* ═══ COMO FUNCIONA ═══ */
 .steps {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -515,7 +532,7 @@ section.block {
   line-height: 1.6;
 }
 
-/* ═══ SCREENSHOTS — broadcast monitor stack ═══ */
+/* ═══ SCREENSHOTS ═══ */
 .shots {
   background: var(--bg-2);
   border-top: 1px solid var(--border);
@@ -553,6 +570,9 @@ section.block {
   height: auto;
   display: block;
   border-radius: 6px;
+  aspect-ratio: 16 / 10;
+  background: var(--bg-2);
+  object-fit: cover;
 }
 .shot .cap {
   margin-top: 14px;
@@ -569,7 +589,7 @@ section.block {
 .shot.s3 { grid-column: span 5; }
 .shot.s4 { grid-column: span 7; }
 
-/* ═══ PRA QUEM É ═══ */
+/* ═══ AUDIENCE ═══ */
 .audience {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -670,7 +690,6 @@ section.block {
   color: var(--accent);
   letter-spacing: -0.02em;
 }
-.price-cents { font-size: 28px; color: var(--accent); }
 .price-period {
   font-family: var(--mono);
   font-size: 12px;
@@ -709,6 +728,30 @@ section.block {
   margin-top: 18px;
   text-transform: uppercase;
   letter-spacing: 0.1em;
+}
+
+/* ladder de escadinha */
+.ladder {
+  max-width: 540px;
+  margin: 32px auto 0;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-align: center;
+}
+.ladder-title { color: var(--muted-hi); margin-bottom: 12px; }
+.ladder-list { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.ladder-list span {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 100px;
+}
+.ladder-list span.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(255,31,142,0.08);
 }
 
 /* ═══ FAQ ═══ */
@@ -761,7 +804,7 @@ details.qa .body {
   line-height: 1.65;
 }
 
-/* ═══ Final CTA strip ═══ */
+/* ═══ Final CTA ═══ */
 .final {
   padding: 120px 32px;
   text-align: center;
@@ -866,14 +909,12 @@ footer .links { display: flex; gap: 22px; flex-wrap: wrap; }
 
 <!-- ═══ HEADER STRIP ═══ -->
 <div class="strip">
-  <img src="assets/logo.svg" alt="Argos" class="logo-img">
+  <div class="logo"></div>
   <div class="brand">ARGOS</div>
-  <span class="led">ON GUARD</span>
+  <span class="led">VIGIANDO</span>
   <div class="spacer"></div>
   <nav>
-    <a href="/">Home</a>
-    <a href="/quick-test/">Quick Test</a>
-    <a href="/live-shop-pro/">Live Shop Pro</a>
+    <a href="#como-funciona">Como funciona</a>
     <a href="#preco">Preço</a>
     <a href="#faq">FAQ</a>
   </nav>
@@ -885,18 +926,16 @@ footer .links { display: flex; gap: 22px; flex-wrap: wrap; }
   <div class="hero-content">
     <div class="eyebrow">APP WINDOWS · TIKTOK LIVE STUDIO</div>
     <h1>
-      Sua live cai por<br>
-      <span class="magenta">captcha</span> toda hora?<br>
-      <span style="color: var(--text);"><em>Não mais.</em></span>
+      <span class="strike">Captcha</span><br>
+      derrubando<br>
+      <span class="magenta">sua live?</span>
     </h1>
     <p class="hero-sub">
-      <strong>Argos</strong> simula atividade real na sua Live Studio — passa o mouse no chat,
-      mexe o banner, manda mensagem nos intervalos certos. Resultado:
-      <strong>chance de captcha cai drasticamente</strong>. Live segue. Faturamento intacto.
+      <strong>Argos</strong> vigia o Live Studio sem parar e mantém <strong>sinais de atividade humana na tela</strong>, no timing certo, sem você lembrar. Menos captcha. Mais venda.
     </p>
     <div class="hero-ctas">
       <a href="#preco" class="btn-primary">
-        Quero o Argos <span class="arrow">→</span>
+        Garantir vaga · R$ 159 <span class="arrow">→</span>
       </a>
       <a href="#como-funciona" class="btn-ghost">
         ▸ Ver como funciona
@@ -904,20 +943,25 @@ footer .links { display: flex; gap: 22px; flex-wrap: wrap; }
     </div>
     <div class="hero-stats">
       <div class="stat">
-        <div class="num">↓↓↓</div>
-        <div class="lbl">chance de captcha</div>
+        <div class="num">24/7</div>
+        <div class="lbl">vigiando por trás</div>
       </div>
       <div class="stat">
-        <div class="num">3min</div>
-        <div class="lbl">de setup total</div>
+        <div class="num">AUTO</div>
+        <div class="lbl">ciclos programados</div>
       </div>
       <div class="stat">
-        <div class="num">background</div>
-        <div class="lbl">roda sozinho</div>
+        <div class="num">1×</div>
+        <div class="lbl">clique pra rodar</div>
       </div>
     </div>
   </div>
-  <!-- TODO: Carol, prints reais do Argos aqui depois -->
+  <div class="hero-mockup">
+    <div class="mockup-frame emblem">
+      <img src="assets/panoptic.svg" alt="Argos" class="panoptic">
+      <span class="mockup-tag">▸ VIGIANDO</span>
+    </div>
+  </div>
 </section>
 
 <!-- ═══ PROBLEMA / SOLUÇÃO ═══ -->
@@ -925,29 +969,27 @@ footer .links { display: flex; gap: 22px; flex-wrap: wrap; }
   <div class="wrap">
     <div class="sec-header">
       <div class="sec-label">o problema real</div>
-      <h2 class="sec-title">Captcha não <em>"acontece".</em><br>Ele te <em>caça</em>.</h2>
+      <h2 class="sec-title">Você tá vendendo.<br>O TikTok <em>manda captcha.</em><br>A live cai.</h2>
     </div>
     <div class="contrast-grid">
       <div class="contrast-card before">
-        <h3>▸ Sem Argos — TikTok te derruba</h3>
+        <h3>▸ Antes, vigiando na mão</h3>
         <ul>
-          <li>Bot do TikTok detecta inatividade — joga captcha do nada</li>
-          <li>Você sai pra resolver venda no WhatsApp → live cai</li>
-          <li>Live caiu = audiência se perde, momentum perdido, faturamento embora</li>
-          <li>Reabrir live nova = começar do zero com 0 espectadores</li>
-          <li>Algoritmo te penaliza por live cortada</li>
-          <li>Você fica refém da tela 8h direto sem sair pra nada</li>
+          <li>Captcha aparece do nada e você não vê</li>
+          <li>Live cai no meio da venda mais quente</li>
+          <li>Precisa lembrar de manter a tela ativa de tempos em tempos</li>
+          <li>Sai pro banheiro 5 minutos e volta com live encerrada</li>
+          <li>Não consegue rodar 2, 3 lives em paralelo, perde uma sem perceber</li>
         </ul>
       </div>
       <div class="contrast-card after">
-        <h3>▸ Com Argos — TikTok te ignora</h3>
+        <h3>▸ Depois, Argos no comando</h3>
         <ul>
-          <li>Argos simula atividade humana real na Live Studio</li>
-          <li>Passa o mouse no chat, mexe o banner, manda mensagem</li>
-          <li>Tudo nos intervalos certos pra parecer humano</li>
-          <li>Chance de captcha cai drasticamente — live segue por muito mais tempo</li>
-          <li>Você pode sair pra responder venda, almoçar, dormir</li>
-          <li>Audiência mantida, algoritmo feliz, faturamento intacto</li>
+          <li>Argos mantém a tela ativa em ciclos programados</li>
+          <li>Você configura o ritmo, ele executa sozinho</li>
+          <li>Minimiza depois de cada ciclo, não atrapalha seu trabalho</li>
+          <li>Roda em segundo plano enquanto você atende cliente, come, dorme</li>
+          <li>Reduz drasticamente a chance de captcha aparecer</li>
         </ul>
       </div>
     </div>
@@ -958,62 +1000,57 @@ footer .links { display: flex; gap: 22px; flex-wrap: wrap; }
 <section class="block" id="como-funciona">
   <div class="wrap">
     <div class="sec-header">
-      <div class="sec-label">setup em 3 minutos</div>
-      <h2 class="sec-title">Calibra <em>uma vez.</em><br>Roda <em>pra sempre.</em></h2>
-      <p class="sec-sub">Se você sabe abrir o Live Studio, você sabe usar Argos.</p>
+      <div class="sec-label">setup em 5 minutos</div>
+      <h2 class="sec-title">Instala, calibra, <em>esquece.</em></h2>
+      <p class="sec-sub">3 cliques na calibragem inicial. Depois disso, Argos roda sozinho a live inteira.</p>
     </div>
     <div class="steps">
       <div class="step">
         <div class="step-num">01</div>
-        <h3>Aponta o Argos pra Live Studio</h3>
-        <p>Clica "Selecionar janela" e o Argos descobre sozinho qual é a Live Studio. Não precisa configurar IP, porta, nada chato.</p>
+        <h3>Aponta o Live Studio</h3>
+        <p>Abre o Live Studio, aperta um botão no Argos. Ele identifica a janela sozinho. Só isso.</p>
       </div>
       <div class="step">
         <div class="step-num">02</div>
-        <h3>Calibra 3 pontos da tela</h3>
-        <p>Mostra pro Argos onde fica o nome do chat, o banner do vídeo, e a caixa de mensagem. Posiciona o mouse, ele lê sozinho. Cada calibração demora 5 segundos.</p>
+        <h3>Calibra em 3 cliques</h3>
+        <p>Aponta 3 pontos-chave na tela pro Argos saber onde agir. Salva as coordenadas, não precisa refazer.</p>
       </div>
       <div class="step">
         <div class="step-num">03</div>
-        <h3>Adiciona mensagens e inicia</h3>
-        <p>Cola umas 10-15 mensagens que ele vai mandar a cada hora no chat. Clica "Iniciar Argos". Pode minimizar — ele continua rodando em background.</p>
+        <h3>Aperta iniciar. Vai vender.</h3>
+        <p>Argos entra em ciclo automático nos intervalos que você configurar. Minimiza sozinho depois de cada ação. Você usa o computador normalmente, ele vigia por trás.</p>
       </div>
     </div>
   </div>
 </section>
-
-<!-- ═══ SCREENSHOTS ═══ -->
-<!-- ═══ POR DENTRO — REVISAR COM SCREENSHOTS DO ARGOS ═══ -->
-<!-- TODO: Carol, tira prints do Argos rodando e adiciona aqui -->
-
 
 <!-- ═══ PRA QUEM É ═══ -->
 <section class="block">
   <div class="wrap">
     <div class="sec-header">
       <div class="sec-label">público</div>
-      <h2 class="sec-title">Feito pra <em>quem vive em live.</em></h2>
+      <h2 class="sec-title">Feito pra <em>quem já tá vendendo.</em></h2>
     </div>
     <div class="audience">
       <div class="aud-card">
         <span class="ic">🛒</span>
         <h4>TikTok Shop seller</h4>
-        <p>Live longa, captcha derruba na pior hora — bem no meio de uma venda quente</p>
+        <p>Vende em live longa e não pode se dar ao luxo de perder a transmissão pra captcha</p>
       </div>
       <div class="aud-card">
-        <span class="ic">⏰</span>
-        <h4>Quem faz live de várias horas</h4>
-        <p>4h, 6h, 8h ao vivo. A cada captcha que aparece é um perigo de quebrar tudo</p>
+        <span class="ic">🏠</span>
+        <h4>Multi-conta</h4>
+        <p>Roda 2, 3 lives em paralelo e precisa de vigia automático em cada uma</p>
       </div>
       <div class="aud-card">
-        <span class="ic">🎯</span>
-        <h4>Quem precisa sair da tela</h4>
-        <p>Responder WhatsApp, ir no banheiro, almoçar — sem deixar a live cair sozinha</p>
+        <span class="ic">🌙</span>
+        <h4>Live noturna / madrugada</h4>
+        <p>Deixa live rodando na madrugada e não quer acordar pra descobrir que caiu às 2h</p>
       </div>
       <div class="aud-card">
         <span class="ic">📊</span>
         <h4>Agência de live</h4>
-        <p>Gerencia múltiplos sellers e precisa padronizar o pitch com qualidade profissional</p>
+        <p>Gerencia sellers no PC e precisa reduzir suporte "minha live caiu de novo"</p>
       </div>
     </div>
   </div>
@@ -1027,26 +1064,39 @@ footer .links { display: flex; gap: 22px; flex-wrap: wrap; }
       <h2 class="sec-title" style="margin: 0 auto;">Paga 1 vez por ano. <em>Sem mensalidade.</em></h2>
     </div>
     <div class="price-card">
-      <div class="price-badge">▸ LANÇAMENTO</div>
+      <div class="price-badge">▸ LANÇAMENTO · 10 PRIMEIRAS VAGAS</div>
+      <div class="price-row">
+        <span class="price-from">R$ 197/ano</span>
+      </div>
       <div class="price-row" style="margin-bottom: 8px; align-items: baseline;">
         <span style="color: var(--muted); font-family: var(--mono); font-size: 14px;">R$</span>
-        <span class="price-now">[VALOR]</span>
+        <span class="price-now">159</span>
         <span style="color: var(--muted-hi); font-family: var(--mono); font-size: 16px; margin-left: 4px;">/ ano</span>
       </div>
       <div class="price-period">12 meses de uso pleno · sem mensalidade</div>
       <ul class="price-features">
-        <li>App pra Windows — instala em 1 clique</li>
-        <li>Calibração em 3 minutos, roda em background</li>
-        <li>2 PCs por licença (notebook + desktop, por exemplo)</li>
-        <li>Updates automáticos durante o período</li>
+        <li>App Windows completo pra prevenir captcha do Live Studio</li>
+        <li>Ciclos automáticos configuráveis por você</li>
+        <li>Timing regulável, você decide os intervalos</li>
+        <li>Suporta 2 máquinas por licença (PC casa + PC live)</li>
+        <li>Updates inclusos durante o período ativo</li>
         <li>Suporte por WhatsApp direto com a Carol</li>
-        <li>Renovação opcional após 12 meses</li>
       </ul>
-      <a href="[KIWIFY-LINK-ARGOS]" class="btn-primary">
-        ▸ Garantir minha licença anual <span class="arrow">→</span>
+      <a href="https://pay.kiwify.com.br/SJYeecq" class="btn-primary">
+        ▸ Garantir minha vaga <span class="arrow">→</span>
       </a>
       <div class="price-foot">
         🔒 Pagamento seguro Kiwify · 7 dias de garantia
+      </div>
+    </div>
+    <div class="ladder">
+      <div class="ladder-title">▸ escadinha de preço</div>
+      <div class="ladder-list">
+        <span class="active">1–10 · R$ 159</span>
+        <span>11–40 · R$ 197</span>
+        <span>41–100 · R$ 247</span>
+        <span>101–200 · R$ 297</span>
+        <span>201+ · R$ 397</span>
       </div>
     </div>
   </div>
@@ -1061,40 +1111,40 @@ footer .links { display: flex; gap: 22px; flex-wrap: wrap; }
     </div>
     <div class="faq-grid">
       <details class="qa">
-        <summary>O TikTok não bane quem usa Argos?</summary>
-        <div class="body">Não. Argos não invade nada do TikTok — só simula movimentos de mouse e teclado no seu PC, igual você faria manualmente. Não modifica a Live Studio, não acessa API privada, não faz nada que viole termos. É um auxiliar visual seu, no seu computador.</div>
-      </details>
-      <details class="qa">
-        <summary>Tem manual de uso completo?</summary>
-        <div class="body">Sim. <a href="/argos/manual/" style="color:var(--accent);">qyvolive.com.br/argos/manual/</a> — passo a passo do zero: instalar, calibrar os 3 pontos, adicionar mensagens, iniciar. Cobre tudo.</div>
-      </details>
-      <details class="qa">
         <summary>Funciona no Mac?</summary>
-        <div class="body">Por enquanto só <strong>Windows</strong>. Se houver demanda, eu faço versão Mac. A Live Studio do TikTok roda nos dois sistemas mas o Argos usa API específica do Windows pra simular mouse/teclado.</div>
+        <div class="body">Não. Argos é <strong>Windows-only</strong> por enquanto. Se você vende de Mac, ainda não tenho versão. Me chama que eu te aviso quando sair.</div>
       </details>
       <details class="qa">
-        <summary>Preciso saber configurar coisa técnica?</summary>
-        <div class="body">Não. Baixa o Argos.exe, abre, calibra (mostra com o mouse onde fica cada coisa), digita umas mensagens, clica iniciar. Total: 3 minutos de setup.</div>
+        <summary>O TikTok não bane quem usa isso?</summary>
+        <div class="body">Argos não injeta nada no TikTok, não modifica o Live Studio, não simula robô dentro do navegador. Do ponto de vista do TikTok, é atividade humana normal na sua máquina.</div>
       </details>
       <details class="qa">
-        <summary>Tem mensalidade? Como funciona a renovação?</summary>
-        <div class="body">Zero mensalidade. Você paga <strong>[VALOR — CAROL DEFINIR]</strong> e usa por 12 meses — sem débito automático, sem cartão preso. Renovação opcional. Se não renovar, app para de funcionar mas suas configurações ficam salvas.</div>
+        <summary>Captcha nunca mais vai aparecer?</summary>
+        <div class="body">Vai. Argos <strong>reduz drasticamente</strong> a chance, mas não elimina 100%. O que ele faz é manter sinais de atividade constante no timing que o TikTok espera de um humano ativo. Isso baixa muito o gatilho de captcha, mas não é garantia absoluta.</div>
       </details>
       <details class="qa">
-        <summary>Posso instalar em mais de um PC?</summary>
-        <div class="body">A chave funciona em até <strong>2 PCs</strong> (ex: notebook + desktop). Se trocar de PC, é só me chamar que libero o slot.</div>
+        <summary>E se o TikTok mudar o Live Studio?</summary>
+        <div class="body">Se mudarem o layout, a calibragem que você fez pode precisar ser refeita (é rápido, 3 cliques). Se mudarem algo mais profundo que quebre o Argos, eu atualizo e libero update pra você. Updates ficam inclusos durante o período ativo da sua licença.</div>
+      </details>
+      <details class="qa">
+        <summary>Como funciona a renovação anual?</summary>
+        <div class="body">Zero mensalidade, zero débito automático. Você paga <strong>R$ 159 hoje e usa por 12 meses</strong>. Depois de 1 ano, se quiser continuar usando, renova pelo preço da faixa atual (o preço de lançamento trava pra você enquanto renovar sem intervalo). Se não renovar, o Argos para de funcionar, mas suas configurações ficam preservadas. Esse preço de R$ 159 é só pras 10 primeiras vagas, depois sobe conforme a escadinha.</div>
+      </details>
+      <details class="qa">
+        <summary>Preciso deixar o Live Studio na frente da tela?</summary>
+        <div class="body">Não. Argos abre a janela, faz o que precisa, e minimiza sozinho. Você pode ficar no navegador, WhatsApp, Chrome, o que quiser, ele age em segundo plano.</div>
+      </details>
+      <details class="qa">
+        <summary>Roda em quantas máquinas?</summary>
+        <div class="body">Até 2 dispositivos por chave (ex: notebook + PC casa). Se trocar de PC, é só me chamar que reseto. Se você usa <strong>Sandboxie ou máquinas virtuais na mesma máquina física</strong>, todas contam como 1 só, porque o hardware é o mesmo.</div>
       </details>
       <details class="qa">
         <summary>E se eu não gostar?</summary>
         <div class="body">7 dias de garantia incondicional pela Kiwify. Testou, não curtiu, pede reembolso e devolvo 100% do valor. Sem perguntas.</div>
       </details>
       <details class="qa">
-        <summary>O suporte é mesmo direto com você?</summary>
-        <div class="body">Direto comigo, Carol. WhatsApp pessoal pra cliente Argos. Respondo até em horário de live (mas se eu tiver vendendo, demoro 1-2h pra responder).</div>
-      </details>
-      <details class="qa">
-        <summary>O Windows acusa o app como suspeito. É vírus?</summary>
-        <div class="body">Não. É o "SmartScreen" do Windows avisando sobre apps sem certificado pago. O Argos é seguro mas como é app pequeno e novo, ainda não tem certificado de assinatura digital (custa R$ 1.500/ano e diluído nos primeiros clientes não cabe). Clica "Mais informações" → "Executar mesmo assim" e abre normal.</div>
+        <summary>Como recebo o programa depois de comprar?</summary>
+        <div class="body">Compra pela Kiwify → chega email com sua chave de ativação (formato <code style="font-family:var(--mono);color:var(--accent);">AR-XXXX-XXXX-XXXX</code>) + link direto de download do <code style="font-family:var(--mono);color:var(--accent);">Argos.exe</code>. Você baixa, abre, cola a chave, e tá funcionando.</div>
       </details>
     </div>
   </div>
@@ -1103,17 +1153,19 @@ footer .links { display: flex; gap: 22px; flex-wrap: wrap; }
 <!-- ═══ FINAL CTA ═══ -->
 <section class="final">
   <div class="final-eyebrow">▸ ÚLTIMA CHAMADA</div>
-  <h2>Sua live <em>precisa</em> ficar<br>no ar mais tempo.</h2>
-  <p>Captcha é um alerta de inatividade. Argos simula atividade real e reduz drasticamente a chance dele aparecer.</p>
-  <a href="[KIWIFY-LINK-ARGOS]" class="btn-primary">
-    Quero o Argos <span class="arrow">→</span>
+  <h2>Sua live merece<br>um <em>guardião.</em></h2>
+  <p>Argos vigia enquanto você vende. Simples assim.</p>
+  <a href="#preco" class="btn-primary">
+    Quero minha vaga · R$ 159 <span class="arrow">→</span>
   </a>
 </section>
 
 <footer>
   <div>© 2026 QYVO · TODOS OS DIREITOS RESERVADOS</div>
   <div class="links">
-    <a href="https://qyvoaudio.github.io/argos-policy/" target="_blank">Política de privacidade</a>
+    <a href="/">Home</a>
+    <a href="/quick-test/">Quick Test</a>
+    <a href="/live-shop-pro/">Live Shop Pro</a>
     <a href="mailto:contato@qyvolive.com.br">contato@qyvolive.com.br</a>
   </div>
 </footer>
