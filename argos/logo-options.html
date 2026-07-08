@@ -4,16 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>Qyvo · logo direções v3</title>
+<title>Qyvo · logo direções v4</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#0A0A10;
   --bg-2:#0F0F17;
   --panel:#141420;
-  --panel-hi:#1A1A26;
   --border:#22222E;
   --border-hi:#2D2D3A;
   --text:#F5F2E8;
@@ -82,12 +81,12 @@ body::before{
 }
 .head .kicker::before{content:"";width:6px;height:6px;background:var(--accent);border-radius:50%;box-shadow:0 0 6px var(--accent)}
 .head h1{
-  font-family:"Sora",sans-serif;
+  font-family:"Space Grotesk",sans-serif;
   font-weight:700;
   font-size:clamp(52px,7vw,96px);
   line-height:.95;
-  letter-spacing:-.035em;
-  margin-bottom:24px;
+  letter-spacing:-.03em;
+  margin-bottom:22px;
   color:var(--text);
   position:relative;z-index:1;
 }
@@ -109,24 +108,26 @@ body::before{
   margin:40px auto 100px;
   padding:0 40px;
   display:grid;
-  grid-template-columns:repeat(2,1fr);
+  grid-template-columns:repeat(3,1fr);
   gap:20px;
 }
-@media (max-width:900px){.grid{grid-template-columns:1fr;padding:0 20px}}
+@media (max-width:1080px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:720px){.grid{grid-template-columns:1fr;padding:0 20px}}
 
 /* CARD */
 .card{
-  background:linear-gradient(180deg,var(--panel-hi),var(--panel));
+  background:linear-gradient(180deg,#161624,var(--panel));
   border:1px solid var(--border);
   border-radius:20px;
   overflow:hidden;
   transition:all .3s ease;
   scroll-margin-top:80px;
+  display:flex;flex-direction:column;
 }
 .card:hover{
   border-color:var(--border-hi);
-  transform:translateY(-2px);
-  box-shadow:0 20px 60px rgba(0,0,0,.4);
+  transform:translateY(-3px);
+  box-shadow:0 20px 60px rgba(0,0,0,.4),0 0 40px rgba(255,31,142,.08);
 }
 
 .card-header{
@@ -144,106 +145,81 @@ body::before{
 }
 .card-header .k{color:var(--muted-hi)}
 
-/* STAGE — mockup em fundo dark limpo */
+/* STAGE — logo centralizado, big, stacked (símbolo em cima + nome embaixo) */
 .stage{
-  margin:16px;
-  aspect-ratio:16/9;
+  margin:14px;
+  padding:44px 24px 36px;
   background:
-    radial-gradient(circle at 30% 40%,rgba(255,31,142,.08),transparent 60%),
-    radial-gradient(circle at 70% 60%,rgba(184,20,107,.06),transparent 55%),
-    #08080E;
+    radial-gradient(circle at center 40%,rgba(255,31,142,.09),transparent 65%),
+    #0A0A14;
   border:1px solid var(--border);
-  border-radius:14px;
-  display:flex;align-items:center;justify-content:center;
-  position:relative;
-  overflow:hidden;
+  border-radius:16px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:24px;
+  min-height:340px;
+  position:relative;overflow:hidden;
 }
 .stage::before{
   content:"";position:absolute;inset:0;pointer-events:none;
   background-image:
-    linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);
+    linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px);
   background-size:32px 32px;
-  mask-image:radial-gradient(ellipse at center,#000 30%,transparent 75%);
+  mask-image:radial-gradient(ellipse at center,#000 25%,transparent 70%);
 }
-.stage .logo-slot{
-  position:relative;z-index:1;
-  display:flex;align-items:center;gap:20px;
-  padding:24px;
-}
-.stage .logo-slot.stacked{flex-direction:column;gap:14px}
-.stage svg.mark{display:block}
-.stage .name{
-  font-family:"Sora",sans-serif;
-  font-weight:700;
-  color:var(--text);
-  letter-spacing:-.03em;
-  line-height:.9;
-}
-.stage .name .live{
+.stage svg.mark{
   display:block;
+  position:relative;z-index:1;
+  width:150px;height:150px;
+  filter:drop-shadow(0 6px 24px rgba(255,31,142,.28));
+}
+.stage .name-block{
+  position:relative;z-index:1;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  padding-top:4px;
+}
+.stage .name{
+  font-family:"Space Grotesk",sans-serif;
+  font-weight:700;
+  font-size:32px;
+  letter-spacing:-.02em;
+  color:var(--text);
+  text-transform:uppercase;
+  line-height:1;
+}
+.stage .tag{
   font-family:"JetBrains Mono",monospace;
   font-weight:500;
-  letter-spacing:.32em;
+  font-size:10.5px;
+  letter-spacing:.4em;
   color:var(--muted-hi);
   text-transform:uppercase;
-  margin-top:6px;
 }
-.stage .name .live-accent{color:var(--accent)}
-
-/* Sizes tailored per option */
-.stage.s01 .name{font-size:44px}
-.stage.s01 .name .live{font-size:11px;letter-spacing:.4em}
-.stage.s02 .name{font-size:52px}
-.stage.s02 .name .live{font-size:11px;letter-spacing:.5em}
-.stage.s03 .name{font-size:56px;font-family:"Sora",sans-serif;font-weight:600}
-.stage.s04 .name{font-size:52px}
-.stage.s04 .name .live{font-size:11px;letter-spacing:.42em}
-.stage.s05 .name{font-size:48px}
-.stage.s05 .name .live{font-size:11px;letter-spacing:.42em}
-.stage.s06 .name{font-size:60px}
-.stage.s06 .name .live{font-size:12px;letter-spacing:.5em}
+.stage .tag .accent{color:var(--accent)}
 
 /* NOTES */
 .notes{
-  padding:20px 24px 22px;
-  display:flex;flex-direction:column;gap:14px;
+  padding:6px 24px 20px;
+  display:flex;flex-direction:column;gap:12px;
 }
 .notes .note-title{
-  font-family:"Sora",sans-serif;
-  font-weight:600;font-size:20px;
+  font-family:"Space Grotesk",sans-serif;
+  font-weight:600;font-size:17px;
   letter-spacing:-.01em;color:var(--text);
 }
 .notes .note-title span{color:var(--accent)}
 .notes .desc{
-  font-size:14.5px;line-height:1.55;color:var(--muted-hi);
+  font-size:14px;line-height:1.55;color:var(--muted-hi);
 }
 .notes .desc b{color:var(--text);font-weight:600}
-.notes .tags{
-  display:flex;flex-wrap:wrap;gap:6px;
-  padding-top:8px;
-}
-.notes .tag{
-  font-family:"JetBrains Mono",monospace;
-  font-size:10px;letter-spacing:.1em;
-  color:var(--muted-hi);
-  padding:4px 10px;
-  background:rgba(255,255,255,.02);
-  border:1px solid var(--border);
-  border-radius:100px;
-}
-.notes .tag.accent{
-  color:var(--accent);
-  background:rgba(255,31,142,.08);
-  border-color:rgba(255,31,142,.25);
-}
 
 /* FAV BAR */
 .favbar{
-  display:flex;align-items:center;gap:12px;
-  padding:16px 24px;
+  display:flex;align-items:center;gap:10px;
+  padding:14px 24px;
   border-top:1px solid var(--border);
   background:rgba(0,0,0,.15);
+  margin-top:auto;
 }
 .favbar .lbl{
   font-family:"JetBrains Mono",monospace;font-size:9.5px;
@@ -291,12 +267,36 @@ body::before{
 .head .kicker{animation-delay:.05s}
 .head h1{animation-delay:.15s}
 .head .lede{animation-delay:.28s}
+
+/* gradient defs shared */
 </style>
 </head>
 <body>
 
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="magGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FF4D9F"/>
+      <stop offset="55%" stop-color="#FF1F8E"/>
+      <stop offset="100%" stop-color="#B8146B"/>
+    </linearGradient>
+    <linearGradient id="magGradSoft" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FF4D9F" stop-opacity=".85"/>
+      <stop offset="100%" stop-color="#FF1F8E" stop-opacity=".6"/>
+    </linearGradient>
+    <linearGradient id="magGradV" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FF6BB2"/>
+      <stop offset="100%" stop-color="#FF1F8E"/>
+    </linearGradient>
+    <linearGradient id="magGradR" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FF4D9F"/>
+      <stop offset="100%" stop-color="#B8146B"/>
+    </linearGradient>
+  </defs>
+</svg>
+
 <div class="top">
-  <div class="left"><span class="dot"></span><span>qyvo · brand system · v3 draft</span></div>
+  <div class="left"><span class="dot"></span><span>qyvo · brand · v4 draft · molecular</span></div>
   <div>
     <a href="#p01">01</a>
     <a href="#p02">02</a>
@@ -308,347 +308,325 @@ body::before{
 </div>
 
 <section class="head">
-  <div class="kicker">v3 · símbolo + wordmark · tech abstrato</div>
-  <h1>Símbolo <em>abstrato,</em><br>direto ao ponto.</h1>
+  <div class="kicker">v4 · molecular · dots + linhas fluidas</div>
+  <h1>Molecular <em>abstrato.</em></h1>
   <p class="lede">
-    Cada opção tem um <b>símbolo abstrato próprio</b> ao lado do nome — nada de olho, torre ou wifi.
-    Formas geométricas puras: nós, órbitas, redes, pixels. Todos monocromáticos magenta, todos escalam pra favicon.
+    Símbolos construídos com <b>círculos e conexões orgânicas</b> — estética molecular/network que você mostrou nas
+    referências. Nome bold centralizado embaixo. Tudo monocromático magenta com gradiente sutil.
   </p>
 </section>
 
 <main class="grid">
 
-  <!-- ═══ 01 — Q ORBITAL / NETWORK ═══ -->
+  <!-- ═══ 01 — Q MOLECULAR ═══ -->
   <section class="card" id="p01">
-    <div class="card-header"><span class="n">01</span><span class="k">orbital · network</span></div>
-    <div class="stage s01">
-      <div class="logo-slot">
-        <svg class="mark" width="88" height="88" viewBox="0 0 88 88" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="g01" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#FF1F8E"/>
-              <stop offset="100%" stop-color="#FF4D9F"/>
-            </linearGradient>
-          </defs>
-          <!-- órbita elíptica em ângulo -->
-          <ellipse cx="44" cy="44" rx="38" ry="16" fill="none" stroke="url(#g01)" stroke-width="2" transform="rotate(-30 44 44)"/>
-          <ellipse cx="44" cy="44" rx="38" ry="16" fill="none" stroke="#F5F2E8" stroke-width="1.2" opacity=".18" transform="rotate(30 44 44)"/>
-          <!-- núcleo -->
-          <circle cx="44" cy="44" r="9" fill="url(#g01)"/>
-          <circle cx="44" cy="44" r="14" fill="none" stroke="url(#g01)" stroke-width="1.5" opacity=".4"/>
-          <!-- nós orbitais -->
-          <circle cx="76" cy="30" r="3.2" fill="#F5F2E8"/>
-          <circle cx="14" cy="60" r="2.4" fill="#F5F2E8" opacity=".6"/>
-          <circle cx="66" cy="66" r="2" fill="#FF1F8E" opacity=".7"/>
-        </svg>
-        <div class="name">
-          qyvo
-          <span class="live">— l i v e —</span>
-        </div>
+    <div class="card-header"><span class="n">01</span><span class="k">Q molecular</span></div>
+    <div class="stage">
+      <svg class="mark" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
+        <!-- conexões (pill bars) -->
+        <g fill="url(#magGrad)">
+          <rect x="43" y="35" width="34" height="10" rx="5"/>
+          <rect x="34" y="52" width="10" height="34" rx="5"/>
+          <rect x="80" y="52" width="10" height="34" rx="5" transform="rotate(-40 85 69)"/>
+          <rect x="43" y="93" width="34" height="10" rx="5"/>
+          <rect x="88" y="88" width="42" height="10" rx="5" transform="rotate(40 109 93)"/>
+        </g>
+        <!-- círculos externos (nós) -->
+        <g fill="url(#magGrad)">
+          <circle cx="40" cy="40" r="12"/>
+          <circle cx="85" cy="40" r="10"/>
+          <circle cx="35" cy="90" r="10"/>
+          <circle cx="85" cy="97" r="12"/>
+        </g>
+        <!-- núcleo com pupila creme -->
+        <circle cx="65" cy="70" r="16" fill="url(#magGradV)"/>
+        <circle cx="65" cy="70" r="6" fill="#F5F2E8"/>
+        <!-- cauda do Q com dot final -->
+        <circle cx="122" cy="118" r="8" fill="url(#magGrad)"/>
+      </svg>
+      <div class="name-block">
+        <div class="name">Qyvo</div>
+        <div class="tag">l · i · v · e</div>
       </div>
     </div>
     <div class="notes">
-      <div class="note-title">Q como <span>núcleo orbital</span></div>
+      <div class="note-title">Molécula <span>que vira Q</span></div>
       <div class="desc">
-        Núcleo magenta com órbita atravessando — sugere <b>sistema</b>, <b>constelação de ferramentas</b>.
-        Argos + Quick Test + LSP são satélites do mesmo core. Abstrato, moderno, escala bem.
-      </div>
-      <div class="tags">
-        <span class="tag accent">símbolo isolável</span>
-        <span class="tag">tech abstrato</span>
-        <span class="tag">favicon forte</span>
+        4 nós conectados + núcleo + cauda molecular formam um <b>Q abstrato</b>. Estrutura orgânica mas ordenada.
+        Foco visual no núcleo com pupila creme (canta com o Argos).
       </div>
     </div>
     <div class="favbar">
       <span class="lbl">preview aba</span>
       <span class="tab-preview">
         <span class="fav">
-          <svg viewBox="0 0 32 32"><ellipse cx="16" cy="16" rx="14" ry="6" fill="none" stroke="#FF1F8E" stroke-width="1.5" transform="rotate(-30 16 16)"/><circle cx="16" cy="16" r="4" fill="#FF1F8E"/></svg>
+          <svg viewBox="0 0 32 32"><circle cx="8" cy="8" r="3" fill="#FF1F8E"/><circle cx="20" cy="8" r="2.5" fill="#FF1F8E"/><circle cx="8" cy="22" r="2.5" fill="#FF1F8E"/><circle cx="21" cy="23" r="3" fill="#FF1F8E"/><rect x="10" y="7" width="8" height="2" rx="1" fill="#FF1F8E"/><rect x="10" y="21" width="8" height="2" rx="1" fill="#FF1F8E"/><rect x="7" y="10" width="2" height="10" rx="1" fill="#FF1F8E"/><circle cx="15" cy="16" r="4" fill="#FF1F8E"/><circle cx="15" cy="16" r="1.5" fill="#F5F2E8"/></svg>
         </span>
         qyvo · live
       </span>
     </div>
   </section>
 
-  <!-- ═══ 02 — CLUSTER DE NÓS (Q abstrato via network) ═══ -->
+  <!-- ═══ 02 — SPHERE NETWORK ═══ -->
   <section class="card" id="p02">
-    <div class="card-header"><span class="n">02</span><span class="k">cluster · nós conectados</span></div>
-    <div class="stage s02">
-      <div class="logo-slot">
-        <svg class="mark" width="88" height="88" viewBox="0 0 88 88" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="g02" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#FF1F8E"/>
-              <stop offset="100%" stop-color="#B8146B"/>
-            </linearGradient>
-          </defs>
-          <!-- linhas de conexão -->
-          <g stroke="#FF1F8E" stroke-width="1.6" opacity=".55">
-            <line x1="20" y1="20" x2="44" y2="44"/>
-            <line x1="68" y1="20" x2="44" y2="44"/>
-            <line x1="20" y1="68" x2="44" y2="44"/>
-            <line x1="68" y1="68" x2="44" y2="44"/>
-            <line x1="44" y1="10" x2="44" y2="44"/>
-          </g>
-          <!-- linhas outras -->
-          <g stroke="#F5F2E8" stroke-width="1" opacity=".25">
-            <line x1="20" y1="20" x2="68" y2="20"/>
-            <line x1="20" y1="68" x2="68" y2="68"/>
-            <line x1="20" y1="20" x2="20" y2="68"/>
-            <line x1="68" y1="20" x2="68" y2="68"/>
-          </g>
-          <!-- nós externos creme -->
-          <circle cx="20" cy="20" r="4" fill="#F5F2E8"/>
-          <circle cx="68" cy="20" r="4" fill="#F5F2E8"/>
-          <circle cx="20" cy="68" r="4" fill="#F5F2E8"/>
-          <circle cx="68" cy="68" r="4" fill="#F5F2E8"/>
-          <circle cx="44" cy="10" r="3" fill="#F5F2E8" opacity=".7"/>
-          <!-- nó central magenta -->
-          <circle cx="44" cy="44" r="7" fill="url(#g02)"/>
-        </svg>
-        <div class="name">
-          qyvo
-          <span class="live"><span class="live-accent">·</span> live <span class="live-accent">·</span></span>
-        </div>
+    <div class="card-header"><span class="n">02</span><span class="k">esfera network</span></div>
+    <div class="stage">
+      <svg class="mark" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
+        <!-- círculo grande outline -->
+        <circle cx="75" cy="75" r="62" fill="none" stroke="url(#magGrad)" stroke-width="4"/>
+        <!-- fill interno sutil -->
+        <circle cx="75" cy="75" r="62" fill="url(#magGrad)" opacity=".08"/>
+        <!-- circuit lines internas -->
+        <g stroke="url(#magGrad)" stroke-width="2" fill="none" stroke-linecap="round">
+          <path d="M 30 60 L 55 60 L 60 65"/>
+          <path d="M 30 75 L 50 75 L 55 80 L 70 80"/>
+          <path d="M 30 90 L 55 90"/>
+          <path d="M 120 60 L 95 60 L 90 65"/>
+          <path d="M 120 75 L 100 75 L 95 70"/>
+          <path d="M 120 90 L 105 90 L 100 85"/>
+          <path d="M 75 30 L 75 50"/>
+          <path d="M 75 100 L 75 120"/>
+        </g>
+        <!-- dots nas pontas -->
+        <g fill="url(#magGrad)">
+          <circle cx="30" cy="60" r="4"/>
+          <circle cx="30" cy="75" r="4"/>
+          <circle cx="30" cy="90" r="4"/>
+          <circle cx="120" cy="60" r="4"/>
+          <circle cx="120" cy="75" r="4"/>
+          <circle cx="120" cy="90" r="4"/>
+          <circle cx="75" cy="30" r="4"/>
+          <circle cx="75" cy="120" r="4"/>
+        </g>
+        <!-- centro -->
+        <circle cx="75" cy="75" r="10" fill="url(#magGrad)"/>
+        <circle cx="75" cy="75" r="4" fill="#F5F2E8"/>
+      </svg>
+      <div class="name-block">
+        <div class="name">Qyvo</div>
+        <div class="tag">l i v e · <span class="accent">system</span></div>
       </div>
     </div>
     <div class="notes">
-      <div class="note-title">Rede que <span>converge</span></div>
+      <div class="note-title">Esfera com <span>circuit interno</span></div>
       <div class="desc">
-        4 nós externos + 1 núcleo magenta — todas as ferramentas convergindo em um só ponto.
-        Metáfora de <b>infraestrutura conectada</b> sem cair em "circuito" clichê.
-      </div>
-      <div class="tags">
-        <span class="tag accent">estrutural</span>
-        <span class="tag">tech clean</span>
-        <span class="tag">escalável</span>
+        Círculo espesso contendo circuits com dots nas pontas — sugere <b>sistema fechado</b>, ecosistema Qyvo.
+        Estilo direto das refs que você mostrou (network+globo).
       </div>
     </div>
     <div class="favbar">
       <span class="lbl">preview aba</span>
       <span class="tab-preview">
         <span class="fav">
-          <svg viewBox="0 0 32 32"><g stroke="#FF1F8E" stroke-width="1" opacity=".7"><line x1="8" y1="8" x2="16" y2="16"/><line x1="24" y1="8" x2="16" y2="16"/><line x1="8" y1="24" x2="16" y2="16"/><line x1="24" y1="24" x2="16" y2="16"/></g><circle cx="8" cy="8" r="2" fill="#F5F2E8"/><circle cx="24" cy="8" r="2" fill="#F5F2E8"/><circle cx="8" cy="24" r="2" fill="#F5F2E8"/><circle cx="24" cy="24" r="2" fill="#F5F2E8"/><circle cx="16" cy="16" r="3.5" fill="#FF1F8E"/></svg>
+          <svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="13" fill="none" stroke="#FF1F8E" stroke-width="2"/><path d="M 6 13 L 12 13 L 14 15" stroke="#FF1F8E" stroke-width="1.2" fill="none"/><path d="M 6 19 L 12 19" stroke="#FF1F8E" stroke-width="1.2" fill="none"/><circle cx="6" cy="13" r="1.2" fill="#FF1F8E"/><circle cx="6" cy="19" r="1.2" fill="#FF1F8E"/><circle cx="16" cy="16" r="3" fill="#FF1F8E"/></svg>
         </span>
         qyvo · live
       </span>
     </div>
   </section>
 
-  <!-- ═══ 03 — Q CUSTOM COM CORTE ═══ -->
+  <!-- ═══ 03 — MOLECULAR BLOB ORGÂNICO ═══ -->
   <section class="card" id="p03">
-    <div class="card-header"><span class="n">03</span><span class="k">letra Q custom · geométrica</span></div>
-    <div class="stage s03">
-      <div class="logo-slot">
-        <svg class="mark" width="88" height="88" viewBox="0 0 88 88" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="g03" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#FF4D9F"/>
-              <stop offset="100%" stop-color="#B8146B"/>
-            </linearGradient>
-          </defs>
-          <!-- Q como quadrado arredondado com "corte" -->
-          <path d="M 14 20 L 14 62 Q 14 74 26 74 L 60 74 Q 74 74 74 60 L 74 20 Q 74 8 62 8 L 26 8 Q 14 8 14 20 Z"
-                fill="url(#g03)"/>
-          <!-- corte inner -->
-          <path d="M 28 26 L 28 54 Q 28 60 34 60 L 54 60 Q 60 60 60 54 L 60 26 Q 60 20 54 20 L 34 20 Q 28 20 28 26 Z"
-                fill="#08080E"/>
-          <!-- traço diagonal do Q (corta o canto) -->
-          <rect x="52" y="52" width="26" height="8" rx="4" fill="url(#g03)" transform="rotate(45 65 56)"/>
-          <!-- pixel accent no canto -->
-          <rect x="72" y="6" width="4" height="4" fill="#F5F2E8" opacity=".7"/>
-          <rect x="78" y="12" width="3" height="3" fill="#F5F2E8" opacity=".5"/>
-        </svg>
-        <div class="name">
-          Qyvo
-          <span class="live"><span class="live-accent">▸</span> LIVE</span>
-        </div>
+    <div class="card-header"><span class="n">03</span><span class="k">blob orgânico</span></div>
+    <div class="stage">
+      <svg class="mark" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
+        <!-- pill bars orgânicas -->
+        <g fill="url(#magGrad)">
+          <rect x="35" y="60" width="46" height="18" rx="9"/>
+          <rect x="72" y="42" width="18" height="46" rx="9"/>
+          <rect x="65" y="72" width="46" height="18" rx="9"/>
+          <rect x="70" y="80" width="18" height="42" rx="9"/>
+        </g>
+        <!-- círculos grandes que "explodem" -->
+        <g fill="url(#magGrad)">
+          <circle cx="42" cy="69" r="17"/>
+          <circle cx="81" cy="45" r="13"/>
+          <circle cx="108" cy="81" r="16"/>
+          <circle cx="79" cy="118" r="14"/>
+        </g>
+        <!-- pontos accent creme (highlights) -->
+        <circle cx="38" cy="63" r="4" fill="#F5F2E8" opacity=".65"/>
+        <circle cx="103" cy="76" r="3.5" fill="#F5F2E8" opacity=".65"/>
+        <!-- circle small extra -->
+        <circle cx="118" cy="42" r="5" fill="url(#magGradR)"/>
+      </svg>
+      <div class="name-block">
+        <div class="name">Qyvo</div>
+        <div class="tag">live tools</div>
       </div>
     </div>
     <div class="notes">
-      <div class="note-title">Q sólido com <span>corte diagonal</span></div>
+      <div class="note-title">Blob <span>molecular</span></div>
       <div class="desc">
-        Q construído como bloco geométrico sólido — não é a letra tipográfica, é um <b>desenho próprio</b>.
-        Pixel accent no canto sugere digital sem ser literal. Peso, presença, cara de app maduro.
-      </div>
-      <div class="tags">
-        <span class="tag accent">bloco sólido</span>
-        <span class="tag">peso visual forte</span>
-        <span class="tag">único</span>
+        Estilo <b>orgânico fluido</b> — direto das refs "IQ LOGO", "TECHNOLOGY molecular" que você mostrou.
+        Círculos grandes conectados por barras arredondadas. Cara de startup atual, não datada.
       </div>
     </div>
     <div class="favbar">
       <span class="lbl">preview aba</span>
       <span class="tab-preview">
         <span class="fav">
-          <svg viewBox="0 0 32 32"><path d="M 5 8 L 5 24 Q 5 28 9 28 L 22 28 Q 27 28 27 23 L 27 8 Q 27 3 22 3 L 9 3 Q 5 3 5 8 Z" fill="#FF1F8E"/><path d="M 10 10 L 10 20 Q 10 22 12 22 L 20 22 Q 22 22 22 20 L 22 10 Q 22 8 20 8 L 12 8 Q 10 8 10 10 Z" fill="#08080E"/><rect x="19" y="19" width="10" height="3" rx="1.5" fill="#FF1F8E" transform="rotate(45 24 20.5)"/></svg>
+          <svg viewBox="0 0 32 32"><rect x="6" y="12" width="10" height="4" rx="2" fill="#FF1F8E"/><rect x="14" y="8" width="4" height="10" rx="2" fill="#FF1F8E"/><rect x="12" y="15" width="10" height="4" rx="2" fill="#FF1F8E"/><circle cx="9" cy="14" r="4" fill="#FF1F8E"/><circle cx="16" cy="10" r="3" fill="#FF1F8E"/><circle cx="23" cy="18" r="4" fill="#FF1F8E"/></svg>
         </span>
         qyvo · live
       </span>
     </div>
   </section>
 
-  <!-- ═══ 04 — DUAS ONDAS SUAVES / ARCO ═══ -->
+  <!-- ═══ 04 — HEX CIRCUIT ═══ -->
   <section class="card" id="p04">
-    <div class="card-header"><span class="n">04</span><span class="k">arcos concêntricos · fluido</span></div>
-    <div class="stage s04">
-      <div class="logo-slot">
-        <svg class="mark" width="90" height="90" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="g04a" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stop-color="#FF1F8E"/>
-              <stop offset="100%" stop-color="#FF4D9F" stop-opacity=".4"/>
-            </linearGradient>
-            <linearGradient id="g04b" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stop-color="#F5F2E8" stop-opacity=".9"/>
-              <stop offset="100%" stop-color="#F5F2E8" stop-opacity=".2"/>
-            </linearGradient>
-          </defs>
-          <!-- arco grande magenta -->
-          <path d="M 8 62 A 40 40 0 0 1 82 62" fill="none" stroke="url(#g04a)" stroke-width="7" stroke-linecap="round"/>
-          <!-- arco meio creme -->
-          <path d="M 20 62 A 26 26 0 0 1 70 62" fill="none" stroke="url(#g04b)" stroke-width="5" stroke-linecap="round"/>
-          <!-- núcleo dot -->
-          <circle cx="45" cy="62" r="6" fill="#FF1F8E"/>
-          <circle cx="45" cy="62" r="10" fill="none" stroke="#FF1F8E" stroke-width="1" opacity=".35"/>
-          <!-- linha base -->
-          <line x1="8" y1="76" x2="82" y2="76" stroke="#22222E" stroke-width="1"/>
-          <line x1="8" y1="76" x2="38" y2="76" stroke="#FF1F8E" stroke-width="2"/>
-        </svg>
-        <div class="name">
-          qyvo
-          <span class="live">Q · Y · V · O <span class="live-accent">/</span> LIVE</span>
-        </div>
+    <div class="card-header"><span class="n">04</span><span class="k">hex + circuit dots</span></div>
+    <div class="stage">
+      <svg class="mark" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
+        <!-- hex outer -->
+        <polygon points="75,10 128,42 128,108 75,140 22,108 22,42" fill="none" stroke="url(#magGrad)" stroke-width="4"/>
+        <polygon points="75,10 128,42 128,108 75,140 22,108 22,42" fill="url(#magGrad)" opacity=".05"/>
+        <!-- circuit lines internal -->
+        <g stroke="url(#magGrad)" stroke-width="2.4" fill="none" stroke-linecap="round">
+          <path d="M 45 50 L 60 50 L 65 55 L 65 70"/>
+          <path d="M 105 50 L 90 50 L 85 55 L 85 70"/>
+          <path d="M 55 100 L 65 100 L 65 85"/>
+          <path d="M 95 100 L 85 100 L 85 85"/>
+          <path d="M 65 78 L 85 78"/>
+        </g>
+        <!-- dots nas pontas circuit -->
+        <g fill="url(#magGrad)">
+          <circle cx="45" cy="50" r="4.5"/>
+          <circle cx="105" cy="50" r="4.5"/>
+          <circle cx="55" cy="100" r="4.5"/>
+          <circle cx="95" cy="100" r="4.5"/>
+        </g>
+        <!-- dots grandes nos vértices hex -->
+        <g fill="#F5F2E8">
+          <circle cx="75" cy="10" r="4"/>
+          <circle cx="128" cy="42" r="4"/>
+          <circle cx="128" cy="108" r="4"/>
+          <circle cx="75" cy="140" r="4"/>
+          <circle cx="22" cy="108" r="4"/>
+          <circle cx="22" cy="42" r="4"/>
+        </g>
+        <!-- núcleo central -->
+        <circle cx="75" cy="78" r="6" fill="url(#magGrad)"/>
+      </svg>
+      <div class="name-block">
+        <div class="name">Qyvo</div>
+        <div class="tag">l i v e</div>
       </div>
     </div>
     <div class="notes">
-      <div class="note-title">Arcos <span>que emergem</span></div>
+      <div class="note-title">Hex com <span>circuit</span></div>
       <div class="desc">
-        Dois arcos assimétricos partindo de um núcleo — sugere <b>transmissão</b> ou <b>expansão</b>
-        sem cair em "wifi wave". Fluido, orgânico dentro de uma marca tech.
-      </div>
-      <div class="tags">
-        <span class="tag accent">fluido</span>
-        <span class="tag">orgânico + tech</span>
-        <span class="tag">diferenciador</span>
+        Frame hexagonal com <b>circuits internos</b> convergindo no núcleo. Dots creme nos vértices, dots magenta nos ends
+        do circuit. Estrutura tech clara sem virar chip literal.
       </div>
     </div>
     <div class="favbar">
       <span class="lbl">preview aba</span>
       <span class="tab-preview">
         <span class="fav">
-          <svg viewBox="0 0 32 32"><path d="M 3 22 A 13 13 0 0 1 29 22" fill="none" stroke="#FF1F8E" stroke-width="2" stroke-linecap="round"/><path d="M 8 22 A 8 8 0 0 1 24 22" fill="none" stroke="#F5F2E8" stroke-width="1.8" stroke-linecap="round" opacity=".7"/><circle cx="16" cy="22" r="3" fill="#FF1F8E"/></svg>
+          <svg viewBox="0 0 32 32"><polygon points="16,3 28,10 28,22 16,29 4,22 4,10" fill="none" stroke="#FF1F8E" stroke-width="1.6"/><path d="M 10 12 L 14 12 L 14 16" stroke="#FF1F8E" stroke-width="1.2" fill="none"/><path d="M 22 12 L 18 12 L 18 16" stroke="#FF1F8E" stroke-width="1.2" fill="none"/><circle cx="10" cy="12" r="1.3" fill="#FF1F8E"/><circle cx="22" cy="12" r="1.3" fill="#FF1F8E"/><circle cx="16" cy="18" r="2" fill="#FF1F8E"/></svg>
         </span>
         qyvo · live
       </span>
     </div>
   </section>
 
-  <!-- ═══ 05 — HEX MODULAR ═══ -->
+  <!-- ═══ 05 — WAVE MOLECULAR (linha ondulada com bolhas) ═══ -->
   <section class="card" id="p05">
-    <div class="card-header"><span class="n">05</span><span class="k">hex modular · sistema</span></div>
-    <div class="stage s05">
-      <div class="logo-slot">
-        <svg class="mark" width="88" height="88" viewBox="0 0 88 88" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="g05" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#FF4D9F"/>
-              <stop offset="100%" stop-color="#FF1F8E"/>
-            </linearGradient>
-          </defs>
-          <!-- hex principal -->
-          <polygon points="44,8 76,26 76,62 44,80 12,62 12,26" fill="none" stroke="url(#g05)" stroke-width="2.4"/>
-          <!-- hex menor rotacionado -->
-          <polygon points="44,22 62,32 62,52 44,62 26,52 26,32" fill="none" stroke="#F5F2E8" stroke-width="1.2" opacity=".35"/>
-          <!-- núcleo -->
-          <polygon points="44,32 54,38 54,50 44,56 34,50 34,38" fill="url(#g05)"/>
-          <!-- dots nas pontas do hex externo -->
-          <circle cx="44" cy="8" r="2.5" fill="#F5F2E8"/>
-          <circle cx="76" cy="26" r="2.5" fill="#F5F2E8"/>
-          <circle cx="76" cy="62" r="2.5" fill="#F5F2E8"/>
-          <circle cx="44" cy="80" r="2.5" fill="#F5F2E8"/>
-          <circle cx="12" cy="62" r="2.5" fill="#F5F2E8"/>
-          <circle cx="12" cy="26" r="2.5" fill="#F5F2E8"/>
-        </svg>
-        <div class="name">
-          qyvo
-          <span class="live">l i v e · s y s t e m</span>
-        </div>
+    <div class="card-header"><span class="n">05</span><span class="k">wave molecular</span></div>
+    <div class="stage">
+      <svg class="mark" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
+        <!-- linha ondulada suave (background) -->
+        <path d="M 15 75 Q 40 40 65 75 T 115 75 T 145 75" fill="none" stroke="url(#magGrad)" stroke-width="4" stroke-linecap="round" opacity=".35"/>
+        <!-- linha ondulada principal com pill connectors -->
+        <g fill="url(#magGrad)">
+          <!-- pill horizontal esquerda-centro -->
+          <rect x="22" y="66" width="34" height="18" rx="9" transform="rotate(-25 39 75)"/>
+          <!-- pill diagonal 2 -->
+          <rect x="52" y="46" width="34" height="18" rx="9" transform="rotate(20 69 55)"/>
+          <!-- pill diagonal 3 -->
+          <rect x="82" y="76" width="34" height="18" rx="9" transform="rotate(-15 99 85)"/>
+          <!-- pill diagonal 4 -->
+          <rect x="105" y="52" width="30" height="18" rx="9" transform="rotate(30 120 61)"/>
+        </g>
+        <!-- circles grandes (átomos) -->
+        <g>
+          <circle cx="22" cy="86" r="12" fill="url(#magGrad)"/>
+          <circle cx="52" cy="65" r="14" fill="url(#magGradV)"/>
+          <circle cx="82" cy="88" r="11" fill="url(#magGrad)"/>
+          <circle cx="115" cy="66" r="14" fill="url(#magGrad)"/>
+          <circle cx="140" cy="86" r="9" fill="url(#magGradR)"/>
+        </g>
+        <!-- accent highlights -->
+        <circle cx="49" cy="61" r="4" fill="#F5F2E8" opacity=".7"/>
+        <circle cx="112" cy="62" r="3.5" fill="#F5F2E8" opacity=".7"/>
+      </svg>
+      <div class="name-block">
+        <div class="name">Qyvo</div>
+        <div class="tag">l · i · v · e</div>
       </div>
     </div>
     <div class="notes">
-      <div class="note-title">Hex <span>modular</span></div>
+      <div class="note-title">Onda <span>molecular</span></div>
       <div class="desc">
-        Hexágono com dots nas pontas e núcleo magenta — sugere <b>sistema modular</b>, ferramentas plugáveis.
-        Herda estética "console broadcast" do site sem repetir clichê tech.
-      </div>
-      <div class="tags">
-        <span class="tag accent">sistêmico</span>
-        <span class="tag">modular</span>
-        <span class="tag">reconhecível</span>
+        Sequência de átomos conectados em <b>onda</b> — sugere fluxo, transmissão, mas orgânico.
+        É o mais "vivo" das seis, com movimento visual sem animar.
       </div>
     </div>
     <div class="favbar">
       <span class="lbl">preview aba</span>
       <span class="tab-preview">
         <span class="fav">
-          <svg viewBox="0 0 32 32"><polygon points="16,3 28,10 28,22 16,29 4,22 4,10" fill="none" stroke="#FF1F8E" stroke-width="1.6"/><polygon points="16,12 21,15 21,20 16,23 11,20 11,15" fill="#FF1F8E"/></svg>
+          <svg viewBox="0 0 32 32"><rect x="5" y="14" width="8" height="4" rx="2" fill="#FF1F8E" transform="rotate(-20 9 16)"/><rect x="13" y="10" width="8" height="4" rx="2" fill="#FF1F8E" transform="rotate(20 17 12)"/><rect x="20" y="14" width="8" height="4" rx="2" fill="#FF1F8E" transform="rotate(-15 24 16)"/><circle cx="5" cy="18" r="3.5" fill="#FF1F8E"/><circle cx="14" cy="14" r="3.5" fill="#FF1F8E"/><circle cx="23" cy="18" r="3.5" fill="#FF1F8E"/></svg>
         </span>
         qyvo · live
       </span>
     </div>
   </section>
 
-  <!-- ═══ 06 — Q PIXEL / SPLIT (referência ao QRew Panels) ═══ -->
+  <!-- ═══ 06 — NÚCLEO + SATÉLITES ═══ -->
   <section class="card" id="p06">
-    <div class="card-header"><span class="n">06</span><span class="k">Q + pixel accent · digital</span></div>
-    <div class="stage s06">
-      <div class="logo-slot stacked">
-        <svg class="mark" width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="g06" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#FF4D9F"/>
-              <stop offset="60%" stop-color="#FF1F8E"/>
-              <stop offset="100%" stop-color="#B8146B"/>
-            </linearGradient>
-          </defs>
-          <!-- círculo Q outer stroke -->
-          <circle cx="60" cy="60" r="46" fill="none" stroke="url(#g06)" stroke-width="9"/>
-          <!-- pixels descolando (top-right) -->
-          <rect x="98" y="14" width="8" height="8" fill="#FF1F8E"/>
-          <rect x="108" y="6" width="6" height="6" fill="#FF4D9F"/>
-          <rect x="102" y="26" width="5" height="5" fill="#FF1F8E" opacity=".7"/>
-          <!-- cauda Q -->
-          <rect x="82" y="82" width="30" height="9" rx="4.5" fill="url(#g06)" transform="rotate(35 97 86)"/>
-          <!-- ponto interior magenta pulse -->
-          <circle cx="60" cy="60" r="6" fill="#FF1F8E" opacity=".5">
-            <animate attributeName="r" values="6;10;6" dur="2.5s" repeatCount="indefinite"/>
-            <animate attributeName="opacity" values=".5;.15;.5" dur="2.5s" repeatCount="indefinite"/>
-          </circle>
-        </svg>
-        <div class="name" style="text-align:center">
-          QYVO
-          <span class="live"><span class="live-accent">◆</span> LIVE <span class="live-accent">◆</span></span>
-        </div>
+    <div class="card-header"><span class="n">06</span><span class="k">núcleo + satélites</span></div>
+    <div class="stage">
+      <svg class="mark" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
+        <!-- conexões diagonais (pill bars) -->
+        <g fill="url(#magGradSoft)">
+          <rect x="30" y="46" width="28" height="12" rx="6" transform="rotate(35 44 52)"/>
+          <rect x="92" y="46" width="28" height="12" rx="6" transform="rotate(-35 106 52)"/>
+          <rect x="34" y="98" width="28" height="12" rx="6" transform="rotate(-35 48 104)"/>
+          <rect x="88" y="98" width="28" height="12" rx="6" transform="rotate(35 102 104)"/>
+        </g>
+        <!-- 4 satélites -->
+        <g fill="url(#magGrad)">
+          <circle cx="30" cy="35" r="12"/>
+          <circle cx="120" cy="35" r="12"/>
+          <circle cx="30" cy="115" r="12"/>
+          <circle cx="120" cy="115" r="12"/>
+        </g>
+        <!-- núcleo grande -->
+        <circle cx="75" cy="75" r="30" fill="url(#magGrad)"/>
+        <!-- pupila creme central -->
+        <circle cx="75" cy="75" r="10" fill="#F5F2E8"/>
+        <!-- highlights sutis -->
+        <circle cx="66" cy="66" r="5" fill="#F5F2E8" opacity=".18"/>
+      </svg>
+      <div class="name-block">
+        <div class="name">Qyvo</div>
+        <div class="tag">l · i · v · e</div>
       </div>
     </div>
     <div class="notes">
-      <div class="note-title">Q com <span>pixels descolando</span></div>
+      <div class="note-title">Núcleo <span>+ satélites</span></div>
       <div class="desc">
-        Q em círculo espesso com pixels magenta descolando na diagonal — <b>digital dispersando</b>.
-        Referência ao QRew Panels (que você curtiu) mas com estética própria: menos infantil, mais adulto.
-      </div>
-      <div class="tags">
-        <span class="tag accent">digital sem infantil</span>
-        <span class="tag">memorável</span>
-        <span class="tag">único no nicho</span>
+        Núcleo grande + 4 satélites conectados por barras diagonais. <b>Simétrico, memorável, forte no favicon</b>.
+        Ideia: núcleo é Qyvo, satélites são Argos, QT, LSP e o próximo.
       </div>
     </div>
     <div class="favbar">
       <span class="lbl">preview aba</span>
       <span class="tab-preview">
         <span class="fav">
-          <svg viewBox="0 0 32 32"><circle cx="15" cy="16" r="11" fill="none" stroke="#FF1F8E" stroke-width="2.5"/><rect x="24" y="4" width="3" height="3" fill="#FF1F8E"/><rect x="28" y="2" width="2" height="2" fill="#FF4D9F"/><rect x="20" y="22" width="8" height="2.5" rx="1" fill="#FF1F8E" transform="rotate(35 24 23.5)"/></svg>
+          <svg viewBox="0 0 32 32"><rect x="7" y="8" width="6" height="3" rx="1.5" fill="#FF1F8E" transform="rotate(35 10 9)"/><rect x="19" y="8" width="6" height="3" rx="1.5" fill="#FF1F8E" transform="rotate(-35 22 9)"/><rect x="7" y="21" width="6" height="3" rx="1.5" fill="#FF1F8E" transform="rotate(-35 10 22)"/><rect x="19" y="21" width="6" height="3" rx="1.5" fill="#FF1F8E" transform="rotate(35 22 22)"/><circle cx="7" cy="7" r="3" fill="#FF1F8E"/><circle cx="25" cy="7" r="3" fill="#FF1F8E"/><circle cx="7" cy="25" r="3" fill="#FF1F8E"/><circle cx="25" cy="25" r="3" fill="#FF1F8E"/><circle cx="16" cy="16" r="7" fill="#FF1F8E"/><circle cx="16" cy="16" r="2.5" fill="#F5F2E8"/></svg>
         </span>
         qyvo · live
       </span>
@@ -658,8 +636,8 @@ body::before{
 </main>
 
 <div class="foot">
-  <span>qyvo · brand · v3</span>
-  <span>▸ 6 símbolos abstratos · monocromático magenta · <b>sem nada didático</b></span>
+  <span>qyvo · brand · v4 molecular</span>
+  <span>▸ 6 opções · <b>dots + conexões</b> · monocromático magenta</span>
   <span>escolhe uma pra virar oficial</span>
 </div>
 
