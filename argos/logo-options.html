@@ -4,683 +4,489 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>Qyvo Live · logo direções</title>
+<title>Qyvo · logo direções v2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,500&family=DM+Serif+Display:ital@0;1&family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0A0A0E;
-  --bg-2:#11111A;
-  --panel:#14141C;
-  --panel-hi:#1B1B26;
-  --border:#2A2A35;
-  --border-hi:#3A3A48;
+  --bg:#0B0B10;
+  --panel:#101018;
+  --panel-hi:#161620;
+  --border:#22222C;
+  --border-hi:#33333E;
   --text:#F5F2E8;
-  --muted:#6B6B7A;
-  --muted-hi:#9B9AA8;
+  --muted:#7B7B87;
+  --muted-hi:#A6A6B0;
   --accent:#FF1F8E;
-  --accent-2:#FF4D9F;
-  --accent-glow:rgba(255,31,142,.35);
-  --signal:#00FF9D;
-  --display:"Anton","Impact",sans-serif;
-  --body:"DM Sans",system-ui,sans-serif;
-  --mono:"JetBrains Mono","SF Mono",Menlo,monospace;
+  --accent-glow:rgba(255,31,142,.28);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{
   background:var(--bg);
   color:var(--text);
-  font-family:var(--body);
+  font-family:"DM Sans",system-ui,sans-serif;
   font-size:16px;
-  line-height:1.6;
+  line-height:1.55;
   overflow-x:hidden;
   min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
 }
-/* grain */
 body::before{
-  content:"";position:fixed;inset:0;pointer-events:none;z-index:1000;opacity:.05;
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:1000;opacity:.03;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
   mix-blend-mode:overlay;
 }
-/* scan lines */
-body::after{
-  content:"";position:fixed;inset:0;pointer-events:none;z-index:999;
-  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,.013) 2px,rgba(255,255,255,.013) 4px);
-}
 
-/* strip */
-.strip{
-  position:fixed;top:0;left:0;right:0;z-index:100;
-  background:rgba(10,10,14,.85);
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+.top{
+  padding:20px 40px;
+  display:flex;align-items:center;justify-content:space-between;
+  font-family:"JetBrains Mono",monospace;font-size:10.5px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
   border-bottom:1px solid var(--border);
-  padding:12px 28px;
-  display:flex;align-items:center;gap:16px;
-  font-family:var(--mono);font-size:11px;
-  letter-spacing:.12em;text-transform:uppercase;
 }
-.strip .dot{width:8px;height:8px;background:var(--accent);border-radius:50%;box-shadow:0 0 10px var(--accent);animation:pulse 1.8s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
-.strip .path{color:var(--muted)}
-.strip .path b{color:var(--text);font-weight:700}
-.strip .spacer{flex:1}
-.strip .meta{color:var(--muted)}
+.top .left{display:flex;align-items:center;gap:14px}
+.top .dot{width:6px;height:6px;background:var(--accent);border-radius:50%;box-shadow:0 0 8px var(--accent)}
+.top a{color:var(--muted);text-decoration:none;border-bottom:1px solid transparent}
+.top a:hover{color:var(--accent);border-color:var(--accent)}
 
-/* header */
+/* HEAD editorial */
 .head{
-  padding:120px 32px 40px;
-  max-width:1320px;margin:0 auto;
+  max-width:900px;
+  margin:0 auto;
+  padding:120px 40px 60px;
+  text-align:left;
+}
+.head .kicker{
+  font-family:"JetBrains Mono",monospace;
+  font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:32px;
+  display:flex;align-items:center;gap:14px;
+}
+.head .kicker::before{content:"";width:32px;height:1px;background:var(--accent)}
+.head h1{
+  font-family:"Instrument Serif",serif;
+  font-weight:400;
+  font-size:clamp(72px,10vw,144px);
+  line-height:.95;
+  letter-spacing:-.02em;
+  margin-bottom:36px;
+  color:var(--text);
+}
+.head h1 em{font-style:italic;color:var(--accent)}
+.head .lede{
+  font-family:"Fraunces",serif;
+  font-weight:300;
+  font-style:italic;
+  font-size:22px;
+  line-height:1.5;
+  color:var(--muted-hi);
+  max-width:640px;
+}
+.head .lede b{font-style:normal;font-weight:500;color:var(--text)}
+.head .divider{
+  margin-top:56px;
+  height:1px;background:var(--border);
   position:relative;
 }
-.head::before{
-  content:"";position:absolute;
-  top:100px;left:-80px;width:400px;height:400px;
-  background:radial-gradient(circle,var(--accent-glow) 0%,transparent 55%);
-  filter:blur(30px);pointer-events:none;z-index:0;
+.head .divider::after{
+  content:"";position:absolute;left:0;top:0;
+  width:80px;height:1px;background:var(--accent);
 }
-.head .eyebrow{
-  display:inline-flex;align-items:center;gap:10px;
-  font-family:var(--mono);font-size:11px;
-  color:var(--signal);letter-spacing:.2em;text-transform:uppercase;
-  padding:7px 14px;
-  background:rgba(0,255,157,.06);
-  border:1px solid rgba(0,255,157,.22);
-  border-radius:100px;margin-bottom:26px;
-  position:relative;z-index:1;
+
+/* GRID */
+.stack{
+  max-width:1080px;
+  margin:0 auto;
+  padding:40px 40px 120px;
+  display:flex;flex-direction:column;
+  gap:8px;
 }
-.head .eyebrow::before{
-  content:"";width:6px;height:6px;background:var(--signal);border-radius:50%;
-  box-shadow:0 0 8px var(--signal);
+
+/* ITEM */
+.item{
+  position:relative;
+  padding:80px 0 0;
+  border-top:1px solid var(--border);
+  scroll-margin-top:60px;
 }
-.head h1{
-  font-family:var(--display);
-  font-size:clamp(56px,10vw,140px);
-  line-height:.9;
-  letter-spacing:-.015em;
+.item:first-child{border-top:0;padding-top:20px}
+
+.item .meta{
+  display:flex;align-items:baseline;gap:28px;
+  margin-bottom:44px;
+  font-family:"JetBrains Mono",monospace;
+  font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--muted);
+}
+.item .meta .num{color:var(--accent);font-weight:500}
+.item .meta .kind{color:var(--muted-hi)}
+.item .meta .rule{flex:1;height:1px;background:var(--border)}
+
+/* STAGE — muita respiração, sem UI, sem ticks */
+.stage{
+  background:transparent;
+  padding:100px 40px;
+  display:flex;align-items:center;justify-content:center;
+  min-height:280px;
+  position:relative;
+}
+
+/* LOGO WRAPPERS — cada logo é HTML/CSS puro pra ser 100% tipográfico */
+
+/* 01 — instrument serif italic minúsculo */
+.l01{
+  font-family:"Instrument Serif",serif;
+  font-style:italic;font-weight:400;
+  font-size:clamp(90px,15vw,180px);
+  letter-spacing:-.03em;line-height:1;
+  color:var(--text);
+  position:relative;
+}
+.l01 .dot{
+  color:var(--accent);
+  font-style:normal;
+}
+
+/* 02 — fraunces com "live" pequeno */
+.l02{
+  display:flex;flex-direction:column;align-items:flex-start;gap:0;
+  font-family:"Fraunces",serif;
+  color:var(--text);
+}
+.l02 .name{
+  font-weight:300;font-style:italic;
+  font-size:clamp(90px,15vw,170px);
+  letter-spacing:-.025em;line-height:.95;
+}
+.l02 .sub{
+  font-family:"JetBrains Mono",monospace;
+  font-size:14px;letter-spacing:.6em;
+  color:var(--muted-hi);text-transform:uppercase;
+  padding-left:6px;margin-top:14px;
+  border-top:1px solid var(--accent);
+  padding-top:14px;
+  width:100%;
+}
+
+/* 03 — Space Grotesk QYVO tight (moda vibe) */
+.l03{
+  font-family:"Space Grotesk",sans-serif;
+  font-weight:600;
+  font-size:clamp(70px,12vw,140px);
+  letter-spacing:-.05em;line-height:.9;
+  color:var(--text);
   text-transform:uppercase;
-  margin-bottom:22px;
-  position:relative;z-index:1;
+  position:relative;
 }
-.head h1 em{font-style:normal;color:var(--accent);text-shadow:0 0 40px var(--accent-glow)}
-.head p{
-  font-size:19px;line-height:1.55;color:var(--muted-hi);
-  max-width:640px;position:relative;z-index:1;
-}
-.head p b{color:var(--text);font-weight:500}
-.head .rule{
-  height:1px;background:linear-gradient(90deg,var(--accent) 0,transparent 55%);
-  margin-top:34px;position:relative;z-index:1;
+.l03 .live{
+  display:block;
+  font-family:"JetBrains Mono",monospace;
+  font-weight:400;
+  font-size:.13em;
+  letter-spacing:.25em;
+  color:var(--accent);
+  margin-top:18px;
 }
 
-/* nav de direções (jump to) */
-.nav{
-  padding:0 32px;max-width:1320px;margin:0 auto 36px;
-  display:flex;flex-wrap:wrap;gap:8px;
-  font-family:var(--mono);font-size:11px;
-  letter-spacing:.1em;text-transform:uppercase;
+/* 04 — monograma "q." puro */
+.l04{
+  font-family:"DM Serif Display",serif;
+  font-style:italic;
+  font-size:clamp(160px,26vw,320px);
+  letter-spacing:-.05em;line-height:.85;
+  color:var(--text);
+  position:relative;
 }
-.nav a{
-  padding:7px 12px;
-  color:var(--muted-hi);text-decoration:none;
-  border:1px solid var(--border);
-  border-radius:100px;
-  transition:all .18s;
+.l04 .period{color:var(--accent)}
+.l04 .sig{
+  position:absolute;
+  bottom:12px;left:calc(100% + 20px);
+  font-family:"JetBrains Mono",monospace;
+  font-size:12px;letter-spacing:.3em;
+  color:var(--muted);text-transform:uppercase;
+  white-space:nowrap;
 }
-.nav a:hover{color:var(--accent);border-color:var(--accent)}
-.nav a b{color:var(--text);font-weight:700;margin-right:6px}
-.nav a:hover b{color:var(--accent)}
 
-/* grid */
-.grid{
-  padding:0 32px 100px;
-  max-width:1320px;margin:0 auto;
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:22px;
+/* 05 — split: "qyvo" italic + "live" mono */
+.l05{
+  display:flex;align-items:baseline;gap:24px;
+  color:var(--text);
 }
-@media (max-width:900px){.grid{grid-template-columns:1fr}}
+.l05 .name{
+  font-family:"Fraunces",serif;
+  font-weight:500;font-style:italic;
+  font-size:clamp(70px,12vw,140px);
+  letter-spacing:-.025em;line-height:1;
+}
+.l05 .slash{
+  color:var(--accent);
+  font-family:"JetBrains Mono",monospace;
+  font-weight:500;
+  font-size:clamp(48px,8vw,80px);
+  transform:translateY(-6px);
+}
+.l05 .live{
+  font-family:"JetBrains Mono",monospace;
+  font-weight:500;
+  font-size:clamp(22px,3vw,32px);
+  letter-spacing:.32em;text-transform:uppercase;
+  color:var(--text);
+}
 
-/* card */
-.card{
+/* 06 — condensed brutalist wordmark */
+.l06{
+  font-family:"Space Grotesk",sans-serif;
+  font-weight:700;
+  font-size:clamp(80px,14vw,150px);
+  letter-spacing:-.06em;line-height:.9;
+  color:var(--text);
+  text-transform:uppercase;
+  text-align:center;
+}
+.l06 .top,.l06 .bot{display:block}
+.l06 .accent{color:var(--accent);font-weight:400;font-style:italic;font-family:"Fraunces",serif}
+
+/* NOTES abaixo do stage */
+.notes{
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  gap:0;
+  border-top:1px solid var(--border);
+  padding-top:0;
+}
+.notes .col{
+  padding:24px 32px 20px;
+  border-right:1px solid var(--border);
+}
+.notes .col:last-child{border-right:0}
+.notes .col-label{
+  font-family:"JetBrains Mono",monospace;
+  font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:10px;
+}
+.notes .col-body{
+  font-family:"Fraunces",serif;
+  font-weight:400;
+  font-size:15.5px;line-height:1.55;
+  color:var(--muted-hi);
+}
+.notes .col-body b{color:var(--text);font-weight:500}
+
+/* favicon preview strip */
+.fav-strip{
+  display:flex;align-items:center;gap:20px;
+  padding:22px 32px;
+  border-top:1px solid var(--border);
+  font-family:"JetBrains Mono",monospace;
+  font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--muted);
+}
+.fav-tab{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:6px 14px 6px 6px;
   background:var(--panel);
   border:1px solid var(--border);
-  border-radius:16px;
-  overflow:hidden;
-  position:relative;
-  transition:all .3s;
-  scroll-margin-top:100px;
+  border-radius:100px;
+  color:var(--muted-hi);
+  font-family:"DM Sans",sans-serif;text-transform:none;
+  font-size:12px;letter-spacing:0;
 }
-.card:hover{border-color:var(--border-hi)}
-
-.card-top{
-  padding:20px 26px 0;
-  display:flex;align-items:baseline;justify-content:space-between;
-  gap:16px;font-family:var(--mono);font-size:11px;
-  letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
-}
-.card-top .id{color:var(--accent);font-weight:700}
-.card-top .kind{color:var(--muted-hi)}
-
-.card-title{
-  padding:6px 26px 4px;
-  font-family:var(--display);font-size:22px;
-  letter-spacing:.01em;text-transform:uppercase;color:var(--text);
-}
-.card-title span{color:var(--accent)}
-
-/* stage do logo */
-.stage{
-  margin:16px 22px 22px;
-  aspect-ratio:16/9;
-  background:
-    linear-gradient(180deg,rgba(255,31,142,.05),transparent 55%),
-    #08080C;
-  border:1px solid var(--border);
-  border-radius:10px;
-  position:relative;
+.fav-icon{
+  width:20px;height:20px;
   display:flex;align-items:center;justify-content:center;
-  overflow:hidden;
+  background:#08080C;border-radius:50%;
+  font-family:"Instrument Serif",serif;font-style:italic;
+  font-size:15px;color:var(--text);line-height:1;
 }
-.stage::before{
-  content:"";position:absolute;inset:0;pointer-events:none;
-  background:
-    linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px) 0 0/40px 40px,
-    linear-gradient(0deg,rgba(255,255,255,.02) 1px,transparent 1px) 0 0/40px 40px;
-  mask-image:radial-gradient(circle at center,#000 30%,transparent 75%);
-  -webkit-mask-image:radial-gradient(circle at center,#000 30%,transparent 75%);
-}
-.stage svg.logo{
-  width:75%;height:75%;
-  filter:drop-shadow(0 0 30px rgba(255,31,142,.18));
-  position:relative;z-index:1;
-}
-.stage .corner{
-  position:absolute;
-  font-family:var(--mono);font-size:9px;letter-spacing:.15em;
-  text-transform:uppercase;color:var(--muted);
-}
-.stage .c-tl{top:10px;left:12px}
-.stage .c-br{bottom:10px;right:12px;color:var(--accent);opacity:.5}
+.fav-icon.mag{color:var(--accent)}
+.fav-icon.grot{font-family:"Space Grotesk",sans-serif;font-weight:700;font-style:normal;font-size:11px}
+.fav-icon.dot{background:var(--accent);color:transparent}
+.fav-icon.dot::after{content:"";width:6px;height:6px;background:var(--bg);border-radius:50%}
 
-/* linha meta: favicon + medidas */
-.meta-row{
-  display:flex;align-items:stretch;gap:14px;
-  padding:0 22px 20px;
-}
-.fav-wrap{
-  padding:8px 12px;
-  background:var(--bg);
-  border:1px solid var(--border);border-radius:8px;
-  display:flex;flex-direction:column;gap:8px;align-items:center;
-  min-width:82px;
-}
-.fav-wrap .fav-lbl{
-  font-family:var(--mono);font-size:9px;
-  letter-spacing:.15em;text-transform:uppercase;color:var(--muted);
-}
-.fav-box{
-  width:32px;height:32px;
-  background:#08080C;
-  border:1px solid var(--border);border-radius:6px;
-  display:flex;align-items:center;justify-content:center;
-  overflow:hidden;
-}
-.fav-box svg{width:22px;height:22px}
-.tabs{
-  flex:1;
-  background:var(--bg);
-  border:1px solid var(--border);border-radius:8px;
-  padding:10px 14px;
-  display:flex;flex-direction:column;justify-content:center;
-  font-family:var(--mono);font-size:10px;letter-spacing:.08em;
-  color:var(--muted);text-transform:uppercase;
-  line-height:1.5;
-}
-.tabs b{color:var(--text);font-weight:700}
-.tabs .row{display:flex;gap:8px;align-items:center}
-.tabs .row + .row{margin-top:4px}
-.tabs .row::before{content:"▸";color:var(--accent);font-size:9px}
-
-/* descrição */
-.desc{
-  padding:0 26px 22px;
-  font-size:14.5px;line-height:1.55;color:var(--muted-hi);
-}
-.desc b{color:var(--text);font-weight:600}
-
-/* footer info */
+/* FOOTER */
 .foot{
+  max-width:1080px;margin:0 auto;
+  padding:40px;
   border-top:1px solid var(--border);
-  padding:24px 32px 60px;
-  max-width:1320px;margin:0 auto;
-  font-family:var(--mono);font-size:11px;
-  color:var(--muted);letter-spacing:.1em;text-transform:uppercase;
-  display:flex;flex-wrap:wrap;gap:20px;justify-content:space-between;
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;
+  font-family:"JetBrains Mono",monospace;
+  font-size:11px;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--muted);
 }
-.foot .brand{color:var(--text);font-weight:700}
 .foot b{color:var(--accent)}
 
-/* animations */
-@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-.card{animation:fadeIn .5s ease-out backwards}
-.card:nth-child(1){animation-delay:.05s}
-.card:nth-child(2){animation-delay:.12s}
-.card:nth-child(3){animation-delay:.19s}
-.card:nth-child(4){animation-delay:.26s}
-.card:nth-child(5){animation-delay:.33s}
-.card:nth-child(6){animation-delay:.4s}
+@media (max-width:720px){
+  .head{padding:80px 24px 40px}
+  .stack{padding:20px 24px 60px}
+  .item{padding-top:60px}
+  .stage{padding:60px 20px;min-height:180px}
+  .notes{grid-template-columns:1fr}
+  .notes .col{border-right:0;border-bottom:1px solid var(--border);padding:18px 24px}
+  .fav-strip{padding:18px 24px;flex-wrap:wrap;gap:14px}
+  .top{padding:14px 20px;flex-direction:column;gap:8px;align-items:flex-start}
+  .l05{flex-wrap:wrap;gap:12px}
+}
 
-.head *{animation:fadeIn .7s ease-out backwards}
-.head .eyebrow{animation-delay:.05s}
+/* animation */
+@keyframes rise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.item{animation:rise .8s ease-out backwards}
+.item:nth-child(1){animation-delay:.05s}
+.item:nth-child(2){animation-delay:.12s}
+.item:nth-child(3){animation-delay:.19s}
+.item:nth-child(4){animation-delay:.26s}
+.item:nth-child(5){animation-delay:.33s}
+.item:nth-child(6){animation-delay:.4s}
+.head *{animation:rise .9s ease-out backwards}
+.head .kicker{animation-delay:.05s}
 .head h1{animation-delay:.15s}
-.head p{animation-delay:.3s}
-.head .rule{animation-delay:.5s}
-
-/* SVG helpers — colors and effects definidos por SVG */
+.head .lede{animation-delay:.28s}
+.head .divider{animation-delay:.45s}
 </style>
 </head>
 <body>
 
-<!-- terminal strip -->
-<div class="strip">
-  <span class="dot"></span>
-  <span class="path">qyvo-live / <b>brand / logo-directions</b></span>
-  <span class="spacer"></span>
-  <span class="meta">v0.1 · draft interno · não publicar</span>
+<div class="top">
+  <div class="left"><span class="dot"></span><span>qyvo · brand · logo v2</span></div>
+  <div>draft · <a href="#p01">01</a> <a href="#p02">02</a> <a href="#p03">03</a> <a href="#p04">04</a> <a href="#p05">05</a> <a href="#p06">06</a></div>
 </div>
 
-<header class="head">
-  <div class="eyebrow">brand system · draft</div>
-  <h1>Direções<br><em>de logo.</em></h1>
-  <p>
-    Seis interpretações pra <b>Qyvo Live</b> — todas monocromáticas magenta+creme sobre o dark do site.
-    Cada uma preserva a identidade "console broadcast" e escala bem pra favicon 32×32.
-    <b>Escolhe uma pra virar oficial</b> — ou marca duas e a gente combina os melhores traços.
+<section class="head">
+  <div class="kicker">v2 · zero símbolos</div>
+  <h1>Só letra.<br><em>Só nome.</em></h1>
+  <p class="lede">
+    A primeira rodada tentou <b>explicar</b> a marca com ícones — torre, olho, ondas. Fica didático e amador.
+    Essa segunda rodada é <b>100% tipográfica</b>: só o nome "qyvo" (ou "qyvo · live") em fontes editoriais.
+    Marca boa não explica. Existe.
   </p>
-  <div class="rule"></div>
-</header>
+  <div class="divider"></div>
+</section>
 
-<nav class="nav">
-  <a href="#p01"><b>01</b> Wordmark Anton</a>
-  <a href="#p02"><b>02</b> Broadcast dot</a>
-  <a href="#p03"><b>03</b> Bolhas mono</a>
-  <a href="#p04"><b>04</b> Monograma QL</a>
-  <a href="#p05"><b>05</b> Torre de sinal</a>
-  <a href="#p06"><b>06</b> Q vigilante</a>
-</nav>
+<main class="stack">
 
-<main class="grid">
-
-  <!-- ═══ 01 — WORDMARK ANTON ═══ -->
-  <section class="card" id="p01">
-    <div class="card-top"><span class="id">▸ 01</span><span class="kind">wordmark tipográfico</span></div>
-    <h2 class="card-title">Anton <span>×</span> LED live</h2>
-
+  <!-- 01 — instrument serif italic minúsculo -->
+  <section class="item" id="p01">
+    <div class="meta"><span class="num">01</span><span class="kind">italic serif · minúsculo</span><span class="rule"></span></div>
     <div class="stage">
-      <span class="corner c-tl">stage · 16:9</span>
-      <span class="corner c-br">▸ on air</span>
-      <svg class="logo" viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="l01-mag" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stop-color="#FF1F8E"/>
-            <stop offset="100%" stop-color="#FF4D9F"/>
-          </linearGradient>
-        </defs>
-        <!-- QYVO -->
-        <text x="8" y="140" font-family="Anton, Impact, sans-serif" font-size="176" fill="#F5F2E8" letter-spacing="-4">QYVO</text>
-        <!-- LED dot + LIVE -->
-        <g transform="translate(456,88)">
-          <circle cx="12" cy="12" r="10" fill="url(#l01-mag)">
-            <animate attributeName="opacity" values="1;.3;1" dur="1.6s" repeatCount="indefinite"/>
-          </circle>
-          <circle cx="12" cy="12" r="17" fill="none" stroke="url(#l01-mag)" stroke-width="1.5" opacity=".35"/>
-        </g>
-        <text x="486" y="108" font-family="Anton, Impact, sans-serif" font-size="60" fill="#FF1F8E" letter-spacing="4">LIVE</text>
-        <!-- baseline scan tick -->
-        <line x1="8" y1="164" x2="620" y2="164" stroke="#2A2A35" stroke-width="1"/>
-        <line x1="8" y1="164" x2="200" y2="164" stroke="#FF1F8E" stroke-width="2"/>
-        <!-- mono tag -->
-        <text x="10" y="188" font-family="JetBrains Mono, monospace" font-size="12" fill="#6B6B7A" letter-spacing="4">TIKTOK · SHOP · TOOLS</text>
-      </svg>
+      <div class="l01">qyvo<span class="dot">.</span></div>
     </div>
-
-    <div class="meta-row">
-      <div class="fav-wrap">
-        <span class="fav-lbl">favicon 32</span>
-        <div class="fav-box">
-          <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-            <text x="2" y="24" font-family="Anton, Impact, sans-serif" font-size="26" fill="#F5F2E8">Q</text>
-            <circle cx="26" cy="8" r="4" fill="#FF1F8E"/>
-          </svg>
-        </div>
-      </div>
-      <div class="tabs">
-        <div class="row"><span><b>Formato</b> · 640×200 stage · escala bem em 32</span></div>
-        <div class="row"><span><b>Peso</b> · display bold · alta legibilidade</span></div>
-      </div>
+    <div class="notes">
+      <div class="col"><div class="col-label">tom</div><div class="col-body">Editorial calmo. Silencioso. Cara de <b>publicação</b>, não de app.</div></div>
+      <div class="col"><div class="col-label">referência</div><div class="col-body">Byredo, The Row, Aesop. Marca que <b>não grita</b>.</div></div>
+      <div class="col"><div class="col-label">favicon</div><div class="col-body">Só a letra <b>q</b> italic serif isolada — carrega a marca sozinha.</div></div>
     </div>
-
-    <p class="desc">
-      Usa a mesma <b>Anton</b> das headlines do site, então já herda continuidade visual. O <b>ponto piscante</b>
-      substitui a bola do "i" clássica de "LIVE" e vira o gancho da marca: sempre que aparecer o dot magenta pulsando, é Qyvo.
-    </p>
+    <div class="fav-strip">
+      <span>preview aba</span>
+      <span class="fav-tab"><span class="fav-icon">q</span> qyvo · live</span>
+      <span class="fav-tab"><span class="fav-icon mag">q</span> qyvo · argos</span>
+    </div>
   </section>
 
-  <!-- ═══ 02 — BROADCAST DOT ═══ -->
-  <section class="card" id="p02">
-    <div class="card-top"><span class="id">▸ 02</span><span class="kind">símbolo · broadcast wave</span></div>
-    <h2 class="card-title">Ponto <span>que transmite</span></h2>
-
+  <!-- 02 — fraunces editorial + live pequeno -->
+  <section class="item" id="p02">
+    <div class="meta"><span class="num">02</span><span class="kind">fraunces italic · rule + live pequeno</span><span class="rule"></span></div>
     <div class="stage">
-      <span class="corner c-tl">stage · 16:9</span>
-      <span class="corner c-br">▸ signal</span>
-      <svg class="logo" viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg">
-        <!-- ondas concêntricas -->
-        <g transform="translate(80,100)">
-          <circle cx="0" cy="0" r="10" fill="#FF1F8E"/>
-          <circle cx="0" cy="0" r="24" fill="none" stroke="#FF1F8E" stroke-width="2.5" opacity=".85"/>
-          <circle cx="0" cy="0" r="42" fill="none" stroke="#FF1F8E" stroke-width="2" opacity=".55" stroke-dasharray="4 3"/>
-          <circle cx="0" cy="0" r="62" fill="none" stroke="#FF1F8E" stroke-width="1.5" opacity=".3" stroke-dasharray="2 4"/>
-          <circle cx="0" cy="0" r="80" fill="none" stroke="#FF1F8E" stroke-width="1" opacity=".18"/>
-          <animate attributeName="opacity" values="1;.7;1" dur="2.4s" repeatCount="indefinite"/>
-        </g>
-        <!-- texto -->
-        <text x="200" y="105" font-family="Anton, Impact, sans-serif" font-size="82" fill="#F5F2E8" letter-spacing="-1">QYVO</text>
-        <text x="200" y="150" font-family="JetBrains Mono, monospace" font-size="20" fill="#FF1F8E" letter-spacing="12" font-weight="700">LIVE</text>
-        <!-- linha coordenada -->
-        <line x1="200" y1="118" x2="420" y2="118" stroke="#2A2A35" stroke-width="1"/>
-        <line x1="200" y1="118" x2="260" y2="118" stroke="#FF1F8E" stroke-width="2"/>
-      </svg>
-    </div>
-
-    <div class="meta-row">
-      <div class="fav-wrap">
-        <span class="fav-lbl">favicon 32</span>
-        <div class="fav-box">
-          <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="16" cy="16" r="3.5" fill="#FF1F8E"/>
-            <circle cx="16" cy="16" r="8" fill="none" stroke="#FF1F8E" stroke-width="1.2" opacity=".7"/>
-            <circle cx="16" cy="16" r="13" fill="none" stroke="#FF1F8E" stroke-width="1" opacity=".4" stroke-dasharray="1.5 2"/>
-          </svg>
-        </div>
-      </div>
-      <div class="tabs">
-        <div class="row"><span><b>Símbolo</b> · isolável (favicon perfeito)</span></div>
-        <div class="row"><span><b>Referência</b> · sinal, wi-fi, on-air, live</span></div>
+      <div class="l02">
+        <div class="name"><em>qyvo</em></div>
+        <div class="sub">l · i · v · e</div>
       </div>
     </div>
-
-    <p class="desc">
-      Um ponto que <b>irradia</b>. Metáfora direta do broadcast — Qyvo Live "transmite" ferramentas.
-      Símbolo isolável, funciona sozinho no favicon (sem precisar do texto). É o mais versátil do lote.
-    </p>
+    <div class="notes">
+      <div class="col"><div class="col-label">tom</div><div class="col-body">Editorial premium. Camada dupla, hierarquia clara sem hierarquia visual pesada.</div></div>
+      <div class="col"><div class="col-label">referência</div><div class="col-body">Kinfolk, Cereal, revistas de arquitetura.</div></div>
+      <div class="col"><div class="col-label">favicon</div><div class="col-body">Letra "q" isolada em italic Fraunces.</div></div>
+    </div>
+    <div class="fav-strip">
+      <span>preview aba</span>
+      <span class="fav-tab"><span class="fav-icon">q</span> qyvo · live</span>
+    </div>
   </section>
 
-  <!-- ═══ 03 — BOLHAS MONO (herdeiro do desenho da Carol) ═══ -->
-  <section class="card" id="p03">
-    <div class="card-top"><span class="id">▸ 03</span><span class="kind">geométrico · herdeiro</span></div>
-    <h2 class="card-title">Bolhas em <span>magenta</span></h2>
-
+  <!-- 03 — grotesque tight, moda vibe -->
+  <section class="item" id="p03">
+    <div class="meta"><span class="num">03</span><span class="kind">grotesque · tight kerning</span><span class="rule"></span></div>
     <div class="stage">
-      <span class="corner c-tl">stage · 16:9</span>
-      <span class="corner c-br">▸ evolução</span>
-      <svg class="logo" viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <clipPath id="c03-q"><path d="M 40 100 A 60 60 0 1 1 160 100 A 60 60 0 1 1 40 100 M 100 100 A 30 30 0 1 0 100 40 A 30 30 0 1 0 100 100 Z"/></clipPath>
-        </defs>
-        <!-- Q -->
-        <g>
-          <circle cx="100" cy="100" r="60" fill="#FF1F8E"/>
-          <circle cx="100" cy="100" r="30" fill="#0A0A0E"/>
-          <!-- cauda do Q -->
-          <rect x="130" y="130" width="42" height="16" rx="8" fill="#FF1F8E" transform="rotate(35 151 138)"/>
-        </g>
-        <!-- Y (angular, magenta soft) -->
-        <g transform="translate(180,45)">
-          <polygon points="0,0 25,0 40,45 55,0 80,0 55,55 55,110 25,110 25,55" fill="#F5F2E8"/>
-        </g>
-        <!-- V (magenta em duas gradações) -->
-        <g transform="translate(280,45)">
-          <polygon points="0,0 25,0 45,80 65,0 90,0 55,110 35,110" fill="#FF1F8E" opacity=".55"/>
-          <polygon points="0,0 25,0 45,80 65,0 90,0 55,110 35,110" fill="none" stroke="#FF1F8E" stroke-width="2"/>
-        </g>
-        <!-- O -->
-        <g transform="translate(400,45)">
-          <circle cx="55" cy="55" r="55" fill="none" stroke="#F5F2E8" stroke-width="18"/>
-        </g>
-        <!-- LIVE tag -->
-        <rect x="180" y="168" width="330" height="20" rx="4" fill="none" stroke="#FF1F8E" stroke-width="1"/>
-        <text x="196" y="184" font-family="JetBrains Mono, monospace" font-size="12" fill="#FF1F8E" letter-spacing="12" font-weight="700">LIVE / SELLERS TOOLS</text>
-      </svg>
-    </div>
-
-    <div class="meta-row">
-      <div class="fav-wrap">
-        <span class="fav-lbl">favicon 32</span>
-        <div class="fav-box">
-          <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="14" cy="16" r="10" fill="#FF1F8E"/>
-            <circle cx="14" cy="16" r="5" fill="#0A0A0E"/>
-            <rect x="20" y="22" width="8" height="3" rx="1.5" fill="#FF1F8E" transform="rotate(35 24 23.5)"/>
-          </svg>
-        </div>
-      </div>
-      <div class="tabs">
-        <div class="row"><span><b>Preserva</b> · a alma do desenho original</span></div>
-        <div class="row"><span><b>Adapta</b> · paleta pro dark do site</span></div>
+      <div class="l03">
+        QYVO
+        <span class="live">— live —</span>
       </div>
     </div>
-
-    <p class="desc">
-      Mantém o <b>DNA geométrico "arredondado divertido"</b> que você desenhou, mas troca o arco-íris por
-      contraste magenta+creme. Cada letra é uma forma pura (círculo, triângulos, arco). O ativo colorido continua vivo
-      pra Instagram, camiseta, cartão — o site fica com a versão que combina.
-    </p>
+    <div class="notes">
+      <div class="col"><div class="col-label">tom</div><div class="col-body">Fashion. Contemporary. Tem peso, mas <b>refinado</b>, não brutalista.</div></div>
+      <div class="col"><div class="col-label">referência</div><div class="col-body">Off-White, Balenciaga wordmark. Diretos, adultos.</div></div>
+      <div class="col"><div class="col-label">favicon</div><div class="col-body">Letra "Q" em Space Grotesk 700 — desenho geométrico limpo.</div></div>
+    </div>
+    <div class="fav-strip">
+      <span>preview aba</span>
+      <span class="fav-tab"><span class="fav-icon grot">Q</span> qyvo · live</span>
+      <span class="fav-tab"><span class="fav-icon grot" style="color:var(--accent)">Q</span> qyvo · argos</span>
+    </div>
   </section>
 
-  <!-- ═══ 04 — MONOGRAMA QL ═══ -->
-  <section class="card" id="p04">
-    <div class="card-top"><span class="id">▸ 04</span><span class="kind">monograma · selo</span></div>
-    <h2 class="card-title">Selo <span>QL</span></h2>
-
+  <!-- 04 — monograma q. gigante -->
+  <section class="item" id="p04">
+    <div class="meta"><span class="num">04</span><span class="kind">monograma · uma letra</span><span class="rule"></span></div>
     <div class="stage">
-      <span class="corner c-tl">stage · 16:9</span>
-      <span class="corner c-br">▸ mark</span>
-      <svg class="logo" viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg">
-        <!-- selo hexagonal -->
-        <g transform="translate(60,20)">
-          <polygon points="80,0 155,42 155,118 80,160 5,118 5,42" fill="none" stroke="#FF1F8E" stroke-width="2.5"/>
-          <polygon points="80,10 145,47 145,113 80,150 15,113 15,47" fill="none" stroke="#FF1F8E" stroke-width=".8" opacity=".5"/>
-          <!-- Q + L entrelaçados -->
-          <g>
-            <!-- Q -->
-            <circle cx="65" cy="80" r="34" fill="none" stroke="#F5F2E8" stroke-width="8"/>
-            <line x1="85" y1="100" x2="105" y2="120" stroke="#F5F2E8" stroke-width="8" stroke-linecap="round"/>
-            <!-- L sobreposto em magenta -->
-            <path d="M 95 55 L 95 108 L 130 108" fill="none" stroke="#FF1F8E" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-          </g>
-          <!-- ticks nas pontas -->
-          <circle cx="80" cy="0" r="3" fill="#FF1F8E"/>
-          <circle cx="80" cy="160" r="3" fill="#FF1F8E"/>
-        </g>
-        <!-- texto ao lado -->
-        <text x="260" y="90" font-family="Anton, Impact, sans-serif" font-size="66" fill="#F5F2E8" letter-spacing="-1">QYVO</text>
-        <text x="260" y="130" font-family="Anton, Impact, sans-serif" font-size="30" fill="#FF1F8E" letter-spacing="16">LIVE</text>
-        <line x1="260" y1="142" x2="480" y2="142" stroke="#2A2A35" stroke-width="1"/>
-        <text x="260" y="164" font-family="JetBrains Mono, monospace" font-size="10" fill="#6B6B7A" letter-spacing="4">EST. 2026 · SP · BR</text>
-      </svg>
+      <div class="l04">q<span class="period">.</span><span class="sig">qyvo · live</span></div>
     </div>
-
-    <div class="meta-row">
-      <div class="fav-wrap">
-        <span class="fav-lbl">favicon 32</span>
-        <div class="fav-box">
-          <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="16,2 28,9 28,23 16,30 4,23 4,9" fill="none" stroke="#FF1F8E" stroke-width="1.5"/>
-            <circle cx="13" cy="15" r="5" fill="none" stroke="#F5F2E8" stroke-width="2"/>
-            <path d="M 18 11 L 18 21 L 24 21" fill="none" stroke="#FF1F8E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-      </div>
-      <div class="tabs">
-        <div class="row"><span><b>Selo</b> · autoridade, oficialidade</span></div>
-        <div class="row"><span><b>Uso</b> · assinatura em emails, rodapé</span></div>
-      </div>
+    <div class="notes">
+      <div class="col"><div class="col-label">tom</div><div class="col-body">Direto, assinatura de autor. A letra vira <b>marca</b> — Hermès H, Chanel CC, Loewe L.</div></div>
+      <div class="col"><div class="col-label">referência</div><div class="col-body">Monogramas de moda europeia. Casas centenárias.</div></div>
+      <div class="col"><div class="col-label">favicon</div><div class="col-body">Já é o favicon. Uma letra. Um ponto magenta.</div></div>
     </div>
-
-    <p class="desc">
-      Formato de <b>selo hexagonal</b> que sugere autoridade — como um carimbo. Q e L se cruzam em duas cores:
-      o Q creme é a base, o L magenta risca por cima. É o mais "sério" das seis; funciona bem em contexto B2B
-      (agências, parcerias, contratos).
-    </p>
+    <div class="fav-strip">
+      <span>preview aba</span>
+      <span class="fav-tab"><span class="fav-icon">q<span style="color:var(--accent)">.</span></span> qyvo · live</span>
+    </div>
   </section>
 
-  <!-- ═══ 05 — TORRE DE SINAL ═══ -->
-  <section class="card" id="p05">
-    <div class="card-top"><span class="id">▸ 05</span><span class="kind">símbolo · torre de transmissão</span></div>
-    <h2 class="card-title">Antena <span>viva</span></h2>
-
+  <!-- 05 — split: qyvo italic + / + live mono -->
+  <section class="item" id="p05">
+    <div class="meta"><span class="num">05</span><span class="kind">italic + mono · split</span><span class="rule"></span></div>
     <div class="stage">
-      <span class="corner c-tl">stage · 16:9</span>
-      <span class="corner c-br">▸ tower</span>
-      <svg class="logo" viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg">
-        <!-- torre estilizada -->
-        <g transform="translate(60,32)">
-          <!-- mastro -->
-          <line x1="70" y1="130" x2="70" y2="20" stroke="#F5F2E8" stroke-width="6"/>
-          <!-- travessões -->
-          <line x1="42" y1="55" x2="98" y2="55" stroke="#F5F2E8" stroke-width="3"/>
-          <line x1="52" y1="75" x2="88" y2="75" stroke="#F5F2E8" stroke-width="3"/>
-          <line x1="46" y1="95" x2="94" y2="95" stroke="#F5F2E8" stroke-width="3"/>
-          <line x1="36" y1="115" x2="104" y2="115" stroke="#F5F2E8" stroke-width="3"/>
-          <!-- ponta magenta -->
-          <circle cx="70" cy="14" r="6" fill="#FF1F8E">
-            <animate attributeName="opacity" values="1;.3;1" dur="1.8s" repeatCount="indefinite"/>
-          </circle>
-          <!-- ondas partindo da ponta -->
-          <path d="M 40 14 A 30 30 0 0 1 100 14" fill="none" stroke="#FF1F8E" stroke-width="2" opacity=".7"/>
-          <path d="M 22 14 A 48 48 0 0 1 118 14" fill="none" stroke="#FF1F8E" stroke-width="1.6" opacity=".45" stroke-dasharray="4 3"/>
-          <path d="M 4 14 A 66 66 0 0 1 136 14" fill="none" stroke="#FF1F8E" stroke-width="1.2" opacity=".25" stroke-dasharray="2 4"/>
-          <!-- base -->
-          <polygon points="24,140 116,140 100,132 40,132" fill="#F5F2E8" opacity=".8"/>
-          <line x1="24" y1="140" x2="116" y2="140" stroke="#FF1F8E" stroke-width="2.5"/>
-        </g>
-        <!-- texto -->
-        <text x="220" y="105" font-family="Anton, Impact, sans-serif" font-size="76" fill="#F5F2E8" letter-spacing="-1">QYVO LIVE</text>
-        <!-- ticks embaixo do texto -->
-        <g transform="translate(220,120)">
-          <rect x="0" y="0" width="60" height="3" fill="#FF1F8E"/>
-          <rect x="66" y="0" width="20" height="3" fill="#FF1F8E" opacity=".7"/>
-          <rect x="92" y="0" width="30" height="3" fill="#FF1F8E" opacity=".55"/>
-          <rect x="128" y="0" width="12" height="3" fill="#FF1F8E" opacity=".4"/>
-          <rect x="146" y="0" width="70" height="3" fill="#FF1F8E" opacity=".28"/>
-        </g>
-        <text x="220" y="150" font-family="JetBrains Mono, monospace" font-size="12" fill="#6B6B7A" letter-spacing="6">▸ ALWAYS ON AIR</text>
-      </svg>
-    </div>
-
-    <div class="meta-row">
-      <div class="fav-wrap">
-        <span class="fav-lbl">favicon 32</span>
-        <div class="fav-box">
-          <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-            <line x1="16" y1="26" x2="16" y2="7" stroke="#F5F2E8" stroke-width="2"/>
-            <line x1="10" y1="14" x2="22" y2="14" stroke="#F5F2E8" stroke-width="1.4"/>
-            <line x1="12" y1="19" x2="20" y2="19" stroke="#F5F2E8" stroke-width="1.4"/>
-            <circle cx="16" cy="6" r="2.4" fill="#FF1F8E"/>
-            <path d="M 10 6 A 6 6 0 0 1 22 6" fill="none" stroke="#FF1F8E" stroke-width="1.3" opacity=".7"/>
-          </svg>
-        </div>
-      </div>
-      <div class="tabs">
-        <div class="row"><span><b>Metáfora</b> · torre broadcast, antena, always-on</span></div>
-        <div class="row"><span><b>Peso</b> · o mais robusto e "engenharia"</span></div>
+      <div class="l05">
+        <span class="name"><em>qyvo</em></span>
+        <span class="slash">/</span>
+        <span class="live">LIVE</span>
       </div>
     </div>
-
-    <p class="desc">
-      Torre de transmissão minimalista com <b>ponta magenta pulsando</b>. Referência direta a "estar no ar".
-      Sugere robustez, infraestrutura, uptime — combina com o posicionamento de "ferramentas" (não produto pontual).
-      Bom pra crescer conforme a Qyvo virar plataforma.
-    </p>
+    <div class="notes">
+      <div class="col"><div class="col-label">tom</div><div class="col-body">Editorial encontra editor de código. Duas famílias tipográficas conversam.</div></div>
+      <div class="col"><div class="col-label">referência</div><div class="col-body">Linear (nome mono), Vercel (nome sans). Contraste consciente.</div></div>
+      <div class="col"><div class="col-label">favicon</div><div class="col-body">Só a barra "/" magenta — símbolo abstrato que virou marca.</div></div>
+    </div>
+    <div class="fav-strip">
+      <span>preview aba</span>
+      <span class="fav-tab"><span class="fav-icon mag" style="font-family:'JetBrains Mono',monospace;font-style:normal;font-weight:700">/</span> qyvo · live</span>
+    </div>
   </section>
 
-  <!-- ═══ 06 — Q VIGILANTE ═══ -->
-  <section class="card" id="p06">
-    <div class="card-top"><span class="id">▸ 06</span><span class="kind">símbolo · Q + olho vigilante</span></div>
-    <h2 class="card-title">Q que <span>vigia</span></h2>
-
+  <!-- 06 — duas linhas, contraste -->
+  <section class="item" id="p06">
+    <div class="meta"><span class="num">06</span><span class="kind">duas linhas · contraste tipo</span><span class="rule"></span></div>
     <div class="stage">
-      <span class="corner c-tl">stage · 16:9</span>
-      <span class="corner c-br">▸ argos vibe</span>
-      <svg class="logo" viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg">
-        <!-- Q como olho -->
-        <g transform="translate(50,25)">
-          <!-- pálpebra externa (arco superior/inferior) -->
-          <path d="M 5 75 Q 75 -5 145 75" fill="none" stroke="#F5F2E8" stroke-width="6" stroke-linecap="round"/>
-          <path d="M 5 75 Q 75 155 145 75" fill="none" stroke="#F5F2E8" stroke-width="6" stroke-linecap="round"/>
-          <!-- íris (círculo grande) -->
-          <circle cx="75" cy="75" r="40" fill="none" stroke="#FF1F8E" stroke-width="3.5"/>
-          <!-- listras dentro (referência ao Panoptic do Argos) -->
-          <g clip-path="url(#c06-iris)">
-            <rect x="35" y="52" width="80" height="2" fill="#FF1F8E" opacity=".6"/>
-            <rect x="35" y="60" width="80" height="2" fill="#FF1F8E" opacity=".5"/>
-            <rect x="35" y="72" width="80" height="4" fill="#FF1F8E"/>
-            <rect x="35" y="84" width="80" height="2" fill="#FF1F8E" opacity=".55"/>
-            <rect x="35" y="92" width="80" height="2" fill="#FF1F8E" opacity=".4"/>
-          </g>
-          <defs>
-            <clipPath id="c06-iris"><circle cx="75" cy="75" r="38"/></clipPath>
-          </defs>
-          <!-- pupila -->
-          <circle cx="75" cy="75" r="10" fill="#FF1F8E">
-            <animate attributeName="r" values="10;8;10" dur="3.5s" repeatCount="indefinite"/>
-          </circle>
-          <!-- cauda do Q (traço diagonal) -->
-          <line x1="105" y1="105" x2="140" y2="140" stroke="#F5F2E8" stroke-width="6" stroke-linecap="round"/>
-        </g>
-        <!-- texto -->
-        <text x="240" y="90" font-family="Anton, Impact, sans-serif" font-size="70" fill="#F5F2E8" letter-spacing="-1">QYVO</text>
-        <text x="240" y="130" font-family="Anton, Impact, sans-serif" font-size="30" fill="#FF1F8E" letter-spacing="16">LIVE</text>
-        <line x1="240" y1="142" x2="450" y2="142" stroke="#2A2A35" stroke-width="1"/>
-        <text x="240" y="164" font-family="JetBrains Mono, monospace" font-size="10" fill="#6B6B7A" letter-spacing="4">▸ VIGIA · TRANSMITE · LIBERA</text>
-      </svg>
-    </div>
-
-    <div class="meta-row">
-      <div class="fav-wrap">
-        <span class="fav-lbl">favicon 32</span>
-        <div class="fav-box">
-          <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-            <defs><clipPath id="f06"><circle cx="15" cy="16" r="9"/></clipPath></defs>
-            <path d="M 3 16 Q 15 5 27 16" fill="none" stroke="#F5F2E8" stroke-width="1.6" stroke-linecap="round"/>
-            <path d="M 3 16 Q 15 27 27 16" fill="none" stroke="#F5F2E8" stroke-width="1.6" stroke-linecap="round"/>
-            <circle cx="15" cy="16" r="9" fill="none" stroke="#FF1F8E" stroke-width="1.3"/>
-            <circle cx="15" cy="16" r="3.2" fill="#FF1F8E"/>
-            <line x1="21" y1="22" x2="26" y2="27" stroke="#F5F2E8" stroke-width="1.6" stroke-linecap="round"/>
-          </svg>
-        </div>
-      </div>
-      <div class="tabs">
-        <div class="row"><span><b>Conecta</b> · Qyvo com o Argos ("olho vigilante")</span></div>
-        <div class="row"><span><b>Camada</b> · Q é letra + é olho + é câmera</span></div>
+      <div class="l06">
+        <span class="top">QYVO</span>
+        <span class="bot accent">live</span>
       </div>
     </div>
-
-    <p class="desc">
-      O <b>Q vira um olho</b> — círculo do Q é a íris, pupila magenta, cauda vira o traço de fechamento.
-      As listras dentro da íris são referência direta ao símbolo do Argos (que também usa faixas horizontais).
-      É a proposta mais <b>narrativa</b>: cria universo (Qyvo vigia, Argos executa, Quick Test transmite).
-    </p>
+    <div class="notes">
+      <div class="col"><div class="col-label">tom</div><div class="col-body">Sério em cima, humano embaixo. Peso vs delicadeza no mesmo bloco.</div></div>
+      <div class="col"><div class="col-label">referência</div><div class="col-body">Editoriais que jogam com hierarquia tipográfica pura.</div></div>
+      <div class="col"><div class="col-label">favicon</div><div class="col-body">"Q" grotesque em cima com traço magenta embaixo.</div></div>
+    </div>
+    <div class="fav-strip">
+      <span>preview aba</span>
+      <span class="fav-tab"><span class="fav-icon grot">Q</span> qyvo · live</span>
+    </div>
   </section>
 
 </main>
 
 <div class="foot">
-  <span class="brand">qyvo · live</span>
-  <span>▸ <b>6</b> propostas · draft interno · <b>não publicar</b></span>
+  <span>qyvo · live · brand draft v2</span>
+  <span>▸ 6 direções · <b>tipografia pura</b> · sem símbolos</span>
   <span>escolhe uma pra virar oficial</span>
 </div>
 
