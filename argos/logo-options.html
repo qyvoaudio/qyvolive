@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>Qyvo · logo direções v5 · digitech style</title>
+<title>Qyvo · logo direções v6 · digitech exato</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@400;500;600;700&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#0A0A10;
@@ -60,7 +60,7 @@ body::before{
 .head{
   max-width:1080px;
   margin:0 auto;
-  padding:80px 40px 40px;
+  padding:70px 40px 30px;
   position:relative;
 }
 .head::before{
@@ -72,7 +72,7 @@ body::before{
 .head .kicker{
   font-family:"JetBrains Mono",monospace;
   font-size:11px;letter-spacing:.22em;text-transform:uppercase;
-  color:var(--accent);margin-bottom:28px;
+  color:var(--accent);margin-bottom:22px;
   display:inline-flex;align-items:center;gap:12px;
   padding:6px 14px;
   background:rgba(255,31,142,.08);
@@ -82,12 +82,12 @@ body::before{
 }
 .head .kicker::before{content:"";width:6px;height:6px;background:var(--accent);border-radius:50%;box-shadow:0 0 6px var(--accent)}
 .head h1{
-  font-family:"Sora",sans-serif;
+  font-family:"Space Grotesk",sans-serif;
   font-weight:700;
-  font-size:clamp(48px,6.5vw,84px);
-  line-height:.98;
+  font-size:clamp(44px,6vw,72px);
+  line-height:1;
   letter-spacing:-.03em;
-  margin-bottom:22px;
+  margin-bottom:16px;
   color:var(--text);
   position:relative;z-index:1;
 }
@@ -97,35 +97,22 @@ body::before{
   -webkit-background-clip:text;background-clip:text;color:transparent;
 }
 .head .lede{
-  font-size:18px;line-height:1.55;
+  font-size:17px;line-height:1.55;
   color:var(--muted-hi);max-width:620px;
   position:relative;z-index:1;
 }
 .head .lede b{color:var(--text);font-weight:500}
-.head .refbox{
-  margin-top:32px;
-  padding:18px 22px;
-  background:rgba(255,31,142,.06);
-  border:1px solid rgba(255,31,142,.2);
-  border-radius:12px;
-  font-size:14px;line-height:1.55;
-  color:var(--muted-hi);
-  max-width:620px;
-  position:relative;z-index:1;
-}
-.head .refbox b{color:var(--accent);font-weight:600;font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.15em;text-transform:uppercase;display:block;margin-bottom:6px}
-.head .refbox u{text-decoration:none;color:var(--text);font-weight:500}
 
 /* GRID */
 .grid{
   max-width:1080px;
-  margin:40px auto 100px;
+  margin:32px auto 80px;
   padding:0 40px;
   display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:22px;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
 }
-@media (max-width:820px){.grid{grid-template-columns:1fr;padding:0 20px}}
+@media (max-width:900px){.grid{grid-template-columns:1fr;padding:0 20px}}
 
 /* CARD */
 .card{
@@ -134,7 +121,6 @@ body::before{
   border-radius:20px;
   overflow:hidden;
   transition:all .3s ease;
-  scroll-margin-top:80px;
   display:flex;flex-direction:column;
 }
 .card:hover{
@@ -144,7 +130,7 @@ body::before{
 }
 
 .card-header{
-  padding:18px 24px 0;
+  padding:16px 22px 0;
   display:flex;align-items:center;justify-content:space-between;
   font-family:"JetBrains Mono",monospace;
   font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);
@@ -156,19 +142,18 @@ body::before{
   border:1px solid rgba(255,31,142,.25);
   border-radius:4px;
 }
-.card-header .k{color:var(--muted-hi)}
 
 .stage{
-  margin:14px;
-  padding:52px 24px 40px;
+  margin:12px;
+  padding:44px 24px 32px;
   background:
-    radial-gradient(circle at center 40%,rgba(255,31,142,.09),transparent 65%),
+    radial-gradient(circle at center 40%,rgba(255,31,142,.08),transparent 65%),
     #0A0A14;
   border:1px solid var(--border);
   border-radius:16px;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:26px;
-  min-height:380px;
+  gap:22px;
+  min-height:340px;
   position:relative;overflow:hidden;
 }
 .stage::before{
@@ -182,63 +167,55 @@ body::before{
 .stage svg.mark{
   display:block;
   position:relative;z-index:1;
-  width:170px;height:170px;
-  filter:drop-shadow(0 8px 28px rgba(255,31,142,.32));
+  width:180px;height:180px;
+  filter:drop-shadow(0 8px 28px rgba(255,31,142,.28));
 }
 .stage .name-block{
   position:relative;z-index:1;
-  display:flex;align-items:baseline;gap:12px;
+  display:flex;align-items:baseline;gap:0;
 }
 .stage .name-bold{
-  font-family:"Sora",sans-serif;
+  font-family:"Space Grotesk",sans-serif;
   font-weight:700;
-  font-size:34px;
-  letter-spacing:-.025em;
+  font-size:28px;
+  letter-spacing:-.02em;
   color:var(--text);
   text-transform:uppercase;
   line-height:1;
 }
 .stage .name-light{
-  font-family:"Sora",sans-serif;
+  font-family:"Space Grotesk",sans-serif;
   font-weight:400;
-  font-size:34px;
-  letter-spacing:.02em;
+  font-size:28px;
+  letter-spacing:0;
   color:var(--muted-hi);
   text-transform:uppercase;
   line-height:1;
+  margin-left:6px;
 }
 .stage .tag{
   position:relative;z-index:1;
-  font-family:"JetBrains Mono",monospace;
-  font-weight:500;
-  font-size:10.5px;
-  letter-spacing:.55em;
+  font-family:"DM Sans",sans-serif;
+  font-weight:400;
+  font-size:11px;
+  letter-spacing:.42em;
   color:var(--muted);
   text-transform:uppercase;
   margin-top:-14px;
 }
 
-/* NOTES */
 .notes{
-  padding:8px 24px 20px;
-  display:flex;flex-direction:column;gap:12px;
+  padding:6px 22px 18px;
 }
-.notes .note-title{
-  font-family:"Sora",sans-serif;
-  font-weight:600;font-size:18px;
-  letter-spacing:-.01em;color:var(--text);
-}
-.notes .note-title span{color:var(--accent)}
 .notes .desc{
-  font-size:14px;line-height:1.55;color:var(--muted-hi);
+  font-size:13.5px;line-height:1.55;color:var(--muted-hi);
 }
 .notes .desc b{color:var(--text);font-weight:600}
 .notes .desc u{color:var(--accent-hi);text-decoration:none;font-weight:600}
 
-/* FAV BAR */
 .favbar{
   display:flex;align-items:center;gap:10px;
-  padding:14px 24px;
+  padding:12px 22px;
   border-top:1px solid var(--border);
   background:rgba(0,0,0,.15);
   margin-top:auto;
@@ -249,12 +226,12 @@ body::before{
 }
 .tab-preview{
   display:inline-flex;align-items:center;gap:8px;
-  padding:5px 12px 5px 5px;
+  padding:4px 12px 4px 4px;
   background:var(--panel);
   border:1px solid var(--border);
   border-radius:100px;
   font-family:"DM Sans",sans-serif;
-  font-size:11.5px;color:var(--muted-hi);
+  font-size:11px;color:var(--muted-hi);
 }
 .tab-preview .fav{
   width:22px;height:22px;
@@ -265,10 +242,9 @@ body::before{
 }
 .tab-preview .fav svg{width:18px;height:18px}
 
-/* FOOTER */
 .foot{
   max-width:1080px;margin:0 auto;
-  padding:32px 40px 60px;
+  padding:28px 40px 60px;
   border-top:1px solid var(--border);
   display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;
   font-family:"JetBrains Mono",monospace;
@@ -282,12 +258,10 @@ body::before{
 .card:nth-child(1){animation-delay:.05s}
 .card:nth-child(2){animation-delay:.12s}
 .card:nth-child(3){animation-delay:.19s}
-.card:nth-child(4){animation-delay:.26s}
 .head *{animation:rise .8s ease-out backwards}
 .head .kicker{animation-delay:.05s}
 .head h1{animation-delay:.15s}
 .head .lede{animation-delay:.28s}
-.head .refbox{animation-delay:.42s}
 </style>
 </head>
 <body>
@@ -296,7 +270,7 @@ body::before{
   <defs>
     <linearGradient id="magGrad" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#FF6BB2"/>
-      <stop offset="55%" stop-color="#FF1F8E"/>
+      <stop offset="60%" stop-color="#FF1F8E"/>
       <stop offset="100%" stop-color="#B8146B"/>
     </linearGradient>
     <linearGradient id="magGradSoft" x1="0" y1="0" x2="1" y2="1">
@@ -307,76 +281,63 @@ body::before{
       <stop offset="0%" stop-color="#FFE4C7"/>
       <stop offset="100%" stop-color="#FFB88E"/>
     </linearGradient>
-    <linearGradient id="creamGrad" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#F5F2E8"/>
-      <stop offset="100%" stop-color="#C7C2B0"/>
-    </linearGradient>
   </defs>
 </svg>
 
 <div class="top">
-  <div class="left"><span class="dot"></span><span>qyvo · brand · v5 · digitech style</span></div>
+  <div class="left"><span class="dot"></span><span>qyvo · brand · v6 · digitech style · linhas finas</span></div>
   <div>
     <a href="#p01">01</a>
     <a href="#p02">02</a>
     <a href="#p03">03</a>
-    <a href="#p04">04</a>
   </div>
 </div>
 
 <section class="head">
-  <div class="kicker">v5 · foco no que você gostou</div>
-  <h1>Molecular <em>fluido.</em></h1>
+  <div class="kicker">v6 · linhas finas · exato digitech</div>
+  <h1>Como o <em>digitech,</em><br>na paleta certa.</h1>
   <p class="lede">
-    4 variações no estilo do <b>DIGITECH</b> que você apontou: círculos de tamanhos diferentes conectados por
-    curvas orgânicas, com um dot destaque em tom quente pra brilhar.
+    Mesmo padrão: <b>4 círculos de tamanhos diferentes</b> conectados por linhas <b>finas</b>, um deles no
+    tom accent (o "laranjinha" vira creme). 3 variações da <b>mesma família</b>, só posicionamento diferente.
   </p>
-  <div class="refbox">
-    <b>▸ Referência DIGITECH · o que replicar</b>
-    <u>Círculos de tamanhos variados · conexões curvas fluidas · 1 dot accent em cor secundária ·
-    formato geral sugere letra (D lá, Q aqui) sem virar letra literal</u>
-  </div>
 </section>
 
 <main class="grid">
 
-  <!-- ═══ 01 — Q FLUIDO HORIZONTAL (DIGITECH direct adapt) ═══ -->
+  <!-- ═══ 01 — layout diagonal (cópia direta do digitech) ═══ -->
   <section class="card" id="p01">
-    <div class="card-header"><span class="n">01</span><span class="k">Q fluido horizontal</span></div>
+    <div class="card-header"><span class="n">01</span><span style="color:var(--muted-hi)">layout diagonal</span></div>
     <div class="stage">
-      <svg class="mark" viewBox="0 0 170 170" xmlns="http://www.w3.org/2000/svg">
-        <!-- conexões curvas (path com stroke grosso arredondado) -->
-        <g fill="none" stroke="url(#magGrad)" stroke-width="18" stroke-linecap="round">
-          <path d="M 40 60 Q 60 30 90 45"/>
-          <path d="M 90 45 Q 118 55 128 82"/>
-          <path d="M 128 82 Q 122 118 92 122"/>
-          <path d="M 92 122 Q 62 122 46 100"/>
+      <svg class="mark" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+        <!-- conexões finas -->
+        <g stroke="url(#magGrad)" stroke-width="9" stroke-linecap="round" fill="none">
+          <line x1="50" y1="50" x2="120" y2="50"/>
+          <line x1="120" y1="50" x2="120" y2="120"/>
+          <line x1="50" y1="50" x2="80" y2="120"/>
         </g>
-        <!-- círculos principais (nós) -->
-        <circle cx="40" cy="60" r="22" fill="url(#magGrad)"/>
-        <circle cx="90" cy="45" r="16" fill="url(#magGrad)"/>
-        <circle cx="128" cy="82" r="18" fill="url(#magGrad)"/>
-        <circle cx="92" cy="122" r="20" fill="url(#magGrad)"/>
-        <circle cx="46" cy="100" r="14" fill="url(#magGrad)"/>
-        <!-- dot accent (creme, o "laranjinha" do digitech) -->
-        <circle cx="140" cy="140" r="11" fill="url(#accentGrad)"/>
-        <!-- linha curva conectando accent com o resto -->
-        <path d="M 128 82 Q 138 118 140 140" fill="none" stroke="url(#accentGrad)" stroke-width="5" stroke-linecap="round" opacity=".55"/>
-        <!-- highlight interno sutil -->
-        <circle cx="38" cy="55" r="6" fill="#F5F2E8" opacity=".22"/>
+        <!-- accent stroke (creme) -->
+        <line x1="120" y1="120" x2="150" y2="150" stroke="url(#accentGrad)" stroke-width="9" stroke-linecap="round"/>
+        <!-- círculos: 4 tamanhos diferentes -->
+        <circle cx="50" cy="50" r="28" fill="url(#magGrad)"/>
+        <circle cx="120" cy="50" r="20" fill="url(#magGrad)"/>
+        <circle cx="80" cy="120" r="24" fill="url(#magGrad)"/>
+        <circle cx="120" cy="120" r="16" fill="url(#magGrad)"/>
+        <!-- accent (creme, papel do laranja) -->
+        <circle cx="150" cy="150" r="14" fill="url(#accentGrad)"/>
+        <!-- highlights sutis -->
+        <circle cx="42" cy="42" r="6" fill="#F5F2E8" opacity=".28"/>
+        <circle cx="115" cy="45" r="4" fill="#F5F2E8" opacity=".22"/>
       </svg>
       <div class="name-block">
-        <span class="name-bold">Qyvo</span>
-        <span class="name-light">Live</span>
+        <span class="name-bold">QYVO</span>
+        <span class="name-light">LIVE</span>
       </div>
-      <div class="tag">tools · for · live · sellers</div>
+      <div class="tag">tools · for · sellers</div>
     </div>
     <div class="notes">
-      <div class="note-title">Q molecular <span>com accent creme</span></div>
       <div class="desc">
-        Adaptação direta do DIGITECH: 5 círculos de tamanhos variados conectados por curvas fluidas,
-        formando um <b>Q abstrato</b>. O <u>dot accent creme</u> ocupa o papel do laranjinha do DIGITECH,
-        dando um segundo tom sem sair da paleta do site.
+        <b>Cópia direta do padrão DIGITECH:</b> 4 círculos de tamanhos diferentes, linhas finas de espessura consistente,
+        dot <u>accent creme</u> no canto (papel do laranjinha).
       </div>
     </div>
     <div class="favbar">
@@ -384,18 +345,17 @@ body::before{
       <span class="tab-preview">
         <span class="fav">
           <svg viewBox="0 0 32 32">
-            <g fill="none" stroke="#FF1F8E" stroke-width="3.5" stroke-linecap="round">
-              <path d="M 8 12 Q 12 6 18 9"/>
-              <path d="M 18 9 Q 24 10 26 16"/>
-              <path d="M 26 16 Q 25 23 19 24"/>
-              <path d="M 19 24 Q 13 24 10 20"/>
+            <g stroke="#FF1F8E" stroke-width="2" stroke-linecap="round" fill="none">
+              <line x1="9" y1="9" x2="22" y2="9"/>
+              <line x1="22" y1="9" x2="22" y2="21"/>
+              <line x1="9" y1="9" x2="14" y2="21"/>
             </g>
-            <circle cx="8" cy="12" r="3.5" fill="#FF1F8E"/>
-            <circle cx="18" cy="9" r="2.6" fill="#FF1F8E"/>
-            <circle cx="26" cy="16" r="3" fill="#FF1F8E"/>
-            <circle cx="19" cy="24" r="3" fill="#FF1F8E"/>
-            <circle cx="10" cy="20" r="2.2" fill="#FF1F8E"/>
-            <circle cx="27" cy="27" r="2.2" fill="#FFE4C7"/>
+            <line x1="22" y1="21" x2="27" y2="26" stroke="#FFE4C7" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="9" cy="9" r="5" fill="#FF1F8E"/>
+            <circle cx="22" cy="9" r="3.5" fill="#FF1F8E"/>
+            <circle cx="14" cy="21" r="4" fill="#FF1F8E"/>
+            <circle cx="22" cy="21" r="3" fill="#FF1F8E"/>
+            <circle cx="27" cy="26" r="2.6" fill="#FFE4C7"/>
           </svg>
         </span>
         qyvo · live
@@ -403,98 +363,41 @@ body::before{
     </div>
   </section>
 
-  <!-- ═══ 02 — Q ORGÂNICO 4 BOLAS ═══ -->
+  <!-- ═══ 02 — layout curva (Q sugerido) ═══ -->
   <section class="card" id="p02">
-    <div class="card-header"><span class="n">02</span><span class="k">Q orgânico · 4 bolas</span></div>
+    <div class="card-header"><span class="n">02</span><span style="color:var(--muted-hi)">sugere Q</span></div>
     <div class="stage">
-      <svg class="mark" viewBox="0 0 170 170" xmlns="http://www.w3.org/2000/svg">
-        <!-- conexão principal curva grande -->
-        <path d="M 40 50 Q 25 90 45 130" fill="none" stroke="url(#magGrad)" stroke-width="24" stroke-linecap="round"/>
-        <path d="M 45 130 Q 90 145 130 118" fill="none" stroke="url(#magGrad)" stroke-width="22" stroke-linecap="round"/>
-        <path d="M 130 118 Q 148 85 128 50" fill="none" stroke="url(#magGrad)" stroke-width="20" stroke-linecap="round"/>
-        <path d="M 128 50 Q 90 30 40 50" fill="none" stroke="url(#magGrad)" stroke-width="18" stroke-linecap="round"/>
-        <!-- cauda do Q -->
-        <path d="M 130 118 Q 148 138 158 152" fill="none" stroke="url(#magGrad)" stroke-width="14" stroke-linecap="round"/>
-        <!-- círculos nas junções -->
-        <circle cx="40" cy="50" r="18" fill="url(#magGrad)"/>
-        <circle cx="45" cy="130" r="17" fill="url(#magGrad)"/>
-        <circle cx="130" cy="118" r="20" fill="url(#magGrad)"/>
-        <circle cx="128" cy="50" r="16" fill="url(#magGrad)"/>
-        <!-- dot accent creme final da cauda -->
-        <circle cx="158" cy="152" r="10" fill="url(#accentGrad)"/>
-        <!-- highlights -->
-        <circle cx="37" cy="45" r="5" fill="#F5F2E8" opacity=".22"/>
-        <circle cx="125" cy="45" r="4" fill="#F5F2E8" opacity=".22"/>
-      </svg>
-      <div class="name-block">
-        <span class="name-bold">Qyvo</span>
-        <span class="name-light">Live</span>
-      </div>
-      <div class="tag">tools · for · live · sellers</div>
-    </div>
-    <div class="notes">
-      <div class="note-title">Q <span>com cauda accent</span></div>
-      <div class="desc">
-        Mais próxima da letra Q real: 4 nós formando o círculo do Q + cauda saindo diagonal. A cauda termina no
-        <u>dot creme</u>, criando <b>hierarquia visual</b>. Muito reconhecível como Q, mas sem ser literal.
-      </div>
-    </div>
-    <div class="favbar">
-      <span class="lbl">preview aba</span>
-      <span class="tab-preview">
-        <span class="fav">
-          <svg viewBox="0 0 32 32">
-            <g fill="none" stroke="#FF1F8E" stroke-width="4" stroke-linecap="round">
-              <path d="M 7 9 Q 5 16 8 24"/>
-              <path d="M 8 24 Q 16 27 24 22"/>
-              <path d="M 24 22 Q 28 15 24 9"/>
-              <path d="M 24 9 Q 16 6 7 9"/>
-              <path d="M 24 22 Q 27 26 29 28"/>
-            </g>
-            <circle cx="29" cy="28" r="2.2" fill="#FFE4C7"/>
-          </svg>
-        </span>
-        qyvo · live
-      </span>
-    </div>
-  </section>
-
-  <!-- ═══ 03 — Q MOLECULAR SIMPLES 4 BOLAS ═══ -->
-  <section class="card" id="p03">
-    <div class="card-header"><span class="n">03</span><span class="k">3 nós + accent · minimalista</span></div>
-    <div class="stage">
-      <svg class="mark" viewBox="0 0 170 170" xmlns="http://www.w3.org/2000/svg">
-        <!-- 3 círculos + 1 accent formam um pequeno Q descontraído -->
-        <!-- pill conexões (largas, arredondadas — estilo DIGITECH puro) -->
-        <g fill="url(#magGrad)">
-          <!-- pill horizontal top -->
-          <rect x="42" y="52" width="86" height="26" rx="13"/>
-          <!-- pill diagonal top-right → center -->
-          <rect x="60" y="82" width="60" height="26" rx="13" transform="rotate(15 90 95)"/>
+      <svg class="mark" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+        <!-- conexões finas em arco (sugerindo Q) -->
+        <g stroke="url(#magGrad)" stroke-width="9" stroke-linecap="round" fill="none">
+          <path d="M 45 60 Q 55 30 90 30"/>
+          <path d="M 90 30 Q 130 30 135 70"/>
+          <path d="M 135 70 Q 130 115 90 120"/>
+          <path d="M 90 120 Q 55 115 45 60"/>
         </g>
-        <!-- 4 círculos grandes -->
-        <circle cx="46" cy="65" r="26" fill="url(#magGrad)"/>
-        <circle cx="128" cy="60" r="22" fill="url(#magGrad)"/>
-        <circle cx="115" cy="110" r="24" fill="url(#magGrad)"/>
-        <!-- dot accent creme (destaque tipo laranja do digitech) -->
-        <circle cx="60" cy="128" r="14" fill="url(#accentGrad)"/>
-        <!-- pill conectando accent -->
-        <rect x="66" y="115" width="60" height="14" rx="7" fill="url(#accentGrad)" opacity=".55" transform="rotate(-8 96 122)"/>
+        <!-- cauda accent (creme) saindo do canto inferior direito -->
+        <line x1="120" y1="105" x2="150" y2="150" stroke="url(#accentGrad)" stroke-width="9" stroke-linecap="round"/>
+        <!-- círculos nos vértices, tamanhos variados -->
+        <circle cx="45" cy="60" r="22" fill="url(#magGrad)"/>
+        <circle cx="90" cy="30" r="18" fill="url(#magGrad)"/>
+        <circle cx="135" cy="70" r="24" fill="url(#magGrad)"/>
+        <circle cx="90" cy="120" r="20" fill="url(#magGrad)"/>
+        <!-- accent creme na ponta -->
+        <circle cx="150" cy="150" r="13" fill="url(#accentGrad)"/>
         <!-- highlights -->
-        <circle cx="42" cy="58" r="7" fill="#F5F2E8" opacity=".28"/>
-        <circle cx="124" cy="55" r="5" fill="#F5F2E8" opacity=".22"/>
+        <circle cx="40" cy="55" r="5" fill="#F5F2E8" opacity=".26"/>
+        <circle cx="130" cy="65" r="6" fill="#F5F2E8" opacity=".22"/>
       </svg>
       <div class="name-block">
-        <span class="name-bold">Qyvo</span>
-        <span class="name-light">Live</span>
+        <span class="name-bold">QYVO</span>
+        <span class="name-light">LIVE</span>
       </div>
-      <div class="tag">tools · for · live · sellers</div>
+      <div class="tag">tools · for · sellers</div>
     </div>
     <div class="notes">
-      <div class="note-title">3 bolhas <span>+ 1 accent</span></div>
       <div class="desc">
-        Versão mais <b>enxuta e memorável</b>. 3 círculos magenta + 1 accent creme (o "acento" da marca).
-        Menor densidade que a 01, mais fácil de reconhecer instantaneamente. Muito bom pra escalar em favicon.
+        Mesmo padrão do 01, mas os 4 círculos formam um <b>ciclo fechado com cauda accent</b> — mais fácil de ler
+        como Q sem virar letra literal. Cara mais "vivo".
       </div>
     </div>
     <div class="favbar">
@@ -502,12 +405,18 @@ body::before{
       <span class="tab-preview">
         <span class="fav">
           <svg viewBox="0 0 32 32">
-            <rect x="8" y="9" width="16" height="5" rx="2.5" fill="#FF1F8E"/>
-            <rect x="11" y="14" width="12" height="5" rx="2.5" fill="#FF1F8E" transform="rotate(15 17 16.5)"/>
-            <circle cx="9" cy="11" r="5" fill="#FF1F8E"/>
-            <circle cx="24" cy="10" r="4" fill="#FF1F8E"/>
-            <circle cx="22" cy="20" r="4.5" fill="#FF1F8E"/>
-            <circle cx="12" cy="23" r="3" fill="#FFE4C7"/>
+            <g stroke="#FF1F8E" stroke-width="2" stroke-linecap="round" fill="none">
+              <path d="M 8 12 Q 10 5 16 5"/>
+              <path d="M 16 5 Q 24 5 24 13"/>
+              <path d="M 24 13 Q 24 22 16 22"/>
+              <path d="M 16 22 Q 10 22 8 12"/>
+            </g>
+            <line x1="21" y1="20" x2="27" y2="27" stroke="#FFE4C7" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="8" cy="12" r="4" fill="#FF1F8E"/>
+            <circle cx="16" cy="5" r="3.2" fill="#FF1F8E"/>
+            <circle cx="24" cy="13" r="4.2" fill="#FF1F8E"/>
+            <circle cx="16" cy="22" r="3.6" fill="#FF1F8E"/>
+            <circle cx="27" cy="27" r="2.6" fill="#FFE4C7"/>
           </svg>
         </span>
         qyvo · live
@@ -515,36 +424,39 @@ body::before{
     </div>
   </section>
 
-  <!-- ═══ 04 — Q FLUIDO VERTICAL (com fluxo direcional) ═══ -->
-  <section class="card" id="p04">
-    <div class="card-header"><span class="n">04</span><span class="k">fluxo vertical · direcional</span></div>
+  <!-- ═══ 03 — layout compacto (3 círculos + 1 accent) ═══ -->
+  <section class="card" id="p03">
+    <div class="card-header"><span class="n">03</span><span style="color:var(--muted-hi)">compacto · triangular</span></div>
     <div class="stage">
-      <svg class="mark" viewBox="0 0 170 170" xmlns="http://www.w3.org/2000/svg">
-        <!-- fluxo curvo grande (backbone) -->
-        <path d="M 50 30 Q 90 55 60 88 Q 30 118 90 138 Q 130 145 135 100" fill="none" stroke="url(#magGrad)" stroke-width="26" stroke-linecap="round"/>
-        <!-- nós ao longo do fluxo -->
-        <circle cx="50" cy="30" r="20" fill="url(#magGrad)"/>
-        <circle cx="60" cy="88" r="16" fill="url(#magGrad)"/>
-        <circle cx="90" cy="138" r="22" fill="url(#magGrad)"/>
-        <circle cx="135" cy="100" r="18" fill="url(#magGrad)"/>
-        <!-- accent creme = dot final que "sai" do fluxo -->
-        <circle cx="150" cy="70" r="10" fill="url(#accentGrad)"/>
-        <path d="M 135 100 Q 148 88 150 70" fill="none" stroke="url(#accentGrad)" stroke-width="6" stroke-linecap="round" opacity=".65"/>
+      <svg class="mark" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+        <!-- conexões finas triangulares -->
+        <g stroke="url(#magGrad)" stroke-width="9" stroke-linecap="round" fill="none">
+          <line x1="55" y1="55" x2="130" y2="55"/>
+          <line x1="55" y1="55" x2="90" y2="125"/>
+          <line x1="130" y1="55" x2="90" y2="125"/>
+        </g>
+        <!-- linha accent creme saindo do lateral -->
+        <line x1="130" y1="55" x2="155" y2="30" stroke="url(#accentGrad)" stroke-width="9" stroke-linecap="round"/>
+        <!-- 3 círculos magenta -->
+        <circle cx="55" cy="55" r="26" fill="url(#magGrad)"/>
+        <circle cx="130" cy="55" r="22" fill="url(#magGrad)"/>
+        <circle cx="90" cy="125" r="28" fill="url(#magGrad)"/>
+        <!-- 1 accent creme -->
+        <circle cx="155" cy="30" r="14" fill="url(#accentGrad)"/>
         <!-- highlights -->
-        <circle cx="47" cy="26" r="6" fill="#F5F2E8" opacity=".28"/>
-        <circle cx="88" cy="132" r="7" fill="#F5F2E8" opacity=".22"/>
+        <circle cx="48" cy="48" r="6" fill="#F5F2E8" opacity=".28"/>
+        <circle cx="83" cy="117" r="7" fill="#F5F2E8" opacity=".22"/>
       </svg>
       <div class="name-block">
-        <span class="name-bold">Qyvo</span>
-        <span class="name-light">Live</span>
+        <span class="name-bold">QYVO</span>
+        <span class="name-light">LIVE</span>
       </div>
-      <div class="tag">tools · for · live · sellers</div>
+      <div class="tag">tools · for · sellers</div>
     </div>
     <div class="notes">
-      <div class="note-title">Fluxo <span>com saída accent</span></div>
       <div class="desc">
-        Mais orgânico dos quatro — o fluxo <b>não se fecha em círculo</b>, o dot accent creme é a "saída".
-        Sugere movimento, transformação. Bom se você quer que a marca sugira <u>dinamismo</u>.
+        Versão <b>mais enxuta</b>: só 3 círculos magenta + 1 accent. Layout triangular. Menos densa que a 01/02,
+        mais fácil de ler no favicon 16×16.
       </div>
     </div>
     <div class="favbar">
@@ -552,8 +464,16 @@ body::before{
       <span class="tab-preview">
         <span class="fav">
           <svg viewBox="0 0 32 32">
-            <path d="M 8 5 Q 16 10 10 16 Q 5 22 16 26 Q 24 27 25 18" fill="none" stroke="#FF1F8E" stroke-width="4" stroke-linecap="round"/>
-            <circle cx="27" cy="12" r="2.5" fill="#FFE4C7"/>
+            <g stroke="#FF1F8E" stroke-width="2" stroke-linecap="round" fill="none">
+              <line x1="9" y1="10" x2="22" y2="10"/>
+              <line x1="9" y1="10" x2="16" y2="22"/>
+              <line x1="22" y1="10" x2="16" y2="22"/>
+            </g>
+            <line x1="22" y1="10" x2="27" y2="5" stroke="#FFE4C7" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="9" cy="10" r="4.5" fill="#FF1F8E"/>
+            <circle cx="22" cy="10" r="4" fill="#FF1F8E"/>
+            <circle cx="16" cy="22" r="5" fill="#FF1F8E"/>
+            <circle cx="27" cy="5" r="2.6" fill="#FFE4C7"/>
           </svg>
         </span>
         qyvo · live
@@ -564,8 +484,8 @@ body::before{
 </main>
 
 <div class="foot">
-  <span>qyvo · brand · v5</span>
-  <span>▸ 4 opções · <b>estilo DIGITECH</b> · dot accent creme</span>
+  <span>qyvo · brand · v6</span>
+  <span>▸ 3 variações · <b>linhas finas</b> · círculos + conexões finas · accent creme</span>
   <span>escolhe uma pra virar oficial</span>
 </div>
 
