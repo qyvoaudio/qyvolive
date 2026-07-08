@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Qyvo Live, Ferramentas pra TikTok Shop sellers</title>
 <meta name="description" content="A Qyvo Live constrói ferramentas que liberam o tempo de quem vive em live no TikTok Shop. Argos, Quick Test, Live Shop Pro.">
-<link rel="icon" href="assets/logo.png">
+<link rel="icon" type="image/svg+xml" href="assets/qyvo-symbol.svg">
+<meta property="og:image" content="https://qyvolive.com.br/assets/qyvo-logo.svg">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -70,13 +71,25 @@ body::before {
   border-bottom: 1px solid rgba(43, 34, 56, 0.5);
 }
 .brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+.brand-mark {
+  width: 36px;
+  height: 36px;
+  display: block;
+}
+.brand-word {
   font-family: var(--serif);
   font-size: 22px;
   font-weight: 600;
   letter-spacing: -0.01em;
   font-style: italic;
+  color: var(--text);
 }
-.brand .y { color: var(--accent); font-style: normal; }
+.brand-word .y { color: var(--accent); font-style: normal; }
 .nav .spacer { flex: 1; }
 .nav-links { display: flex; gap: 32px; font-size: 14px; }
 .nav-links a {
@@ -442,7 +455,10 @@ footer a:hover { color: var(--accent); }
 <body>
 
 <nav class="nav">
-  <div class="brand"><span class="y">q</span>yvo · live</div>
+  <a href="/" class="brand">
+    <img src="assets/qyvo-symbol.svg" alt="Qyvo Live" class="brand-mark">
+    <span class="brand-word"><span class="y">q</span>yvo · live</span>
+  </a>
   <div class="spacer"></div>
   <div class="nav-links">
     <a href="#produtos">Produtos</a>
