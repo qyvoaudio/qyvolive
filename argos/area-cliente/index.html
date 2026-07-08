@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Área cliente · Argos · Qyvo Live</title>
+<meta name="description" content="Área dos clientes do Argos. Manual completo pra baixar, ativar, calibrar e rodar o guardião da sua live.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="../assets/logo.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #0A0A0E;
+  --bg-2: #11111A;
+  --panel: #14141C;
+  --panel-hi: #1B1B26;
+  --border: #2A2A35;
+  --border-hi: #3A3A48;
+  --text: #F5F2E8;
+  --muted: #6B6B7A;
+  --muted-hi: #9B9AA8;
+  --accent: #FF1F8E;
+  --accent-glow: rgba(255, 31, 142, 0.35);
+  --signal: #00FF9D;
+  --warn: #FFB800;
+
+  --display: "Anton", "Impact", sans-serif;
+  --body: "DM Sans", system-ui, sans-serif;
+  --mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.65;
+  overflow-x: hidden;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  mix-blend-mode: overlay;
+}
+a { color: var(--accent); text-decoration: none; }
+
+/* STRIP */
+.strip {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  background: rgba(10, 10, 14, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  z-index: 100;
+  padding: 14px 32px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.strip .logo-img {
+  width: 28px; height: 28px;
+  display: block;
+  filter: drop-shadow(0 0 8px var(--accent-glow));
+}
+.strip .brand { font-weight: 700; font-size: 13px; letter-spacing: 0.12em; }
+.strip .brand .mark { color: var(--accent); margin: 0 1px; }
+.strip .spacer { flex: 1; }
+.strip a { color: var(--muted-hi); }
+.strip a:hover { color: var(--accent); }
+.strip .btn-sair {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted-hi);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.strip .btn-sair:hover { color: var(--accent); border-color: var(--accent); }
+
+/* GATE */
+.gate {
+  max-width: 460px;
+  margin: 160px auto 80px;
+  padding: 0 32px;
+}
+.gate-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 40px 36px;
+}
+.gate-eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+  margin-bottom: 18px;
+  display: flex; align-items: center; gap: 12px;
+}
+.gate-eyebrow::before {
+  content: ""; width: 24px; height: 1px; background: var(--accent);
+}
+.gate h1 {
+  font-family: var(--display);
+  font-size: 42px;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.gate h1 em { font-style: normal; color: var(--accent); }
+.gate .lead {
+  color: var(--muted-hi);
+  font-size: 15px;
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+.gate input {
+  width: 100%;
+  background: var(--bg-2);
+  border: 1px solid var(--border-hi);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  padding: 14px 16px;
+  border-radius: 8px;
+  text-transform: uppercase;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.gate input:focus { border-color: var(--accent); }
+.gate input::placeholder { color: var(--muted); letter-spacing: 0.08em; }
+.gate button {
+  width: 100%;
+  margin-top: 12px;
+  background: var(--accent);
+  color: white;
+  font-family: var(--body);
+  font-weight: 700;
+  font-size: 15px;
+  padding: 14px 20px;
+  border: 0;
+  border-radius: 100px;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: all 0.15s;
+  box-shadow: 0 8px 24px var(--accent-glow);
+}
+.gate button:hover { transform: translateY(-1px); box-shadow: 0 12px 32px var(--accent-glow); }
+.gate button:disabled { opacity: 0.5; cursor: progress; }
+.gate-error {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: rgba(255, 100, 100, 0.08);
+  border: 1px solid rgba(255, 100, 100, 0.25);
+  border-radius: 8px;
+  color: #FF7878;
+  font-size: 13.5px;
+  display: none;
+}
+.gate-error.show { display: block; }
+.gate-help {
+  margin-top: 24px;
+  padding-top: 22px;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.gate-help a { color: var(--muted-hi); border-bottom: 1px solid var(--border); }
+.gate-help a:hover { color: var(--accent); border-color: var(--accent); }
+
+/* HOME */
+.home {
+  max-width: 1000px;
+  margin: 120px auto 40px;
+  padding: 0 32px;
+  display: none;
+}
+.home.show { display: block; }
+.home h1 {
+  font-family: var(--display);
+  font-size: clamp(44px, 7vw, 72px);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.home h1 em { font-style: normal; color: var(--accent); }
+.home .welcome {
+  color: var(--muted-hi);
+  font-size: 17px;
+  margin-bottom: 48px;
+  max-width: 600px;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  margin-bottom: 60px;
+}
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px 26px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  font-family: inherit;
+  color: inherit;
+}
+.card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(255, 31, 142, 0.15);
+}
+.card .label {
+  font-family: var(--mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+.card h3 {
+  font-family: var(--display);
+  font-size: 28px;
+  line-height: 1.05;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  letter-spacing: -0.005em;
+}
+.card p {
+  color: var(--muted-hi);
+  font-size: 14.5px;
+  line-height: 1.55;
+}
+
+/* DOWNLOAD CARD (destaque) */
+.download {
+  background: linear-gradient(135deg, rgba(255,31,142,0.10), rgba(255,31,142,0.02));
+  border: 1px solid rgba(255, 31, 142, 0.4);
+  border-radius: 14px;
+  padding: 28px 26px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.download .info { flex: 1; min-width: 260px; }
+.download .label {
+  font-family: var(--mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+.download h3 {
+  font-family: var(--display);
+  font-size: 28px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.download p {
+  color: var(--muted-hi);
+  font-size: 14.5px;
+}
+.download .btn-dl {
+  background: var(--accent);
+  color: white;
+  padding: 14px 26px;
+  border-radius: 100px;
+  font-weight: 700;
+  font-size: 15px;
+  box-shadow: 0 8px 24px var(--accent-glow);
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+.download .btn-dl:hover { transform: translateY(-1px); box-shadow: 0 12px 32px var(--accent-glow); }
+
+/* RENDERIZADO */
+.render-wrap {
+  display: none;
+  margin-top: 60px;
+  padding-top: 60px;
+  border-top: 1px solid var(--border);
+}
+.render-wrap.show { display: block; }
+.render-wrap .render-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  color: var(--muted-hi);
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+.render-wrap .render-back:hover { color: var(--accent); }
+.render-wrap .hero { padding: 0 0 40px; margin-bottom: 40px; text-align: left; max-width: none; }
+.render-wrap .hero .eyebrow {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--mono); font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.18em;
+  color: var(--signal); padding: 8px 16px;
+  background: rgba(0, 255, 157, 0.07);
+  border: 1px solid rgba(0, 255, 157, 0.25);
+  border-radius: 100px; margin-bottom: 28px;
+}
+.render-wrap .hero .eyebrow::before { content: ""; width: 6px; height: 6px; background: var(--signal); border-radius: 50%; }
+.render-wrap .hero h1 { font-family: var(--display); font-size: clamp(40px, 6vw, 72px); line-height: 0.95; letter-spacing: -0.01em; text-transform: uppercase; margin-bottom: 18px; }
+.render-wrap .hero h1 em { font-style: normal; color: var(--accent); }
+.render-wrap .hero .lead { color: var(--muted-hi); font-size: 17px; max-width: 720px; line-height: 1.6; }
+.render-wrap .toc-wrap { max-width: none; margin: 40px 0 60px; padding: 0; }
+.render-wrap .toc { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 28px; }
+.render-wrap .toc h2 { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+.render-wrap .toc h2::before { content: ""; width: 24px; height: 1px; background: var(--accent); }
+.render-wrap .toc-list { list-style: none; counter-reset: toc; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.render-wrap .toc-list li { counter-increment: toc; }
+.render-wrap .toc-list a { display: flex; align-items: center; gap: 14px; padding: 11px 12px; color: var(--muted-hi); text-decoration: none; border-radius: 8px; font-size: 14px; }
+.render-wrap .toc-list a::before { content: counter(toc, decimal-leading-zero); font-family: var(--mono); font-size: 11px; color: var(--accent); font-weight: 700; }
+.render-wrap .toc-list a:hover { background: var(--panel-hi); color: var(--text); }
+@media (max-width: 640px) { .render-wrap .toc-list { grid-template-columns: 1fr; } }
+.render-wrap .sec { max-width: none; margin: 0 0 70px; padding: 0; scroll-margin-top: 80px; }
+.render-wrap .sec-label { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+.render-wrap .sec-label::before { content: ""; width: 28px; height: 1px; background: var(--accent); }
+.render-wrap .sec h2 { font-family: var(--display); font-size: clamp(34px, 5vw, 52px); line-height: 1; letter-spacing: -0.01em; text-transform: uppercase; margin-bottom: 22px; }
+.render-wrap .sec h2 em { font-style: normal; color: var(--accent); }
+.render-wrap .sec h3 { font-family: var(--display); font-size: 22px; text-transform: uppercase; margin: 32px 0 14px; }
+.render-wrap .sec p { color: var(--muted-hi); font-size: 16px; line-height: 1.7; margin-bottom: 14px; }
+.render-wrap .sec p strong { color: var(--text); font-weight: 600; }
+.render-wrap .sec code { font-family: var(--mono); background: var(--panel-hi); padding: 2px 7px; border-radius: 4px; font-size: 13.5px; color: var(--signal); }
+.render-wrap .sec ol, .render-wrap .sec ul { margin: 14px 0 20px 26px; color: var(--muted-hi); font-size: 16px; line-height: 1.7; }
+.render-wrap .sec li { margin-bottom: 6px; }
+.render-wrap .sec ol li::marker { color: var(--accent); font-family: var(--mono); font-weight: 700; }
+.render-wrap .sec ul li::marker { color: var(--accent); }
+.render-wrap .callout { background: var(--panel); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 8px; padding: 20px 24px; margin: 24px 0; font-size: 15px; color: var(--muted-hi); line-height: 1.6; }
+.render-wrap .callout strong { color: var(--text); }
+.render-wrap .callout.signal { border-left-color: var(--signal); }
+.render-wrap .callout.warn { border-left-color: var(--warn); }
+.render-wrap .callout-title { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 8px; font-weight: 700; }
+.render-wrap .callout.signal .callout-title { color: var(--signal); }
+.render-wrap .callout.warn .callout-title { color: var(--warn); }
+.render-wrap .sec a { color: var(--accent); border-bottom: 1px solid transparent; }
+.render-wrap .sec a:hover { border-color: var(--accent); }
+
+footer {
+  max-width: 1000px;
+  margin: 60px auto 30px;
+  padding: 24px 32px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+footer .links { display: flex; gap: 18px; }
+footer a { color: var(--muted); }
+footer a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="strip">
+  <img src="../assets/panoptic.svg" alt="Argos" class="logo-img">
+  <div class="brand">ARGOS · ÁREA CLIENTE</div>
+  <div class="spacer"></div>
+  <button id="btnSair" class="btn-sair" onclick="sair()" style="display:none">Sair</button>
+</div>
+
+<!-- GATE -->
+<section class="gate" id="gate">
+  <div class="gate-card">
+    <div class="gate-eyebrow">Acesso restrito</div>
+    <h1>Cola sua <em>chave</em>.</h1>
+    <p class="lead">
+      O manual completo com passo a passo é exclusivo pra quem comprou o Argos. Cola a chave de licença que você recebeu por email.
+    </p>
+    <input
+      id="chave"
+      type="text"
+      placeholder="AR-XXXX-XXXX-XXXX"
+      autocapitalize="characters"
+      spellcheck="false"
+      maxlength="32"
+      onkeydown="if(event.key==='Enter') entrar()">
+    <button id="btnEntrar" onclick="entrar()">Entrar →</button>
+    <div class="gate-error" id="gateError"></div>
+    <div class="gate-help">
+      Perdeu a chave? Procura no seu email, chegou logo após a compra na Kiwify.
+      Ainda não comprou? <a href="/argos/">Conhecer o Argos →</a>
+    </div>
+  </div>
+</section>
+
+<!-- HOME -->
+<section class="home" id="home">
+  <h1>Parabéns pela <em>sua compra</em>!</h1>
+  <p class="welcome">
+    Aqui tá o que você precisa pra começar. Download direto do app + manual completo passo a passo.
+  </p>
+
+  <div class="download">
+    <div class="info">
+      <div class="label">Download</div>
+      <h3>Argos.exe (Windows)</h3>
+      <p>Última versão. Baixa, executa, cola sua chave.</p>
+    </div>
+    <a href="https://github.com/qyvoaudio/argos/releases/latest/download/Argos.exe" class="btn-dl" download>
+      ▸ Baixar Argos.exe
+    </a>
+  </div>
+
+  <div class="cards">
+    <button class="card" onclick="abrir('manual')">
+      <div class="label">📖 Documentação</div>
+      <h3>Manual completo</h3>
+      <p>Do download até a primeira live vigiada. Baixa, ativa, calibra 3 pontos, ajusta timing, aperta iniciar. Passo a passo com dicas e troubleshooting.</p>
+    </button>
+  </div>
+
+  <div class="render-wrap" id="renderWrap">
+    <button class="render-back" onclick="voltar()">← Voltar</button>
+    <div id="renderTarget"></div>
+  </div>
+</section>
+
+<footer>
+  <div>© 2026 QYVO LIVE</div>
+  <div class="links">
+    <a href="/">Home</a>
+    <a href="/argos/">Produto</a>
+    <a href="mailto:contato@qyvolive.com.br">Suporte</a>
+  </div>
+</footer>
+
+<script>
+const WORKER = "https://argos-license.caroldepaz.workers.dev";
+const STORAGE_KEY = "argos_area_key";
+let chave = localStorage.getItem(STORAGE_KEY) || "";
+
+const $ = (id) => document.getElementById(id);
+const showError = (msg) => { $("gateError").textContent = msg; $("gateError").classList.add("show"); };
+const hideError = () => $("gateError").classList.remove("show");
+const trocaParaGate = () => { $("gate").style.display = ""; $("home").classList.remove("show"); $("btnSair").style.display = "none"; };
+const trocaParaHome = () => { $("gate").style.display = "none"; $("home").classList.add("show"); $("btnSair").style.display = ""; };
+
+async function fetchProtegido(qual) {
+  const r = await fetch(`${WORKER}/v1/area/${qual}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ key: chave }),
+  });
+  return await r.json();
+}
+
+const REASON_PT = {
+  invalid: "Chave inválida. Confere se digitou certo.",
+  revoked: "Essa chave foi revogada. Chama o suporte.",
+  expired: "Sua licença expirou. Renova em qyvolive.com.br/argos",
+  missing_key: "Cola uma chave válida.",
+};
+
+async function entrar() {
+  hideError();
+  const input = $("chave").value.trim().toUpperCase();
+  if (input.length < 8) { showError("Chave muito curta."); return; }
+  chave = input;
+  $("btnEntrar").disabled = true; $("btnEntrar").textContent = "Validando...";
+  try {
+    const r = await fetchProtegido("manual");
+    if (!r.ok) {
+      showError(REASON_PT[r.reason] || `Erro: ${r.reason || "desconhecido"}`);
+      chave = "";
+    } else {
+      localStorage.setItem(STORAGE_KEY, chave);
+      trocaParaHome();
+    }
+  } catch (e) {
+    showError("Sem conexão. Tenta de novo em alguns segundos.");
+    chave = "";
+  }
+  $("btnEntrar").disabled = false; $("btnEntrar").textContent = "Entrar →";
+}
+
+async function abrir(qual) {
+  const renderWrap = $("renderWrap");
+  const target = $("renderTarget");
+  target.innerHTML = '<p style="color:var(--muted);font-family:var(--mono);text-align:center;padding:60px 0">Carregando...</p>';
+  renderWrap.classList.add("show");
+  renderWrap.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  try {
+    const r = await fetchProtegido(qual);
+    if (!r.ok) {
+      if (r.reason === "invalid" || r.reason === "expired" || r.reason === "revoked") {
+        sair();
+        showError(REASON_PT[r.reason] || "Sua licença não está mais ativa.");
+        return;
+      }
+      target.innerHTML = `<p style="color:var(--accent);text-align:center;padding:60px 0">Erro: ${r.reason || "desconhecido"}</p>`;
+      return;
+    }
+    target.innerHTML = r.html;
+  } catch (e) {
+    target.innerHTML = '<p style="color:var(--accent);text-align:center;padding:60px 0">Sem conexão. Tenta de novo.</p>';
+  }
+}
+
+function voltar() {
+  $("renderWrap").classList.remove("show");
+  $("home").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function sair() {
+  localStorage.removeItem(STORAGE_KEY);
+  chave = "";
+  $("chave").value = "";
+  $("renderWrap").classList.remove("show");
+  $("renderTarget").innerHTML = "";
+  trocaParaGate();
+}
+
+(async () => {
+  if (!chave) return;
+  try {
+    const r = await fetchProtegido("manual");
+    if (r.ok) {
+      trocaParaHome();
+    } else {
+      localStorage.removeItem(STORAGE_KEY);
+      chave = "";
+    }
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>
