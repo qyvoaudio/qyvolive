@@ -217,6 +217,70 @@ main{
 }
 .tab-item .t-title{font-size:13px;color:var(--text)}
 .tab-item .t-url{font-size:11px;color:var(--muted);font-family:"JetBrains Mono",monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* BANNERS */
+.banner-actions{
+  display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center;
+}
+.rot-status{
+  font-family:"JetBrains Mono",monospace;font-size:10.5px;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+  padding:5px 12px;border:1px solid var(--border);border-radius:100px;
+  margin-left:auto;
+}
+.rot-status.on{color:var(--signal);border-color:var(--signal)}
+.banner-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+  gap:12px;margin-bottom:14px;
+}
+.banner-card{
+  background:var(--bg);border:1px solid var(--border);border-radius:10px;
+  overflow:hidden;display:flex;flex-direction:column;
+  transition:border-color .15s;
+}
+.banner-card:hover{border-color:var(--border-hi)}
+.banner-card.playing{border-color:var(--signal);box-shadow:0 0 20px var(--signal-glow)}
+.banner-thumb{
+  aspect-ratio:16/9;background:#000;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.banner-thumb img{max-width:100%;max-height:100%;object-fit:cover}
+.banner-meta{padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.banner-name{
+  font-size:12px;color:var(--text);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.banner-interval{
+  display:flex;align-items:center;gap:6px;
+  font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--muted);
+}
+.banner-interval input{
+  width:60px;padding:4px 8px;
+  background:var(--panel);border:1px solid var(--border);border-radius:6px;
+  color:var(--text);font-family:inherit;font-size:11px;
+  outline:none;
+}
+.banner-interval input:focus{border-color:var(--accent)}
+.banner-actions-row{
+  display:flex;gap:4px;justify-content:space-between;
+  padding:0 12px 10px;
+}
+.banner-actions-row button{
+  padding:4px 8px;font-size:11px;background:transparent;color:var(--muted);
+  border:1px solid var(--border);border-radius:4px;cursor:pointer;
+  transition:all .15s;
+}
+.banner-actions-row button:hover{color:var(--text);border-color:var(--border-hi)}
+.banner-actions-row button.danger:hover{color:var(--err);border-color:var(--err)}
+.upload-box{
+  padding:20px;text-align:center;
+  border:2px dashed var(--border);border-radius:10px;
+  color:var(--muted);cursor:pointer;transition:all .15s;
+  margin-bottom:14px;
+}
+.upload-box:hover{border-color:var(--accent);color:var(--accent)}
+.upload-box input{display:none}
 </style>
 </head>
 <body>
@@ -273,7 +337,22 @@ main{
     <h2>Abas abertas <span id="tabCount" style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--muted)"></span></h2>
     <div class="tab-list" id="tabList"></div>
 
-    <h2>Log</h2>
+    <h2 style="margin-top:22px">Banners <span id="rotStatus" class="rot-status">parado</span></h2>
+
+    <label class="upload-box" for="bannerUpload">
+      📁 Clique pra subir imagens (múltiplas)
+      <input type="file" id="bannerUpload" accept="image/*" multiple>
+    </label>
+
+    <div class="banner-actions">
+      <button class="btn small" id="btnStartRotation">▶ Iniciar rotação</button>
+      <button class="btn ghost small" id="btnStopRotation">■ Parar</button>
+      <button class="btn ghost small" id="btnClearBanners" style="margin-left:auto">🗑 Limpar todos</button>
+    </div>
+
+    <div class="banner-grid" id="bannerGrid"></div>
+
+    <h2 style="margin-top:22px">Log</h2>
     <div class="log" id="log"></div>
   </section>
 </main>
@@ -366,13 +445,145 @@ $("btnScreenshot").addEventListener("click", async () => {
   log(`✓ screenshot aberto em nova aba`, "ok");
 });
 
+// ─── BANNERS ─────────────────────────────────────────────────────────────────
+
+let bannersCache = [];
+
+async function refreshBanners() {
+  try {
+    const r = await api("/banners");
+    if (!r.ok) return;
+    bannersCache = r.banners || [];
+    const rotStatus = await api("/rotation/status");
+    const currentId = rotStatus.current_banner_id;
+    const active = rotStatus.active;
+    $("rotStatus").textContent = active ? `▶ rotacionando · ${bannersCache.length} banner(s)` : "parado";
+    $("rotStatus").classList.toggle("on", !!active);
+    const grid = $("bannerGrid");
+    grid.innerHTML = "";
+    if (!bannersCache.length) {
+      grid.innerHTML = `<div style="grid-column:1/-1;color:var(--muted);font-size:12px;text-align:center;padding:14px">nenhum banner ainda — sobe imagens acima</div>`;
+      return;
+    }
+    bannersCache.forEach((b, i) => {
+      const card = document.createElement("div");
+      card.className = "banner-card" + (b.id === currentId ? " playing" : "");
+      const imgSrc = `${API}/banners/${b.id}/file`;
+      card.innerHTML = `
+        <div class="banner-thumb"><img src="${imgSrc}" alt="" onerror="this.parentElement.innerHTML='<span style=color:var(--muted);font-size:11px>#${i+1}</span>'"></div>
+        <div class="banner-meta">
+          <div class="banner-name" title="${escHtml(b.original_name)}">${escHtml(b.original_name)}</div>
+          <div class="banner-interval">
+            <input type="number" min="5" max="600" value="${b.interval_s}" data-bid="${b.id}" class="int-input">
+            <span>seg</span>
+          </div>
+        </div>
+        <div class="banner-actions-row">
+          <button data-apply="${b.id}">Aplicar</button>
+          <button data-up="${b.id}" ${i===0?"disabled":""}>↑</button>
+          <button data-down="${b.id}" ${i===bannersCache.length-1?"disabled":""}>↓</button>
+          <button data-remove="${b.id}" class="danger">×</button>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+
+    grid.querySelectorAll(".int-input").forEach(inp => {
+      inp.addEventListener("change", async () => {
+        const id = inp.dataset.bid, v = parseInt(inp.value, 10);
+        if (!v || v < 5) return;
+        await api(`/banners/${id}/update`, { interval_s: v });
+        log(`✓ intervalo do banner atualizado`, "ok");
+      });
+    });
+    grid.querySelectorAll("button[data-apply]").forEach(b => {
+      b.addEventListener("click", async () => {
+        const r = await api("/set-banner", { banner_id: b.dataset.apply });
+        r.ok ? log(`✓ banner aplicado`, "ok") : log(`✗ ${r.error}`, "err");
+      });
+    });
+    grid.querySelectorAll("button[data-up]").forEach(b => {
+      b.addEventListener("click", async () => {
+        const id = b.dataset.up;
+        const i = bannersCache.findIndex(x => x.id === id);
+        if (i <= 0) return;
+        const prev = bannersCache[i-1];
+        // swap orders
+        await api(`/banners/${prev.id}/update`, { order: bannersCache[i].order });
+        await api(`/banners/${id}/update`, { order: prev.order });
+        await refreshBanners();
+      });
+    });
+    grid.querySelectorAll("button[data-down]").forEach(b => {
+      b.addEventListener("click", async () => {
+        const id = b.dataset.down;
+        const i = bannersCache.findIndex(x => x.id === id);
+        if (i < 0 || i >= bannersCache.length - 1) return;
+        const next = bannersCache[i+1];
+        await api(`/banners/${next.id}/update`, { order: bannersCache[i].order });
+        await api(`/banners/${id}/update`, { order: next.order });
+        await refreshBanners();
+      });
+    });
+    grid.querySelectorAll("button[data-remove]").forEach(b => {
+      b.addEventListener("click", async () => {
+        if (!confirm("Remover este banner?")) return;
+        await fetch(`${API}/banners/${b.dataset.remove}`, { method: "DELETE" });
+        await refreshBanners();
+        log(`✓ banner removido`, "ok");
+      });
+    });
+  } catch (e) { log(`refreshBanners: ${e.message}`, "err"); }
+}
+
+function escHtml(s) { return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+$("bannerUpload").addEventListener("change", async (ev) => {
+  const files = Array.from(ev.target.files || []);
+  if (!files.length) return;
+  log(`▸ subindo ${files.length} imagem(ns)`, "cmd");
+  for (const f of files) {
+    const fd = new FormData();
+    fd.append("file", f);
+    fd.append("interval_s", "60");
+    try {
+      const r = await fetch(`${API}/banners/upload`, { method: "POST", body: fd });
+      const j = await r.json();
+      j.ok ? log(`✓ ${f.name}`, "ok") : log(`✗ ${f.name}: ${j.error}`, "err");
+    } catch (e) { log(`✗ ${f.name}: ${e.message}`, "err"); }
+  }
+  ev.target.value = "";
+  await refreshBanners();
+});
+
+$("btnStartRotation").addEventListener("click", async () => {
+  const r = await api("/rotation/start", {});
+  r.ok ? log(`✓ rotação iniciada`, "ok") : log(`✗ ${r.error}`, "err");
+  await refreshBanners();
+});
+$("btnStopRotation").addEventListener("click", async () => {
+  const r = await api("/rotation/stop", {});
+  r.ok ? log(`✓ rotação parada`, "ok") : log(`✗ ${r.error}`, "err");
+  await refreshBanners();
+});
+$("btnClearBanners").addEventListener("click", async () => {
+  if (!confirm("Remover TODOS os banners?")) return;
+  const r = await api("/banners/clear", {});
+  r.ok ? log(`✓ banners removidos`, "ok") : log(`✗ ${r.error}`, "err");
+  await refreshBanners();
+});
+
 // Boot + polling
 (async () => {
   await checkStatus();
   await refreshTabs();
+  await refreshBanners();
   setInterval(async () => {
     const s = await checkStatus();
-    if (s && s.cdp_connected) await refreshTabs();
+    if (s && s.cdp_connected) {
+      await refreshTabs();
+      await refreshBanners();
+    }
   }, 3000);
 })();
 </script>
