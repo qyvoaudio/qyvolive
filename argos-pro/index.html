@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Argos Pro · Painel de controle</title>
+<meta name="description" content="Painel de controle do Argos Pro — rode lives no TikTok Shop direto pelo Chrome, sem Live Studio.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="../assets/qyvo-symbol.svg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#0A0A10;
+  --bg-2:#0F0F17;
+  --panel:#141420;
+  --panel-hi:#1A1A26;
+  --border:#22222E;
+  --border-hi:#2D2D3A;
+  --text:#F5F2E8;
+  --muted:#6B6B7A;
+  --muted-hi:#9C9CAA;
+  --accent:#FF1F8E;
+  --accent-glow:rgba(255,31,142,.35);
+  --signal:#00FF9D;
+  --signal-glow:rgba(0,255,157,.28);
+  --warn:#FFB800;
+  --err:#FF4757;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:"DM Sans",system-ui,sans-serif;
+  font-size:15px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+  display:flex;flex-direction:column;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:1000;opacity:.025;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  mix-blend-mode:overlay;
+}
+
+/* HEADER */
+header{
+  padding:18px 32px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);
+  background:rgba(10,10,16,.75);
+  backdrop-filter:blur(20px);
+  position:sticky;top:0;z-index:100;
+}
+header .brand{
+  display:flex;align-items:center;gap:12px;
+}
+header .brand img{width:28px;height:28px}
+header .brand-name{
+  font-family:"Sora",sans-serif;font-weight:700;font-size:16px;letter-spacing:-.01em;
+}
+header .brand-name em{font-style:normal;color:var(--accent)}
+header .meta{
+  font-family:"JetBrains Mono",monospace;font-size:10px;
+  letter-spacing:.15em;text-transform:uppercase;color:var(--muted);
+}
+
+/* STATUS STRIP */
+.status-strip{
+  display:flex;align-items:center;gap:18px;
+  padding:14px 32px;
+  border-bottom:1px solid var(--border);
+  background:var(--bg-2);
+  font-family:"JetBrains Mono",monospace;font-size:11.5px;
+  letter-spacing:.08em;
+}
+.status-item{
+  display:flex;align-items:center;gap:8px;
+  padding:5px 12px;
+  border:1px solid var(--border);
+  border-radius:100px;
+  color:var(--muted-hi);
+}
+.status-item .dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--muted);
+  transition:all .3s;
+}
+.status-item.on{border-color:var(--signal);color:var(--signal)}
+.status-item.on .dot{background:var(--signal);box-shadow:0 0 8px var(--signal-glow);animation:blink 1.6s infinite}
+.status-item.off{border-color:var(--err);color:var(--err)}
+.status-item.off .dot{background:var(--err)}
+.status-item.warn{border-color:var(--warn);color:var(--warn)}
+.status-item.warn .dot{background:var(--warn)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.status-strip .spacer{flex:1}
+
+/* MAIN GRID */
+main{
+  flex:1;
+  display:grid;
+  grid-template-columns:340px 1fr;
+  gap:20px;
+  padding:20px 32px 40px;
+  max-width:1400px;margin:0 auto;width:100%;
+}
+@media (max-width:900px){
+  main{grid-template-columns:1fr;padding:20px 20px 40px}
+}
+
+.side, .stage{
+  background:linear-gradient(180deg,#161624,var(--panel));
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:20px;
+  min-height:100%;
+}
+
+.side h2, .stage h2{
+  font-family:"Sora",sans-serif;font-weight:600;font-size:14px;
+  letter-spacing:-.005em;color:var(--text);
+  margin-bottom:14px;
+  display:flex;align-items:center;gap:10px;
+}
+.side h2::before, .stage h2::before{
+  content:"";width:14px;height:1px;background:var(--accent);
+}
+
+/* GATE (quando app não tá conectado) */
+.gate{
+  padding:60px 32px;
+  text-align:center;
+  max-width:520px;margin:40px auto;
+  background:var(--panel);border:1px solid var(--border);border-radius:16px;
+}
+.gate h1{
+  font-family:"Sora",sans-serif;font-weight:700;
+  font-size:32px;line-height:1;letter-spacing:-.02em;margin-bottom:16px;
+}
+.gate h1 em{font-style:normal;color:var(--accent)}
+.gate p{color:var(--muted-hi);margin-bottom:22px;font-size:14.5px;line-height:1.55}
+.gate code{
+  font-family:"JetBrains Mono",monospace;font-size:12px;
+  background:var(--bg);padding:2px 8px;border-radius:4px;color:var(--accent);
+  border:1px solid var(--border);
+}
+.gate .link-download{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:12px 22px;
+  background:var(--accent);color:#fff;text-decoration:none;font-weight:600;
+  border-radius:100px;font-size:14px;
+  box-shadow:0 8px 24px var(--accent-glow);
+}
+
+/* CONTROLS */
+.field{
+  margin-bottom:14px;
+}
+.field label{
+  display:block;font-size:11px;font-family:"JetBrains Mono",monospace;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+  margin-bottom:6px;
+}
+.field input, .field textarea{
+  width:100%;
+  background:var(--bg);border:1px solid var(--border);
+  color:var(--text);font-family:inherit;font-size:14px;
+  padding:10px 12px;border-radius:8px;
+  outline:none;transition:border-color .15s;
+}
+.field input:focus, .field textarea:focus{border-color:var(--accent)}
+.field textarea{min-height:80px;resize:vertical}
+
+.btn{
+  padding:11px 18px;
+  background:var(--accent);color:#fff;border:0;border-radius:100px;
+  font-family:inherit;font-weight:600;font-size:13px;cursor:pointer;
+  transition:all .15s;
+  box-shadow:0 6px 20px var(--accent-glow);
+}
+.btn:hover{transform:translateY(-1px)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.btn.ghost{
+  background:transparent;border:1px solid var(--border);color:var(--text);box-shadow:none;
+}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn.small{padding:7px 12px;font-size:11.5px}
+
+/* LOG STAGE */
+.log{
+  background:#08080E;
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:14px;
+  font-family:"JetBrains Mono",monospace;font-size:11.5px;line-height:1.6;
+  color:var(--muted-hi);
+  max-height:400px;overflow-y:auto;
+  white-space:pre-wrap;
+}
+.log .ok{color:var(--signal)}
+.log .err{color:var(--err)}
+.log .info{color:var(--muted-hi)}
+.log .cmd{color:var(--accent)}
+
+/* TABS LIST */
+.tab-list{
+  display:flex;flex-direction:column;gap:8px;margin-bottom:14px;
+}
+.tab-item{
+  padding:10px 12px;
+  background:var(--bg);border:1px solid var(--border);border-radius:8px;
+  display:flex;flex-direction:column;gap:2px;
+}
+.tab-item .t-title{font-size:13px;color:var(--text)}
+.tab-item .t-url{font-size:11px;color:var(--muted);font-family:"JetBrains Mono",monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <img src="../assets/qyvo-symbol.svg" alt="Qyvo">
+    <div class="brand-name">Argos <em>Pro</em></div>
+  </div>
+  <div class="meta">v0.1.0 · fase 1 · pré-alpha</div>
+</header>
+
+<div class="status-strip" id="statusStrip">
+  <span class="status-item" id="stApp"><span class="dot"></span>App local</span>
+  <span class="status-item" id="stChrome"><span class="dot"></span>Chrome CDP</span>
+  <span class="spacer"></span>
+  <span style="color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:10.5px">
+    localhost:8902 · CDP:9222
+  </span>
+</div>
+
+<div id="gate" class="gate" style="display:none">
+  <h1>Argos <em>Pro</em> não está aberto</h1>
+  <p>Este painel controla o app Argos Pro que roda no seu Mac/Windows.<br>Abre o app pra continuar — ele fica na barra de menu (Mac) ou na bandeja (Windows).</p>
+  <p style="font-size:13px">O app expõe um servidor local em <code>127.0.0.1:8902</code> que este site consulta.</p>
+  <p><a class="link-download" href="https://github.com/qyvoaudio/argos-pro-releases/releases/latest" target="_blank">▸ Baixar Argos Pro</a></p>
+</div>
+
+<main id="app" style="display:none">
+  <aside class="side">
+    <h2>Controles</h2>
+
+    <div class="field">
+      <label>URL pra abrir</label>
+      <input type="text" id="urlInput" value="https://shop.tiktok.com/streamer/live" placeholder="https://..." spellcheck="false">
+    </div>
+    <button class="btn ghost small" id="btnOpenTab">▸ Abrir nova aba</button>
+
+    <hr style="border:0;border-top:1px solid var(--border);margin:20px 0">
+
+    <div class="field">
+      <label>Mensagem no chat</label>
+      <textarea id="chatInput" placeholder="Bem-vindos à live! 💜"></textarea>
+    </div>
+    <button class="btn" id="btnSendChat">▶ Enviar no chat</button>
+
+    <hr style="border:0;border-top:1px solid var(--border);margin:20px 0">
+
+    <button class="btn ghost small" id="btnRefreshTabs">⟳ Atualizar abas</button>
+    <button class="btn ghost small" id="btnScreenshot" style="margin-top:6px">📷 Screenshot</button>
+  </aside>
+
+  <section class="stage">
+    <h2>Abas abertas <span id="tabCount" style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--muted)"></span></h2>
+    <div class="tab-list" id="tabList"></div>
+
+    <h2>Log</h2>
+    <div class="log" id="log"></div>
+  </section>
+</main>
+
+<script>
+const API = "http://127.0.0.1:8902";
+
+const $ = (id) => document.getElementById(id);
+const log = (msg, cls = "info") => {
+  const el = $("log");
+  const stamp = new Date().toLocaleTimeString();
+  el.insertAdjacentHTML("afterbegin", `<span class="${cls}">[${stamp}] ${msg}</span>\n`);
+};
+
+async function api(path, body) {
+  const opts = body
+    ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }
+    : { method: "GET" };
+  const r = await fetch(API + path, opts);
+  return await r.json();
+}
+
+async function checkStatus() {
+  try {
+    const s = await api("/ping");
+    $("stApp").classList.add("on");
+    if (s.chrome_open && s.cdp_connected) {
+      $("stChrome").classList.remove("off", "warn");
+      $("stChrome").classList.add("on");
+    } else if (s.chrome_open) {
+      $("stChrome").classList.remove("off", "on");
+      $("stChrome").classList.add("warn");
+    } else {
+      $("stChrome").classList.remove("on", "warn");
+      $("stChrome").classList.add("off");
+    }
+    $("gate").style.display = "none";
+    $("app").style.display = "";
+    return s;
+  } catch (e) {
+    $("stApp").classList.remove("on"); $("stApp").classList.add("off");
+    $("stChrome").classList.remove("on", "warn"); $("stChrome").classList.add("off");
+    $("gate").style.display = "";
+    $("app").style.display = "none";
+    return null;
+  }
+}
+
+async function refreshTabs() {
+  try {
+    const r = await api("/tabs");
+    if (!r.ok) return log(`erro /tabs: ${r.error}`, "err");
+    const list = $("tabList");
+    list.innerHTML = "";
+    r.tabs.forEach(t => {
+      const div = document.createElement("div");
+      div.className = "tab-item";
+      div.innerHTML = `<div class="t-title">${t.title || "(sem título)"}</div><div class="t-url">${t.url}</div>`;
+      list.appendChild(div);
+    });
+    $("tabCount").textContent = `${r.tabs.length} aba(s)`;
+  } catch (e) { log(`refreshTabs: ${e.message}`, "err"); }
+}
+
+$("btnOpenTab").addEventListener("click", async () => {
+  const url = $("urlInput").value.trim();
+  if (!url) return;
+  log(`▸ abrir aba: ${url}`, "cmd");
+  const r = await api("/open-tab", { url });
+  r.ok ? log(`✓ aba aberta (id=${r.tab_id})`, "ok") : log(`✗ ${r.error}`, "err");
+  await refreshTabs();
+});
+
+$("btnSendChat").addEventListener("click", async () => {
+  const text = $("chatInput").value.trim();
+  if (!text) return;
+  log(`▸ enviar: "${text}"`, "cmd");
+  const r = await api("/send-chat", { text });
+  r.ok ? log(`✓ mensagem injetada`, "ok") : log(`✗ ${r.error}`, "err");
+});
+
+$("btnRefreshTabs").addEventListener("click", refreshTabs);
+
+$("btnScreenshot").addEventListener("click", async () => {
+  log(`▸ screenshot`, "cmd");
+  const r = await api("/screenshot", {});
+  if (!r.ok) return log(`✗ ${r.error}`, "err");
+  const win = window.open("", "_blank");
+  win.document.write(`<img src="data:image/png;base64,${r.png_base64}" style="max-width:100%">`);
+  log(`✓ screenshot aberto em nova aba`, "ok");
+});
+
+// Boot + polling
+(async () => {
+  await checkStatus();
+  await refreshTabs();
+  setInterval(async () => {
+    const s = await checkStatus();
+    if (s && s.cdp_connected) await refreshTabs();
+  }, 3000);
+})();
+</script>
+</body>
+</html>
