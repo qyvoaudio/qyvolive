@@ -463,6 +463,95 @@ input[type="range"]{width:100%;accent-color:var(--slot-color,var(--accent))}
   </div>
 </main>
 
+<!-- ═══ MODAL CÉREBRO (compartilhado entre slots) ═══ -->
+<div id="brainModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;padding:24px;overflow-y:auto">
+  <div style="max-width:1100px;margin:0 auto;background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:22px;position:relative">
+    <button id="brainModalClose" style="position:absolute;top:16px;right:16px;background:transparent;border:1px solid var(--border);color:var(--text);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px">×</button>
+    <h2 style="font-family:'Sora',sans-serif;font-weight:700;font-size:19px;margin-bottom:4px">Cérebro <span id="brainSlotLabel" style="color:var(--muted-hi);font-weight:400;font-size:13px"></span></h2>
+    <p style="color:var(--muted-hi);font-size:12.5px;margin-bottom:16px">
+      Roteiro que a IA gera e o Argos manda no chat da live automaticamente, com intervalo entre falas.
+    </p>
+
+    <!-- Briefing + Gerar -->
+    <div class="col" style="padding:14px;margin-bottom:14px">
+      <div class="sec-label" style="margin-bottom:8px"><span class="bar" style="background:var(--accent)"></span>Briefing pra IA</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div class="field"><label>Produto</label><input type="text" id="brainProduct" placeholder="Ex: Escova sônica"></div>
+        <div class="field"><label>Preço</label><input type="text" id="brainPrice" placeholder="Ex: R$97 (de R$197)"></div>
+      </div>
+      <div class="field" style="margin-top:6px"><label>Benefício-chave</label><input type="text" id="brainBenefit" placeholder="Ex: 3x mais limpo em 2 minutos"></div>
+      <div class="field"><label>Observações extras</label><textarea id="brainNotes" placeholder="Público, urgência (frete grátis até meia-noite), objeções comuns..."></textarea></div>
+      <div class="row" style="margin-top:8px">
+        <select id="brainProvider" style="padding:8px 10px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:6px;font-family:inherit;font-size:12.5px">
+          <option value="claude">Claude (Anthropic)</option>
+          <option value="openai">GPT (OpenAI)</option>
+          <option value="gemini">Gemini (Google)</option>
+        </select>
+        <input type="password" id="brainApiKey" placeholder="Cola sua API key (guardada só no navegador)" style="flex:1;min-width:200px;padding:8px 10px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:6px;font-family:inherit;font-size:12px">
+        <button class="btn" id="brainGenerate">🧠 Gerar roteiro</button>
+      </div>
+      <div style="font-size:10.5px;color:var(--muted);margin-top:4px">API key fica no localStorage do teu navegador. Nunca sai daqui.</div>
+    </div>
+
+    <!-- Tabs de blocos -->
+    <div style="display:flex;gap:2px;border-bottom:1px solid var(--border);margin-bottom:12px;overflow-x:auto">
+      <button class="brain-block-tab active" data-block="ABERTURA">Abertura</button>
+      <button class="brain-block-tab" data-block="BENEFICIO">Benefício</button>
+      <button class="brain-block-tab" data-block="PRECO">Preço</button>
+      <button class="brain-block-tab" data-block="URGENCIA">Urgência</button>
+      <button class="brain-block-tab" data-block="OBJECOES">Objeções</button>
+      <button class="brain-block-tab" data-block="SOCIAL">Social</button>
+      <button class="brain-block-tab" data-block="CTA">CTA</button>
+      <button class="brain-block-tab" data-block="ENGAJAMENTO">Engajamento</button>
+    </div>
+
+    <div id="brainBlockContent" style="min-height:220px;margin-bottom:14px"></div>
+
+    <!-- Config + salvar -->
+    <div class="col" style="padding:14px;margin-bottom:12px">
+      <div class="sec-label" style="margin-bottom:8px"><span class="bar" style="background:var(--accent)"></span>Config de envio</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:end">
+        <div class="field"><label>Intervalo entre falas (segundos)</label><input type="number" id="brainInterval" min="10" max="600" value="45"></div>
+        <div style="display:flex;align-items:center;gap:8px;padding-bottom:6px">
+          <input type="checkbox" id="brainShuffle" style="width:16px;height:16px;accent-color:var(--accent)">
+          <label for="brainShuffle" style="font-size:12.5px">Embaralhar a cada rodada</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="row" style="justify-content:space-between">
+      <div style="font-size:11.5px;color:var(--muted)" id="brainCount">0 falas</div>
+      <div class="row">
+        <button class="btn ghost" id="brainSave">💾 Salvar roteiro</button>
+        <button class="btn" id="brainSaveStart">💾 Salvar e ▶ Iniciar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.brain-block-tab{
+  padding:8px 14px;background:transparent;border:0;color:var(--muted);cursor:pointer;
+  font-family:inherit;font-size:12.5px;font-weight:500;border-bottom:2px solid transparent;
+  white-space:nowrap;transition:all .15s;
+}
+.brain-block-tab:hover{color:var(--text)}
+.brain-block-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.brain-line{
+  display:flex;gap:6px;align-items:flex-start;margin-bottom:5px;
+}
+.brain-line textarea{
+  flex:1;background:var(--bg);border:1px solid var(--border);color:var(--text);
+  padding:7px 10px;border-radius:6px;font-family:inherit;font-size:12.5px;
+  min-height:36px;resize:vertical;
+}
+.brain-line button{
+  padding:6px 9px;font-size:11px;background:transparent;border:1px solid var(--border);
+  color:var(--muted);border-radius:6px;cursor:pointer;
+}
+.brain-line button:hover{color:var(--err);border-color:var(--err)}
+</style>
+
 <!-- TEMPLATE PRO CONTEÚDO DE CADA LIVE (clonado por JS) -->
 <template id="liveTemplate">
   <div class="slot-context">
@@ -534,12 +623,13 @@ input[type="range"]{width:100%;accent-color:var(--slot-color,var(--accent))}
         </div>
 
         <div class="sec">
-          <div class="sec-label"><span class="bar"></span>Cérebro <span class="extra">roteiro IA</span></div>
-          <div class="soon">
-            <strong>Fase 6 — Cérebro</strong>
-            8 blocos de fala (Abertura, Benefício, Preço, Urgência, Objeções, Social, CTA, Engajamento).<br>
-            IA gera roteiro e envia no chat com timing.
+          <div class="sec-label"><span class="bar"></span>Cérebro <span class="extra" data-brain-status>parado</span></div>
+          <div class="row">
+            <button class="btn slot-color small" data-btn-open-brain>✎ Editar roteiro</button>
+            <button class="btn slot-color small" data-btn-start-brain>▶ Iniciar</button>
+            <button class="btn ghost small" data-btn-stop-brain>■ Parar</button>
           </div>
+          <div style="font-size:10.5px;color:var(--muted);margin-top:2px" data-brain-current>—</div>
         </div>
 
         <div class="sec">
@@ -646,6 +736,20 @@ async function checkStatus() {
       state.slots[i].appliedVideoId = sl.applied_video_id;
       state.slots[i].proxy = sl.proxy;
       state.slots[i].liveConfig = sl.live_config || {};
+      state.slots[i].brainConfig = sl.brain_config || {};
+      state.slots[i].brainRunning = !!sl.brain_running;
+
+      // Atualiza status "▶ rodando · N falas" / "parado" na coluna central
+      const panel = document.querySelector(`[data-tab-panel="${i}"]`);
+      if (panel) {
+        const bStatus = panel.querySelector("[data-brain-status]");
+        const bCurrent = panel.querySelector("[data-brain-current]");
+        if (bStatus) {
+          const total = (sl.brain_config?.lines || []).length;
+          bStatus.textContent = sl.brain_running ? `▶ rodando · ${total} falas` : (total ? `${total} falas salvas` : "sem roteiro");
+          bStatus.style.color = sl.brain_running ? "var(--slot-color)" : "";
+        }
+      }
       const dot = $(`tabDot${i}`);
       if (dot) dot.className = "dot" + (sl.cdp_connected ? " on" : "");
 
@@ -763,6 +867,19 @@ function bindLivePanel(slot) {
     };
     const r = await api(`/live-config${sq(slot)}`, payload);
     r.ok ? log(`[Live ${label}] ✓ config da live salva`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+  });
+  q("[data-btn-open-brain]")?.addEventListener("click", () => brainOpen(slot));
+  q("[data-btn-start-brain]")?.addEventListener("click", async () => {
+    const label = slotLabel(slot);
+    const r = await api(`/brain/start${sq(slot)}`, {});
+    r.ok ? log(`[Live ${label}] ✓ Cérebro iniciado`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+    await refreshAll();
+  });
+  q("[data-btn-stop-brain]")?.addEventListener("click", async () => {
+    const label = slotLabel(slot);
+    const r = await api(`/brain/stop${sq(slot)}`, {});
+    r.ok ? log(`[Live ${label}] ✓ Cérebro parado`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+    await refreshAll();
   });
   q("[data-btn-apply-live-config]")?.addEventListener("click", async () => {
     const label = slotLabel(slot);
@@ -1004,7 +1121,270 @@ $$(".tab").forEach(btn => {
   });
 });
 
+// ─── CÉREBRO ─────────────────────────────────────────────────────────────────
+
+const BRAIN_BLOCKS = ["ABERTURA", "BENEFICIO", "PRECO", "URGENCIA", "OBJECOES", "SOCIAL", "CTA", "ENGAJAMENTO"];
+
+// Editor state: por bloco, lista de falas em edição
+let brainEditor = {
+  slot: "0",
+  activeBlock: "ABERTURA",
+  lines: {}, // { ABERTURA: [{text: "..."}], ... }
+};
+
+function brainOpen(slot) {
+  brainEditor.slot = slot;
+  $("brainSlotLabel").textContent = `— Live ${slotLabel(slot)}`;
+  // Carrega roteiro atual do slot
+  const cfg = state.slots[slot].brainConfig || {};
+  brainEditor.lines = {};
+  BRAIN_BLOCKS.forEach(b => brainEditor.lines[b] = []);
+  (cfg.lines || []).forEach(l => {
+    const b = BRAIN_BLOCKS.includes(l.block) ? l.block : "ABERTURA";
+    brainEditor.lines[b].push({ text: l.text });
+  });
+  $("brainInterval").value = cfg.interval_s || 45;
+  $("brainShuffle").checked = !!cfg.shuffle;
+  // Carrega API key salva
+  const provider = localStorage.getItem("argos-brain-provider") || "claude";
+  $("brainProvider").value = provider;
+  $("brainApiKey").value = localStorage.getItem(`argos-brain-key-${provider}`) || "";
+  // Renderiza bloco ativo
+  brainRenderBlock();
+  $("brainModal").style.display = "block";
+}
+function brainClose() { $("brainModal").style.display = "none"; }
+
+function brainRenderBlock() {
+  const b = brainEditor.activeBlock;
+  const lines = brainEditor.lines[b] || [];
+  const container = $("brainBlockContent");
+  container.innerHTML = "";
+  lines.forEach((l, i) => {
+    const row = document.createElement("div");
+    row.className = "brain-line";
+    row.innerHTML = `
+      <textarea data-idx="${i}" placeholder="Fala pra chat">${esc(l.text)}</textarea>
+      <button data-del="${i}">×</button>
+    `;
+    row.querySelector("textarea").addEventListener("input", (ev) => {
+      brainEditor.lines[b][parseInt(ev.target.dataset.idx, 10)].text = ev.target.value;
+      brainUpdateCount();
+    });
+    row.querySelector("button").addEventListener("click", () => {
+      brainEditor.lines[b].splice(i, 1);
+      brainRenderBlock();
+      brainUpdateCount();
+    });
+    container.appendChild(row);
+  });
+  // Botão + adicionar fala vazia
+  const addBtn = document.createElement("button");
+  addBtn.className = "btn ghost small";
+  addBtn.textContent = "+ Adicionar fala";
+  addBtn.style.marginTop = "6px";
+  addBtn.addEventListener("click", () => {
+    brainEditor.lines[b].push({ text: "" });
+    brainRenderBlock();
+  });
+  container.appendChild(addBtn);
+  brainUpdateCount();
+}
+
+function brainUpdateCount() {
+  const total = Object.values(brainEditor.lines).reduce((s, arr) => s + arr.filter(l => l.text.trim()).length, 0);
+  $("brainCount").textContent = `${total} falas`;
+}
+
+// Tab clicks
+$$(".brain-block-tab").forEach(t => {
+  t.addEventListener("click", () => {
+    $$(".brain-block-tab").forEach(x => x.classList.remove("active"));
+    t.classList.add("active");
+    brainEditor.activeBlock = t.dataset.block;
+    brainRenderBlock();
+  });
+});
+
+$("brainModalClose").addEventListener("click", brainClose);
+$("brainModal").addEventListener("click", (ev) => {
+  if (ev.target.id === "brainModal") brainClose();
+});
+
+// Provider select — carrega key salva do provider escolhido
+$("brainProvider").addEventListener("change", () => {
+  const p = $("brainProvider").value;
+  localStorage.setItem("argos-brain-provider", p);
+  $("brainApiKey").value = localStorage.getItem(`argos-brain-key-${p}`) || "";
+});
+$("brainApiKey").addEventListener("change", () => {
+  const p = $("brainProvider").value;
+  localStorage.setItem(`argos-brain-key-${p}`, $("brainApiKey").value);
+});
+
+// LLM prompt
+function brainPrompt(product, price, benefit, notes) {
+  return `Você é uma vendedora TikTok Shop brasileira, tom espontâneo e amigável, gírias sutis. Nunca robô.
+Gera JSON com 8 blocos, cada bloco com 3-5 falas curtas (max 90 caracteres cada) pra postar no chat da live.
+
+Produto: ${product || "(não informado)"}
+Preço: ${price || "(não informado)"}
+Benefício-chave: ${benefit || "(não informado)"}
+Observações: ${notes || "(nenhuma)"}
+
+Blocos e o que cada um deve fazer:
+- ABERTURA: cumprimenta a galera que tá entrando, cria clima ("boa noite gente linda 💜")
+- BENEFICIO: destaca o principal benefício do produto, causa desejo
+- PRECO: menciona o preço/oferta de forma direta e leve
+- URGENCIA: cria pressa (estoque, tempo, brinde limitado)
+- OBJECOES: responde dúvidas comuns (durabilidade, qualidade, prazo)
+- SOCIAL: menciona prova social ("milhares já compraram", depoimentos)
+- CTA: chama pra ação ("clica no carrinho no cantinho ↘")
+- ENGAJAMENTO: pergunta pro chat, gera interação ("de onde vc tá?", "manda 🔥 se curtiu")
+
+Regras:
+- Fala natural, sem parecer script
+- Emojis moderados (1 por fala no máximo)
+- Nada de "compre agora" cru — usa gírias tipo "corre lá"
+- Não repete a mesma frase
+- PT-BR
+
+Responde APENAS o JSON, sem markdown, sem explicação:
+{"ABERTURA":["fala1","fala2",...],"BENEFICIO":[...],"PRECO":[...],"URGENCIA":[...],"OBJECOES":[...],"SOCIAL":[...],"CTA":[...],"ENGAJAMENTO":[...]}`;
+}
+
+async function brainCallLLM(prompt, provider, apiKey) {
+  if (!apiKey) throw new Error("cola a API key primeiro");
+  if (provider === "claude") {
+    const r = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true",
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-5",
+        max_tokens: 2048,
+        messages: [{ role: "user", content: prompt }],
+      }),
+    });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error?.message || "Claude erro");
+    return j.content?.[0]?.text || "";
+  }
+  if (provider === "openai") {
+    const r = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: { "content-type": "application/json", authorization: `Bearer ${apiKey}` },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        response_format: { type: "json_object" },
+        messages: [{ role: "user", content: prompt }],
+      }),
+    });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error?.message || "OpenAI erro");
+    return j.choices?.[0]?.message?.content || "";
+  }
+  if (provider === "gemini") {
+    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { responseMimeType: "application/json", thinkingConfig: { thinkingBudget: 0 } },
+      }),
+    });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error?.message || "Gemini erro");
+    return j.candidates?.[0]?.content?.parts?.[0]?.text || "";
+  }
+  throw new Error(`provider ${provider} desconhecido`);
+}
+
+$("brainGenerate").addEventListener("click", async () => {
+  const prompt = brainPrompt(
+    $("brainProduct").value.trim(),
+    $("brainPrice").value.trim(),
+    $("brainBenefit").value.trim(),
+    $("brainNotes").value.trim(),
+  );
+  const provider = $("brainProvider").value;
+  const apiKey = $("brainApiKey").value.trim();
+  localStorage.setItem(`argos-brain-key-${provider}`, apiKey);
+  const btn = $("brainGenerate");
+  btn.disabled = true; btn.textContent = "🧠 Gerando…";
+  try {
+    const raw = await brainCallLLM(prompt, provider, apiKey);
+    // Extrai JSON (às vezes vem com markdown fences)
+    const match = raw.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error("resposta sem JSON — tenta de novo");
+    const data = JSON.parse(match[0]);
+    // Preenche editor
+    BRAIN_BLOCKS.forEach(b => {
+      brainEditor.lines[b] = (data[b] || []).map(t => ({ text: String(t) }));
+    });
+    brainRenderBlock();
+    brainUpdateCount();
+    log("[Cérebro] ✓ roteiro gerado", "ok");
+  } catch (e) {
+    log(`[Cérebro] ✗ ${e.message}`, "err");
+    alert(`Erro gerando roteiro: ${e.message}`);
+  } finally {
+    btn.disabled = false; btn.textContent = "🧠 Gerar roteiro";
+  }
+});
+
+function brainCollectLines() {
+  const lines = [];
+  BRAIN_BLOCKS.forEach(b => {
+    (brainEditor.lines[b] || []).forEach(l => {
+      if (l.text.trim()) lines.push({ block: b, text: l.text.trim() });
+    });
+  });
+  return lines;
+}
+
+async function brainSaveBackend(slot, andStart = false) {
+  const payload = {
+    lines: brainCollectLines(),
+    interval_s: Math.max(10, parseInt($("brainInterval").value, 10) || 45),
+    shuffle: $("brainShuffle").checked,
+  };
+  const r = await api(`/brain${sq(slot)}`, payload);
+  if (!r.ok) { log(`[Live ${slotLabel(slot)}] ✗ ${r.error}`, "err"); return; }
+  log(`[Live ${slotLabel(slot)}] ✓ roteiro salvo (${r.lines_count} falas)`, "ok");
+  if (andStart) {
+    const s = await api(`/brain/start${sq(slot)}`, {});
+    s.ok ? log(`[Live ${slotLabel(slot)}] ✓ Cérebro iniciado`, "ok") : log(`[Live ${slotLabel(slot)}] ✗ ${s.error}`, "err");
+  }
+  brainClose();
+  await refreshAll();
+}
+
+$("brainSave").addEventListener("click", () => brainSaveBackend(brainEditor.slot, false));
+$("brainSaveStart").addEventListener("click", () => brainSaveBackend(brainEditor.slot, true));
+
 // ─── REFRESH ALL ─────────────────────────────────────────────────────────────
+async function refreshBrainCurrent() {
+  for (const slot of ["0", "1"]) {
+    if (!state.slots[slot].brainRunning) continue;
+    try {
+      const r = await api(`/brain/status${sq(slot)}`);
+      if (!r.ok) continue;
+      const panel = document.querySelector(`[data-tab-panel="${slot}"]`);
+      const el = panel?.querySelector("[data-brain-current]");
+      if (el) {
+        el.textContent = r.current_text
+          ? `→ ${r.current_text.length > 60 ? r.current_text.slice(0, 60) + "…" : r.current_text}`
+          : "—";
+      }
+    } catch {}
+  }
+}
+
 async function refreshAll() {
   const s = await checkStatus();
   if (!s) return;
@@ -1013,6 +1393,7 @@ async function refreshAll() {
     refreshTabs("1"),
     refreshBanners(),
     refreshVideos(),
+    refreshBrainCurrent(),
   ]);
 }
 
