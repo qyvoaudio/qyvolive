@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Argos Pro · Painel de controle</title>
-<meta name="description" content="Painel de controle do Argos Pro — rode lives no TikTok Shop direto pelo Chrome, sem Live Studio.">
+<meta name="description" content="Painel de controle do Argos Pro — rode 2 lives simultâneas no TikTok Shop direto pelo Chrome, sem Live Studio.">
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/svg+xml" href="../assets/qyvo-symbol.svg">
 
@@ -25,6 +25,10 @@
   --muted-hi:#9C9CAA;
   --accent:#FF1F8E;
   --accent-glow:rgba(255,31,142,.35);
+  --slot-a:#00FF9D;
+  --slot-a-glow:rgba(0,255,157,.28);
+  --slot-b:#00B8FF;
+  --slot-b-glow:rgba(0,184,255,.28);
   --signal:#00FF9D;
   --signal-glow:rgba(0,255,157,.28);
   --warn:#FFB800;
@@ -56,9 +60,7 @@ header{
   backdrop-filter:blur(20px);
   position:sticky;top:0;z-index:100;
 }
-header .brand{
-  display:flex;align-items:center;gap:12px;
-}
+header .brand{display:flex;align-items:center;gap:12px}
 header .brand img{width:28px;height:28px}
 header .brand-name{
   font-family:"Sora",sans-serif;font-weight:700;font-size:16px;letter-spacing:-.01em;
@@ -71,7 +73,7 @@ header .meta{
 
 /* STATUS STRIP */
 .status-strip{
-  display:flex;align-items:center;gap:18px;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
   padding:14px 32px;
   border-bottom:1px solid var(--border);
   background:var(--bg-2);
@@ -98,37 +100,126 @@ header .meta{
 .status-item.warn .dot{background:var(--warn)}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
 .status-strip .spacer{flex:1}
+.status-strip .info{
+  color:var(--muted);font-size:10.5px;
+}
 
-/* MAIN GRID */
+/* MAIN LAYOUT: 2 slots lado-a-lado + banners embaixo */
 main{
   flex:1;
-  display:grid;
-  grid-template-columns:340px 1fr;
-  gap:20px;
+  display:flex;flex-direction:column;gap:20px;
   padding:20px 32px 40px;
-  max-width:1400px;margin:0 auto;width:100%;
+  max-width:1600px;margin:0 auto;width:100%;
 }
-@media (max-width:900px){
-  main{grid-template-columns:1fr;padding:20px 20px 40px}
+.slots-row{
+  display:grid;grid-template-columns:1fr 1fr;gap:20px;
+}
+@media (max-width:1000px){
+  .slots-row{grid-template-columns:1fr}
 }
 
-.side, .stage{
+.slot{
   background:linear-gradient(180deg,#161624,var(--panel));
   border:1px solid var(--border);
   border-radius:16px;
-  padding:20px;
-  min-height:100%;
+  padding:18px;
+  display:flex;flex-direction:column;
+  position:relative;
+  overflow:hidden;
+}
+.slot::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--slot-color, var(--muted));
+  opacity:.65;
+}
+.slot[data-slot="0"]{--slot-color:var(--slot-a);--slot-glow:var(--slot-a-glow)}
+.slot[data-slot="1"]{--slot-color:var(--slot-b);--slot-glow:var(--slot-b-glow)}
+
+.slot-header{
+  display:flex;align-items:center;gap:12px;margin-bottom:14px;
+}
+.slot-tag{
+  font-family:"Sora",sans-serif;font-weight:700;font-size:15px;
+  letter-spacing:-.005em;color:var(--slot-color);
+  display:flex;align-items:center;gap:8px;
+}
+.slot-tag .badge{
+  font-family:"JetBrains Mono",monospace;font-size:9.5px;
+  letter-spacing:.15em;text-transform:uppercase;
+  padding:2px 8px;border-radius:100px;
+  background:var(--slot-glow);color:var(--slot-color);
+}
+.slot-state{
+  margin-left:auto;
+  font-family:"JetBrains Mono",monospace;font-size:10.5px;
+  color:var(--muted);letter-spacing:.1em;text-transform:uppercase;
+}
+.slot-state.on{color:var(--slot-color)}
+
+.section-title{
+  font-family:"Sora",sans-serif;font-weight:600;font-size:12.5px;
+  letter-spacing:-.005em;color:var(--text);
+  margin:14px 0 8px;
+  display:flex;align-items:center;gap:8px;
+}
+.section-title::before{
+  content:"";width:10px;height:1px;background:var(--slot-color, var(--accent));
+}
+.section-title .extra{
+  margin-left:auto;
+  font-family:"JetBrains Mono",monospace;font-size:10px;
+  color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:400;
 }
 
-.side h2, .stage h2{
-  font-family:"Sora",sans-serif;font-weight:600;font-size:14px;
-  letter-spacing:-.005em;color:var(--text);
-  margin-bottom:14px;
-  display:flex;align-items:center;gap:10px;
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+
+.field{margin-bottom:10px}
+.field label{
+  display:block;font-size:10.5px;font-family:"JetBrains Mono",monospace;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+  margin-bottom:5px;
 }
-.side h2::before, .stage h2::before{
-  content:"";width:14px;height:1px;background:var(--accent);
+.field input, .field textarea{
+  width:100%;
+  background:var(--bg);border:1px solid var(--border);
+  color:var(--text);font-family:inherit;font-size:13px;
+  padding:9px 11px;border-radius:8px;
+  outline:none;transition:border-color .15s;
 }
+.field input:focus, .field textarea:focus{border-color:var(--slot-color, var(--accent))}
+.field textarea{min-height:70px;resize:vertical}
+
+.btn{
+  padding:9px 15px;
+  background:var(--accent);color:#fff;border:0;border-radius:100px;
+  font-family:inherit;font-weight:600;font-size:12px;cursor:pointer;
+  transition:all .15s;white-space:nowrap;
+  box-shadow:0 4px 14px var(--accent-glow);
+}
+.btn:hover{transform:translateY(-1px)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.btn.slot-color{
+  background:var(--slot-color);
+  color:#000;
+  box-shadow:0 4px 14px var(--slot-glow);
+}
+.btn.ghost{
+  background:transparent;border:1px solid var(--border);color:var(--text);box-shadow:none;
+}
+.btn.ghost:hover{border-color:var(--slot-color, var(--accent));color:var(--slot-color, var(--accent))}
+.btn.small{padding:6px 10px;font-size:11px}
+.btn.danger{background:transparent;border:1px solid var(--err);color:var(--err);box-shadow:none}
+.btn.danger:hover{background:var(--err);color:#fff}
+
+/* Abas list (compacta) */
+.tab-list{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.tab-item{
+  padding:8px 10px;
+  background:var(--bg);border:1px solid var(--border);border-radius:6px;
+  display:flex;flex-direction:column;gap:2px;
+}
+.tab-item .t-title{font-size:12px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tab-item .t-url{font-size:10px;color:var(--muted);font-family:"JetBrains Mono",monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 /* GATE (quando app não tá conectado) */
 .gate{
@@ -156,82 +247,39 @@ main{
   box-shadow:0 8px 24px var(--accent-glow);
 }
 
-/* CONTROLS */
-.field{
-  margin-bottom:14px;
+/* SHARED PANELS (banners + log) */
+.shared-grid{
+  display:grid;grid-template-columns:1.4fr 1fr;gap:20px;
 }
-.field label{
-  display:block;font-size:11px;font-family:"JetBrains Mono",monospace;
-  letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
-  margin-bottom:6px;
+@media (max-width:1000px){
+  .shared-grid{grid-template-columns:1fr}
 }
-.field input, .field textarea{
-  width:100%;
-  background:var(--bg);border:1px solid var(--border);
-  color:var(--text);font-family:inherit;font-size:14px;
-  padding:10px 12px;border-radius:8px;
-  outline:none;transition:border-color .15s;
+.shared-panel{
+  background:linear-gradient(180deg,#161624,var(--panel));
+  border:1px solid var(--border);border-radius:16px;padding:18px;
 }
-.field input:focus, .field textarea:focus{border-color:var(--accent)}
-.field textarea{min-height:80px;resize:vertical}
-
-.btn{
-  padding:11px 18px;
-  background:var(--accent);color:#fff;border:0;border-radius:100px;
-  font-family:inherit;font-weight:600;font-size:13px;cursor:pointer;
-  transition:all .15s;
-  box-shadow:0 6px 20px var(--accent-glow);
+.shared-panel h2{
+  font-family:"Sora",sans-serif;font-weight:600;font-size:13px;
+  letter-spacing:-.005em;color:var(--text);
+  margin-bottom:12px;
+  display:flex;align-items:center;gap:10px;
 }
-.btn:hover{transform:translateY(-1px)}
-.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
-.btn.ghost{
-  background:transparent;border:1px solid var(--border);color:var(--text);box-shadow:none;
+.shared-panel h2::before{
+  content:"";width:12px;height:1px;background:var(--accent);
 }
-.btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
-.btn.small{padding:7px 12px;font-size:11.5px}
-
-/* LOG STAGE */
-.log{
-  background:#08080E;
-  border:1px solid var(--border);
-  border-radius:10px;
-  padding:14px;
-  font-family:"JetBrains Mono",monospace;font-size:11.5px;line-height:1.6;
-  color:var(--muted-hi);
-  max-height:400px;overflow-y:auto;
-  white-space:pre-wrap;
-}
-.log .ok{color:var(--signal)}
-.log .err{color:var(--err)}
-.log .info{color:var(--muted-hi)}
-.log .cmd{color:var(--accent)}
-
-/* TABS LIST */
-.tab-list{
-  display:flex;flex-direction:column;gap:8px;margin-bottom:14px;
-}
-.tab-item{
-  padding:10px 12px;
-  background:var(--bg);border:1px solid var(--border);border-radius:8px;
-  display:flex;flex-direction:column;gap:2px;
-}
-.tab-item .t-title{font-size:13px;color:var(--text)}
-.tab-item .t-url{font-size:11px;color:var(--muted);font-family:"JetBrains Mono",monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 /* BANNERS */
-.banner-actions{
-  display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center;
+.upload-box{
+  padding:20px;text-align:center;
+  border:2px dashed var(--border);border-radius:10px;
+  color:var(--muted);cursor:pointer;transition:all .15s;
+  margin-bottom:14px;font-size:13px;
 }
-.rot-status{
-  font-family:"JetBrains Mono",monospace;font-size:10.5px;
-  letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
-  padding:5px 12px;border:1px solid var(--border);border-radius:100px;
-  margin-left:auto;
-}
-.rot-status.on{color:var(--signal);border-color:var(--signal)}
+.upload-box:hover{border-color:var(--accent);color:var(--accent)}
+.upload-box input{display:none}
 .banner-grid{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
-  gap:12px;margin-bottom:14px;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  gap:10px;
 }
 .banner-card{
   background:var(--bg);border:1px solid var(--border);border-radius:10px;
@@ -239,48 +287,71 @@ main{
   transition:border-color .15s;
 }
 .banner-card:hover{border-color:var(--border-hi)}
-.banner-card.playing{border-color:var(--signal);box-shadow:0 0 20px var(--signal-glow)}
+.banner-card.playing-a{border-color:var(--slot-a);box-shadow:0 0 16px var(--slot-a-glow)}
+.banner-card.playing-b{border-color:var(--slot-b);box-shadow:0 0 16px var(--slot-b-glow)}
+.banner-card.playing-ab{
+  border-image:linear-gradient(90deg,var(--slot-a),var(--slot-b)) 1;
+  box-shadow:0 0 20px var(--slot-a-glow),0 0 20px var(--slot-b-glow);
+}
 .banner-thumb{
   aspect-ratio:16/9;background:#000;
   display:flex;align-items:center;justify-content:center;
-  overflow:hidden;
+  overflow:hidden;position:relative;
 }
 .banner-thumb img{max-width:100%;max-height:100%;object-fit:cover}
-.banner-meta{padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.banner-thumb .live-badge{
+  position:absolute;top:6px;right:6px;
+  font-family:"JetBrains Mono",monospace;font-size:9px;font-weight:600;
+  padding:2px 6px;border-radius:6px;letter-spacing:.1em;
+  background:rgba(0,0,0,.7);color:#fff;
+}
+.banner-meta{padding:8px 10px;display:flex;flex-direction:column;gap:6px}
 .banner-name{
-  font-size:12px;color:var(--text);
+  font-size:11px;color:var(--text);
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
 .banner-interval{
-  display:flex;align-items:center;gap:6px;
-  font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--muted);
+  display:flex;align-items:center;gap:5px;
+  font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--muted);
 }
 .banner-interval input{
-  width:60px;padding:4px 8px;
-  background:var(--panel);border:1px solid var(--border);border-radius:6px;
-  color:var(--text);font-family:inherit;font-size:11px;
+  width:52px;padding:3px 6px;
+  background:var(--panel);border:1px solid var(--border);border-radius:5px;
+  color:var(--text);font-family:inherit;font-size:10.5px;
   outline:none;
 }
 .banner-interval input:focus{border-color:var(--accent)}
 .banner-actions-row{
-  display:flex;gap:4px;justify-content:space-between;
-  padding:0 12px 10px;
+  display:flex;gap:3px;flex-wrap:wrap;justify-content:space-between;
+  padding:0 10px 8px;
 }
 .banner-actions-row button{
-  padding:4px 8px;font-size:11px;background:transparent;color:var(--muted);
+  padding:3px 6px;font-size:10px;background:transparent;color:var(--muted);
   border:1px solid var(--border);border-radius:4px;cursor:pointer;
   transition:all .15s;
 }
 .banner-actions-row button:hover{color:var(--text);border-color:var(--border-hi)}
+.banner-actions-row button.apply-a:hover{color:var(--slot-a);border-color:var(--slot-a)}
+.banner-actions-row button.apply-b:hover{color:var(--slot-b);border-color:var(--slot-b)}
 .banner-actions-row button.danger:hover{color:var(--err);border-color:var(--err)}
-.upload-box{
-  padding:20px;text-align:center;
-  border:2px dashed var(--border);border-radius:10px;
-  color:var(--muted);cursor:pointer;transition:all .15s;
-  margin-bottom:14px;
+
+/* LOG */
+.log{
+  background:#08080E;
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:12px;
+  font-family:"JetBrains Mono",monospace;font-size:11px;line-height:1.55;
+  color:var(--muted-hi);
+  max-height:340px;overflow-y:auto;
+  white-space:pre-wrap;
 }
-.upload-box:hover{border-color:var(--accent);color:var(--accent)}
-.upload-box input{display:none}
+.log .ok{color:var(--signal)}
+.log .err{color:var(--err)}
+.log .info{color:var(--muted-hi)}
+.log .cmd{color:var(--accent)}
+.log .a{color:var(--slot-a)}
+.log .b{color:var(--slot-b)}
 </style>
 </head>
 <body>
@@ -290,16 +361,15 @@ main{
     <img src="../assets/qyvo-symbol.svg" alt="Qyvo">
     <div class="brand-name">Argos <em>Pro</em></div>
   </div>
-  <div class="meta">v0.1.0 · fase 1 · pré-alpha</div>
+  <div class="meta">v0.1.0 · fase 3 · 2 lives simultâneas</div>
 </header>
 
 <div class="status-strip" id="statusStrip">
   <span class="status-item" id="stApp"><span class="dot"></span>App local</span>
-  <span class="status-item" id="stChrome"><span class="dot"></span>Chrome CDP</span>
+  <span class="status-item" id="stSlotA"><span class="dot"></span>Live A · CDP:9222</span>
+  <span class="status-item" id="stSlotB"><span class="dot"></span>Live B · CDP:9223</span>
   <span class="spacer"></span>
-  <span style="color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:10.5px">
-    localhost:8902 · CDP:9222
-  </span>
+  <span class="info">localhost:8902</span>
 </div>
 
 <div id="gate" class="gate" style="display:none">
@@ -310,57 +380,118 @@ main{
 </div>
 
 <main id="app" style="display:none">
-  <aside class="side">
-    <h2>Controles</h2>
 
-    <div class="field">
-      <label>URL pra abrir</label>
-      <input type="text" id="urlInput" value="https://shop.tiktok.com/streamer/live" placeholder="https://..." spellcheck="false">
-    </div>
-    <button class="btn ghost small" id="btnOpenTab">▸ Abrir nova aba</button>
+  <!-- 2 slots lado a lado -->
+  <div class="slots-row">
+    <!-- SLOT 0 (Live A) -->
+    <section class="slot" data-slot="0">
+      <div class="slot-header">
+        <div class="slot-tag">
+          <span class="badge">Live A</span>
+          <span>slot 0 · :9222</span>
+        </div>
+        <span class="slot-state" id="stateSlot0">desconectado</span>
+      </div>
 
-    <hr style="border:0;border-top:1px solid var(--border);margin:20px 0">
+      <div class="row">
+        <button class="btn slot-color small" data-open-chrome="0">▸ Abrir Chrome</button>
+        <button class="btn ghost small" data-close-chrome="0">■ Fechar</button>
+        <button class="btn ghost small" data-refresh-tabs="0">⟳ Abas</button>
+        <button class="btn ghost small" data-screenshot="0">📷</button>
+      </div>
 
-    <div class="field">
-      <label>Mensagem no chat</label>
-      <textarea id="chatInput" placeholder="Bem-vindos à live! 💜"></textarea>
-    </div>
-    <button class="btn" id="btnSendChat">▶ Enviar no chat</button>
+      <div class="section-title">Nova aba</div>
+      <div class="field">
+        <input type="text" data-url-input="0" value="https://shop.tiktok.com/streamer/live" placeholder="https://..." spellcheck="false">
+      </div>
+      <button class="btn ghost small" data-open-tab="0">▸ Abrir</button>
 
-    <hr style="border:0;border-top:1px solid var(--border);margin:20px 0">
+      <div class="section-title">Chat</div>
+      <div class="field">
+        <textarea data-chat-input="0" placeholder="Bem-vindos à live! 💜"></textarea>
+      </div>
+      <button class="btn slot-color small" data-send-chat="0">▶ Enviar</button>
 
-    <button class="btn ghost small" id="btnRefreshTabs">⟳ Atualizar abas</button>
-    <button class="btn ghost small" id="btnScreenshot" style="margin-top:6px">📷 Screenshot</button>
-  </aside>
+      <div class="section-title">Abas <span class="extra" data-tab-count="0"></span></div>
+      <div class="tab-list" data-tab-list="0"></div>
 
-  <section class="stage">
-    <h2>Abas abertas <span id="tabCount" style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--muted)"></span></h2>
-    <div class="tab-list" id="tabList"></div>
+      <div class="section-title">Rotação de banner <span class="extra" data-rot-status="0">parado</span></div>
+      <div class="row">
+        <button class="btn slot-color small" data-start-rotation="0">▶ Iniciar</button>
+        <button class="btn ghost small" data-stop-rotation="0">■ Parar</button>
+      </div>
+    </section>
 
-    <h2 style="margin-top:22px">Banners <span id="rotStatus" class="rot-status">parado</span></h2>
+    <!-- SLOT 1 (Live B) -->
+    <section class="slot" data-slot="1">
+      <div class="slot-header">
+        <div class="slot-tag">
+          <span class="badge">Live B</span>
+          <span>slot 1 · :9223</span>
+        </div>
+        <span class="slot-state" id="stateSlot1">desconectado</span>
+      </div>
 
-    <label class="upload-box" for="bannerUpload">
-      📁 Clique pra subir imagens (múltiplas)
-      <input type="file" id="bannerUpload" accept="image/*" multiple>
-    </label>
+      <div class="row">
+        <button class="btn slot-color small" data-open-chrome="1">▸ Abrir Chrome</button>
+        <button class="btn ghost small" data-close-chrome="1">■ Fechar</button>
+        <button class="btn ghost small" data-refresh-tabs="1">⟳ Abas</button>
+        <button class="btn ghost small" data-screenshot="1">📷</button>
+      </div>
 
-    <div class="banner-actions">
-      <button class="btn small" id="btnStartRotation">▶ Iniciar rotação</button>
-      <button class="btn ghost small" id="btnStopRotation">■ Parar</button>
-      <button class="btn ghost small" id="btnClearBanners" style="margin-left:auto">🗑 Limpar todos</button>
-    </div>
+      <div class="section-title">Nova aba</div>
+      <div class="field">
+        <input type="text" data-url-input="1" value="https://shop.tiktok.com/streamer/live" placeholder="https://..." spellcheck="false">
+      </div>
+      <button class="btn ghost small" data-open-tab="1">▸ Abrir</button>
 
-    <div class="banner-grid" id="bannerGrid"></div>
+      <div class="section-title">Chat</div>
+      <div class="field">
+        <textarea data-chat-input="1" placeholder="Bem-vindos à live! 💜"></textarea>
+      </div>
+      <button class="btn slot-color small" data-send-chat="1">▶ Enviar</button>
 
-    <h2 style="margin-top:22px">Log</h2>
-    <div class="log" id="log"></div>
-  </section>
+      <div class="section-title">Abas <span class="extra" data-tab-count="1"></span></div>
+      <div class="tab-list" data-tab-list="1"></div>
+
+      <div class="section-title">Rotação de banner <span class="extra" data-rot-status="1">parado</span></div>
+      <div class="row">
+        <button class="btn slot-color small" data-start-rotation="1">▶ Iniciar</button>
+        <button class="btn ghost small" data-stop-rotation="1">■ Parar</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- Banners compartilhados + Log -->
+  <div class="shared-grid">
+    <section class="shared-panel">
+      <h2>Banners <span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase">compartilhados entre lives</span></h2>
+
+      <label class="upload-box" for="bannerUpload">
+        📁 Clique pra subir imagens (múltiplas)
+        <input type="file" id="bannerUpload" accept="image/*" multiple>
+      </label>
+
+      <div class="row" style="margin-bottom:12px">
+        <button class="btn ghost small" id="btnClearBanners" style="margin-left:auto">🗑 Limpar todos</button>
+      </div>
+
+      <div class="banner-grid" id="bannerGrid"></div>
+    </section>
+
+    <section class="shared-panel">
+      <h2>Log</h2>
+      <div class="log" id="log"></div>
+    </section>
+  </div>
+
 </main>
 
 <script>
 const API = "http://127.0.0.1:8902";
-
 const $ = (id) => document.getElementById(id);
+const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+
 const log = (msg, cls = "info") => {
   const el = $("log");
   const stamp = new Date().toLocaleTimeString();
@@ -375,74 +506,149 @@ async function api(path, body) {
   return await r.json();
 }
 
+// slot query helper
+const sq = (s) => `?slot=${s}`;
+
+// ─── STATUS ──────────────────────────────────────────────────────────────────
+
 async function checkStatus() {
   try {
     const s = await api("/ping");
+    if (!s.ok) throw new Error("ping falhou");
     $("stApp").classList.add("on");
-    if (s.chrome_open && s.cdp_connected) {
-      $("stChrome").classList.remove("off", "warn");
-      $("stChrome").classList.add("on");
-    } else if (s.chrome_open) {
-      $("stChrome").classList.remove("off", "on");
-      $("stChrome").classList.add("warn");
-    } else {
-      $("stChrome").classList.remove("on", "warn");
-      $("stChrome").classList.add("off");
-    }
+    (s.slots || []).forEach((sl, i) => {
+      const chip = $(`stSlot${i === 0 ? "A" : "B"}`);
+      const state = $(`stateSlot${i}`);
+      chip.classList.remove("on", "off", "warn");
+      state.classList.remove("on");
+      if (sl.chrome_open && sl.cdp_connected) {
+        chip.classList.add("on");
+        state.classList.add("on");
+        state.textContent = "conectado";
+      } else if (sl.chrome_open) {
+        chip.classList.add("warn");
+        state.textContent = "Chrome sem CDP";
+      } else {
+        chip.classList.add("off");
+        state.textContent = "desconectado";
+      }
+    });
     $("gate").style.display = "none";
     $("app").style.display = "";
     return s;
   } catch (e) {
     $("stApp").classList.remove("on"); $("stApp").classList.add("off");
-    $("stChrome").classList.remove("on", "warn"); $("stChrome").classList.add("off");
+    ["A","B"].forEach(k => { $("stSlot"+k).classList.remove("on","warn"); $("stSlot"+k).classList.add("off"); });
     $("gate").style.display = "";
     $("app").style.display = "none";
     return null;
   }
 }
 
-async function refreshTabs() {
+// ─── CHROME OPEN / CLOSE (por slot) ──────────────────────────────────────────
+
+$$("[data-open-chrome]").forEach(b => {
+  b.addEventListener("click", async () => {
+    const s = b.dataset.openChrome;
+    const label = s === "0" ? "A" : "B";
+    log(`[Live ${label}] ▸ abrindo Chrome`, label === "A" ? "a" : "b");
+    const r = await api(`/open-chrome${sq(s)}`, {});
+    r.ok ? log(`[Live ${label}] ✓ Chrome conectado`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+    await checkStatus();
+    await refreshTabs(parseInt(s, 10));
+  });
+});
+$$("[data-close-chrome]").forEach(b => {
+  b.addEventListener("click", async () => {
+    const s = b.dataset.closeChrome;
+    const label = s === "0" ? "A" : "B";
+    const r = await api(`/close-chrome${sq(s)}`, {});
+    r.ok ? log(`[Live ${label}] ✓ Chrome fechado`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+    await checkStatus();
+  });
+});
+
+// ─── ABAS ────────────────────────────────────────────────────────────────────
+
+async function refreshTabs(slot) {
+  const s = String(slot);
   try {
-    const r = await api("/tabs");
-    if (!r.ok) return log(`erro /tabs: ${r.error}`, "err");
-    const list = $("tabList");
+    const r = await api(`/tabs${sq(s)}`);
+    const list = document.querySelector(`[data-tab-list="${s}"]`);
+    const count = document.querySelector(`[data-tab-count="${s}"]`);
+    if (!r.ok) { list.innerHTML = ""; count.textContent = "—"; return; }
     list.innerHTML = "";
     r.tabs.forEach(t => {
       const div = document.createElement("div");
       div.className = "tab-item";
-      div.innerHTML = `<div class="t-title">${t.title || "(sem título)"}</div><div class="t-url">${t.url}</div>`;
+      div.innerHTML = `<div class="t-title">${escHtml(t.title || "(sem título)")}</div><div class="t-url">${escHtml(t.url)}</div>`;
       list.appendChild(div);
     });
-    $("tabCount").textContent = `${r.tabs.length} aba(s)`;
-  } catch (e) { log(`refreshTabs: ${e.message}`, "err"); }
+    count.textContent = `${r.tabs.length} aba(s)`;
+  } catch (e) {}
 }
 
-$("btnOpenTab").addEventListener("click", async () => {
-  const url = $("urlInput").value.trim();
-  if (!url) return;
-  log(`▸ abrir aba: ${url}`, "cmd");
-  const r = await api("/open-tab", { url });
-  r.ok ? log(`✓ aba aberta (id=${r.tab_id})`, "ok") : log(`✗ ${r.error}`, "err");
-  await refreshTabs();
+$$("[data-refresh-tabs]").forEach(b => {
+  b.addEventListener("click", () => refreshTabs(parseInt(b.dataset.refreshTabs, 10)));
 });
 
-$("btnSendChat").addEventListener("click", async () => {
-  const text = $("chatInput").value.trim();
-  if (!text) return;
-  log(`▸ enviar: "${text}"`, "cmd");
-  const r = await api("/send-chat", { text });
-  r.ok ? log(`✓ mensagem injetada`, "ok") : log(`✗ ${r.error}`, "err");
+$$("[data-open-tab]").forEach(b => {
+  b.addEventListener("click", async () => {
+    const s = b.dataset.openTab;
+    const label = s === "0" ? "A" : "B";
+    const url = document.querySelector(`[data-url-input="${s}"]`).value.trim();
+    if (!url) return;
+    log(`[Live ${label}] ▸ abrir aba: ${url}`, "cmd");
+    const r = await api(`/open-tab${sq(s)}`, { url });
+    r.ok ? log(`[Live ${label}] ✓ aba aberta`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+    await refreshTabs(parseInt(s, 10));
+  });
 });
 
-$("btnRefreshTabs").addEventListener("click", refreshTabs);
+$$("[data-send-chat]").forEach(b => {
+  b.addEventListener("click", async () => {
+    const s = b.dataset.sendChat;
+    const label = s === "0" ? "A" : "B";
+    const text = document.querySelector(`[data-chat-input="${s}"]`).value.trim();
+    if (!text) return;
+    log(`[Live ${label}] ▸ enviar: "${text}"`, "cmd");
+    const r = await api(`/send-chat${sq(s)}`, { text });
+    r.ok ? log(`[Live ${label}] ✓ mensagem injetada`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+  });
+});
 
-$("btnScreenshot").addEventListener("click", async () => {
-  log(`▸ screenshot`, "cmd");
-  const r = await api("/screenshot", {});
-  if (!r.ok) return log(`✗ ${r.error}`, "err");
-  const win = window.open("", "_blank");
-  win.document.write(`<img src="data:image/png;base64,${r.png_base64}" style="max-width:100%">`);
-  log(`✓ screenshot aberto em nova aba`, "ok");
+$$("[data-screenshot]").forEach(b => {
+  b.addEventListener("click", async () => {
+    const s = b.dataset.screenshot;
+    const label = s === "0" ? "A" : "B";
+    log(`[Live ${label}] ▸ screenshot`, "cmd");
+    const r = await api(`/screenshot${sq(s)}`, {});
+    if (!r.ok) return log(`[Live ${label}] ✗ ${r.error}`, "err");
+    const win = window.open("", "_blank");
+    win.document.write(`<img src="data:image/png;base64,${r.png_base64}" style="max-width:100%">`);
+    log(`[Live ${label}] ✓ screenshot aberto`, "ok");
+  });
+});
+
+// ─── ROTATION (por slot) ─────────────────────────────────────────────────────
+
+$$("[data-start-rotation]").forEach(b => {
+  b.addEventListener("click", async () => {
+    const s = b.dataset.startRotation;
+    const label = s === "0" ? "A" : "B";
+    const r = await api(`/rotation/start${sq(s)}`, {});
+    r.ok ? log(`[Live ${label}] ✓ rotação iniciada`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+    await refreshBanners();
+  });
+});
+$$("[data-stop-rotation]").forEach(b => {
+  b.addEventListener("click", async () => {
+    const s = b.dataset.stopRotation;
+    const label = s === "0" ? "A" : "B";
+    const r = await api(`/rotation/stop${sq(s)}`, {});
+    r.ok ? log(`[Live ${label}] ✓ rotação parada`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+    await refreshBanners();
+  });
 });
 
 // ─── BANNERS ─────────────────────────────────────────────────────────────────
@@ -454,11 +660,22 @@ async function refreshBanners() {
     const r = await api("/banners");
     if (!r.ok) return;
     bannersCache = r.banners || [];
-    const rotStatus = await api("/rotation/status");
-    const currentId = rotStatus.current_banner_id;
-    const active = rotStatus.active;
-    $("rotStatus").textContent = active ? `▶ rotacionando · ${bannersCache.length} banner(s)` : "parado";
-    $("rotStatus").classList.toggle("on", !!active);
+
+    // Rotation status por slot
+    const [rot0, rot1] = await Promise.all([
+      api(`/rotation/status${sq(0)}`),
+      api(`/rotation/status${sq(1)}`)
+    ]);
+    const cur0 = rot0.active ? rot0.current_banner_id : null;
+    const cur1 = rot1.active ? rot1.current_banner_id : null;
+
+    document.querySelector(`[data-rot-status="0"]`).textContent =
+      rot0.active ? `▶ rotacionando · ${bannersCache.length} banner(s)` : "parado";
+    document.querySelector(`[data-rot-status="0"]`).style.color = rot0.active ? "var(--slot-a)" : "";
+    document.querySelector(`[data-rot-status="1"]`).textContent =
+      rot1.active ? `▶ rotacionando · ${bannersCache.length} banner(s)` : "parado";
+    document.querySelector(`[data-rot-status="1"]`).style.color = rot1.active ? "var(--slot-b)" : "";
+
     const grid = $("bannerGrid");
     grid.innerHTML = "";
     if (!bannersCache.length) {
@@ -466,11 +683,23 @@ async function refreshBanners() {
       return;
     }
     bannersCache.forEach((b, i) => {
+      const inA = b.id === cur0;
+      const inB = b.id === cur1;
+      let cls = "banner-card";
+      if (inA && inB) cls += " playing-ab";
+      else if (inA) cls += " playing-a";
+      else if (inB) cls += " playing-b";
+
       const card = document.createElement("div");
-      card.className = "banner-card" + (b.id === currentId ? " playing" : "");
+      card.className = cls;
       const imgSrc = `${API}/banners/${b.id}/file`;
+      let liveBadge = "";
+      if (inA && inB) liveBadge = `<span class="live-badge" style="color:var(--slot-a)">A</span><span class="live-badge" style="right:22px;color:var(--slot-b)">B</span>`;
+      else if (inA) liveBadge = `<span class="live-badge" style="color:var(--slot-a)">A</span>`;
+      else if (inB) liveBadge = `<span class="live-badge" style="color:var(--slot-b)">B</span>`;
+
       card.innerHTML = `
-        <div class="banner-thumb"><img src="${imgSrc}" alt="" onerror="this.parentElement.innerHTML='<span style=color:var(--muted);font-size:11px>#${i+1}</span>'"></div>
+        <div class="banner-thumb">${liveBadge}<img src="${imgSrc}" alt="" onerror="this.parentElement.innerHTML+='<span style=color:var(--muted);font-size:11px>#${i+1}</span>'"></div>
         <div class="banner-meta">
           <div class="banner-name" title="${escHtml(b.original_name)}">${escHtml(b.original_name)}</div>
           <div class="banner-interval">
@@ -479,7 +708,8 @@ async function refreshBanners() {
           </div>
         </div>
         <div class="banner-actions-row">
-          <button data-apply="${b.id}">Aplicar</button>
+          <button data-apply-a="${b.id}" class="apply-a">A</button>
+          <button data-apply-b="${b.id}" class="apply-b">B</button>
           <button data-up="${b.id}" ${i===0?"disabled":""}>↑</button>
           <button data-down="${b.id}" ${i===bannersCache.length-1?"disabled":""}>↓</button>
           <button data-remove="${b.id}" class="danger">×</button>
@@ -493,30 +723,34 @@ async function refreshBanners() {
         const id = inp.dataset.bid, v = parseInt(inp.value, 10);
         if (!v || v < 5) return;
         await api(`/banners/${id}/update`, { interval_s: v });
-        log(`✓ intervalo do banner atualizado`, "ok");
       });
     });
-    grid.querySelectorAll("button[data-apply]").forEach(b => {
-      b.addEventListener("click", async () => {
-        const r = await api("/set-banner", { banner_id: b.dataset.apply });
-        r.ok ? log(`✓ banner aplicado`, "ok") : log(`✗ ${r.error}`, "err");
+    grid.querySelectorAll("button[data-apply-a]").forEach(bt => {
+      bt.addEventListener("click", async () => {
+        const r = await api(`/set-banner${sq(0)}`, { banner_id: bt.dataset.applyA });
+        r.ok ? log(`[Live A] ✓ banner aplicado`, "ok") : log(`[Live A] ✗ ${r.error}`, "err");
       });
     });
-    grid.querySelectorAll("button[data-up]").forEach(b => {
-      b.addEventListener("click", async () => {
-        const id = b.dataset.up;
+    grid.querySelectorAll("button[data-apply-b]").forEach(bt => {
+      bt.addEventListener("click", async () => {
+        const r = await api(`/set-banner${sq(1)}`, { banner_id: bt.dataset.applyB });
+        r.ok ? log(`[Live B] ✓ banner aplicado`, "ok") : log(`[Live B] ✗ ${r.error}`, "err");
+      });
+    });
+    grid.querySelectorAll("button[data-up]").forEach(bt => {
+      bt.addEventListener("click", async () => {
+        const id = bt.dataset.up;
         const i = bannersCache.findIndex(x => x.id === id);
         if (i <= 0) return;
         const prev = bannersCache[i-1];
-        // swap orders
         await api(`/banners/${prev.id}/update`, { order: bannersCache[i].order });
         await api(`/banners/${id}/update`, { order: prev.order });
         await refreshBanners();
       });
     });
-    grid.querySelectorAll("button[data-down]").forEach(b => {
-      b.addEventListener("click", async () => {
-        const id = b.dataset.down;
+    grid.querySelectorAll("button[data-down]").forEach(bt => {
+      bt.addEventListener("click", async () => {
+        const id = bt.dataset.down;
         const i = bannersCache.findIndex(x => x.id === id);
         if (i < 0 || i >= bannersCache.length - 1) return;
         const next = bannersCache[i+1];
@@ -525,10 +759,10 @@ async function refreshBanners() {
         await refreshBanners();
       });
     });
-    grid.querySelectorAll("button[data-remove]").forEach(b => {
-      b.addEventListener("click", async () => {
+    grid.querySelectorAll("button[data-remove]").forEach(bt => {
+      bt.addEventListener("click", async () => {
         if (!confirm("Remover este banner?")) return;
-        await fetch(`${API}/banners/${b.dataset.remove}`, { method: "DELETE" });
+        await fetch(`${API}/banners/${bt.dataset.remove}`, { method: "DELETE" });
         await refreshBanners();
         log(`✓ banner removido`, "ok");
       });
@@ -556,16 +790,6 @@ $("bannerUpload").addEventListener("change", async (ev) => {
   await refreshBanners();
 });
 
-$("btnStartRotation").addEventListener("click", async () => {
-  const r = await api("/rotation/start", {});
-  r.ok ? log(`✓ rotação iniciada`, "ok") : log(`✗ ${r.error}`, "err");
-  await refreshBanners();
-});
-$("btnStopRotation").addEventListener("click", async () => {
-  const r = await api("/rotation/stop", {});
-  r.ok ? log(`✓ rotação parada`, "ok") : log(`✗ ${r.error}`, "err");
-  await refreshBanners();
-});
 $("btnClearBanners").addEventListener("click", async () => {
   if (!confirm("Remover TODOS os banners?")) return;
   const r = await api("/banners/clear", {});
@@ -573,15 +797,18 @@ $("btnClearBanners").addEventListener("click", async () => {
   await refreshBanners();
 });
 
-// Boot + polling
+// ─── BOOT + POLLING ──────────────────────────────────────────────────────────
+
 (async () => {
   await checkStatus();
-  await refreshTabs();
+  await refreshTabs(0);
+  await refreshTabs(1);
   await refreshBanners();
   setInterval(async () => {
     const s = await checkStatus();
-    if (s && s.cdp_connected) {
-      await refreshTabs();
+    if (s) {
+      if (s.slots?.[0]?.cdp_connected) await refreshTabs(0);
+      if (s.slots?.[1]?.cdp_connected) await refreshTabs(1);
       await refreshBanners();
     }
   }, 3000);
