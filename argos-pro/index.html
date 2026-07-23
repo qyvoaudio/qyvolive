@@ -366,16 +366,16 @@ main{
 
 <div class="status-strip" id="statusStrip">
   <span class="status-item" id="stApp"><span class="dot"></span>App local</span>
-  <span class="status-item" id="stSlotA"><span class="dot"></span>Live A · CDP:9222</span>
-  <span class="status-item" id="stSlotB"><span class="dot"></span>Live B · CDP:9223</span>
+  <span class="status-item" id="stSlotA"><span class="dot"></span>Live A · CDP:9322</span>
+  <span class="status-item" id="stSlotB"><span class="dot"></span>Live B · CDP:9323</span>
   <span class="spacer"></span>
-  <span class="info">localhost:8902</span>
+  <span class="info">localhost:8903</span>
 </div>
 
 <div id="gate" class="gate" style="display:none">
   <h1>Argos <em>Pro</em> não está aberto</h1>
   <p>Este painel controla o app Argos Pro que roda no seu Mac/Windows.<br>Abre o app pra continuar — ele fica na barra de menu (Mac) ou na bandeja (Windows).</p>
-  <p style="font-size:13px">O app expõe um servidor local em <code>127.0.0.1:8902</code> que este site consulta.</p>
+  <p style="font-size:13px">O app expõe um servidor local em <code>127.0.0.1:8903</code> que este site consulta.</p>
   <p><a class="link-download" href="https://github.com/qyvoaudio/argos-pro-releases/releases/latest" target="_blank">▸ Baixar Argos Pro</a></p>
 </div>
 
@@ -488,7 +488,7 @@ main{
 </main>
 
 <script>
-const API = "http://127.0.0.1:8902";
+const API = "http://127.0.0.1:8903";
 const $ = (id) => document.getElementById(id);
 const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 
