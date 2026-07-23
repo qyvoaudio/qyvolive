@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Argos Pro · Painel de controle</title>
-<meta name="description" content="Painel de controle do Argos Pro — rode 2 lives simultâneas no TikTok Shop direto pelo Chrome, sem Live Studio.">
+<meta name="description" content="Painel de controle do Argos Pro — rode lives no TikTok Shop direto pelo Chrome, sem Live Studio.">
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/svg+xml" href="../assets/qyvo-symbol.svg">
 
@@ -40,188 +40,86 @@ body{
   background:var(--bg);
   color:var(--text);
   font-family:"DM Sans",system-ui,sans-serif;
-  font-size:15px;line-height:1.55;
+  font-size:14px;line-height:1.5;
   -webkit-font-smoothing:antialiased;
   min-height:100vh;
   display:flex;flex-direction:column;
 }
 body::before{
-  content:"";position:fixed;inset:0;pointer-events:none;z-index:1000;opacity:.025;
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:1000;opacity:.02;
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
   mix-blend-mode:overlay;
 }
 
-/* HEADER */
+/* HEADER + TABS */
 header{
-  padding:18px 32px;
-  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;
+  display:flex;align-items:center;
   border-bottom:1px solid var(--border);
-  background:rgba(10,10,16,.75);
+  background:rgba(10,10,16,.85);
   backdrop-filter:blur(20px);
   position:sticky;top:0;z-index:100;
+  height:52px;
+  gap:20px;
 }
-header .brand{display:flex;align-items:center;gap:12px}
-header .brand img{width:28px;height:28px}
-header .brand-name{
-  font-family:"Sora",sans-serif;font-weight:700;font-size:16px;letter-spacing:-.01em;
+.brand{
+  display:flex;align-items:center;gap:10px;
 }
-header .brand-name em{font-style:normal;color:var(--accent)}
-header .meta{
-  font-family:"JetBrains Mono",monospace;font-size:10px;
-  letter-spacing:.15em;text-transform:uppercase;color:var(--muted);
+.brand img{width:24px;height:24px}
+.brand-name{
+  font-family:"Sora",sans-serif;font-weight:700;font-size:15px;letter-spacing:-.01em;
 }
+.brand-name em{font-style:normal;color:var(--accent)}
 
-/* STATUS STRIP */
-.status-strip{
-  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
-  padding:14px 32px;
-  border-bottom:1px solid var(--border);
-  background:var(--bg-2);
-  font-family:"JetBrains Mono",monospace;font-size:11.5px;
-  letter-spacing:.08em;
+.tab-bar{
+  display:flex;gap:2px;height:100%;align-items:stretch;
+  margin-left:20px;
 }
-.status-item{
-  display:flex;align-items:center;gap:8px;
-  padding:5px 12px;
-  border:1px solid var(--border);
-  border-radius:100px;
-  color:var(--muted-hi);
+.tab{
+  display:flex;align-items:center;gap:8px;padding:0 16px;
+  border:0;background:transparent;color:var(--muted);cursor:pointer;
+  font-family:inherit;font-size:12.5px;font-weight:500;
+  letter-spacing:.02em;
+  border-bottom:2px solid transparent;
+  transition:all .15s;
 }
-.status-item .dot{
-  width:8px;height:8px;border-radius:50%;
-  background:var(--muted);
-  transition:all .3s;
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--text)}
+.tab[data-tab="0"].active{border-bottom-color:var(--slot-a)}
+.tab[data-tab="1"].active{border-bottom-color:var(--slot-b)}
+.tab[data-tab="config"].active{border-bottom-color:var(--accent)}
+.tab .dot{
+  width:8px;height:8px;border-radius:50%;background:var(--muted);
 }
-.status-item.on{border-color:var(--signal);color:var(--signal)}
-.status-item.on .dot{background:var(--signal);box-shadow:0 0 8px var(--signal-glow);animation:blink 1.6s infinite}
-.status-item.off{border-color:var(--err);color:var(--err)}
-.status-item.off .dot{background:var(--err)}
-.status-item.warn{border-color:var(--warn);color:var(--warn)}
-.status-item.warn .dot{background:var(--warn)}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
-.status-strip .spacer{flex:1}
-.status-strip .info{
-  color:var(--muted);font-size:10.5px;
-}
+.tab[data-tab="0"] .dot.on{background:var(--slot-a);box-shadow:0 0 6px var(--slot-a-glow)}
+.tab[data-tab="1"] .dot.on{background:var(--slot-b);box-shadow:0 0 6px var(--slot-b-glow)}
 
-/* MAIN LAYOUT: 2 slots lado-a-lado + banners embaixo */
+.header-right{
+  margin-left:auto;
+  display:flex;align-items:center;gap:12px;
+  font-family:"JetBrains Mono",monospace;font-size:10.5px;
+  color:var(--muted);letter-spacing:.08em;
+}
+.status-chip{
+  display:flex;align-items:center;gap:6px;
+  padding:4px 10px;border:1px solid var(--border);border-radius:100px;
+}
+.status-chip .dot{width:6px;height:6px;border-radius:50%;background:var(--muted)}
+.status-chip.on{border-color:var(--signal);color:var(--signal)}
+.status-chip.on .dot{background:var(--signal);box-shadow:0 0 6px var(--signal-glow)}
+.status-chip.off{border-color:var(--err);color:var(--err)}
+.status-chip.off .dot{background:var(--err)}
+
+/* MAIN LAYOUT */
 main{
   flex:1;
-  display:flex;flex-direction:column;gap:20px;
-  padding:20px 32px 40px;
-  max-width:1600px;margin:0 auto;width:100%;
+  padding:16px 24px 32px;
+  max-width:1800px;margin:0 auto;width:100%;
 }
-.slots-row{
-  display:grid;grid-template-columns:1fr 1fr;gap:20px;
-}
-@media (max-width:1000px){
-  .slots-row{grid-template-columns:1fr}
-}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
 
-.slot{
-  background:linear-gradient(180deg,#161624,var(--panel));
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:18px;
-  display:flex;flex-direction:column;
-  position:relative;
-  overflow:hidden;
-}
-.slot::before{
-  content:"";position:absolute;top:0;left:0;right:0;height:2px;
-  background:var(--slot-color, var(--muted));
-  opacity:.65;
-}
-.slot[data-slot="0"]{--slot-color:var(--slot-a);--slot-glow:var(--slot-a-glow)}
-.slot[data-slot="1"]{--slot-color:var(--slot-b);--slot-glow:var(--slot-b-glow)}
-
-.slot-header{
-  display:flex;align-items:center;gap:12px;margin-bottom:14px;
-}
-.slot-tag{
-  font-family:"Sora",sans-serif;font-weight:700;font-size:15px;
-  letter-spacing:-.005em;color:var(--slot-color);
-  display:flex;align-items:center;gap:8px;
-}
-.slot-tag .badge{
-  font-family:"JetBrains Mono",monospace;font-size:9.5px;
-  letter-spacing:.15em;text-transform:uppercase;
-  padding:2px 8px;border-radius:100px;
-  background:var(--slot-glow);color:var(--slot-color);
-}
-.slot-state{
-  margin-left:auto;
-  font-family:"JetBrains Mono",monospace;font-size:10.5px;
-  color:var(--muted);letter-spacing:.1em;text-transform:uppercase;
-}
-.slot-state.on{color:var(--slot-color)}
-
-.section-title{
-  font-family:"Sora",sans-serif;font-weight:600;font-size:12.5px;
-  letter-spacing:-.005em;color:var(--text);
-  margin:14px 0 8px;
-  display:flex;align-items:center;gap:8px;
-}
-.section-title::before{
-  content:"";width:10px;height:1px;background:var(--slot-color, var(--accent));
-}
-.section-title .extra{
-  margin-left:auto;
-  font-family:"JetBrains Mono",monospace;font-size:10px;
-  color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:400;
-}
-
-.row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-
-.field{margin-bottom:10px}
-.field label{
-  display:block;font-size:10.5px;font-family:"JetBrains Mono",monospace;
-  letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
-  margin-bottom:5px;
-}
-.field input, .field textarea{
-  width:100%;
-  background:var(--bg);border:1px solid var(--border);
-  color:var(--text);font-family:inherit;font-size:13px;
-  padding:9px 11px;border-radius:8px;
-  outline:none;transition:border-color .15s;
-}
-.field input:focus, .field textarea:focus{border-color:var(--slot-color, var(--accent))}
-.field textarea{min-height:70px;resize:vertical}
-
-.btn{
-  padding:9px 15px;
-  background:var(--accent);color:#fff;border:0;border-radius:100px;
-  font-family:inherit;font-weight:600;font-size:12px;cursor:pointer;
-  transition:all .15s;white-space:nowrap;
-  box-shadow:0 4px 14px var(--accent-glow);
-}
-.btn:hover{transform:translateY(-1px)}
-.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
-.btn.slot-color{
-  background:var(--slot-color);
-  color:#000;
-  box-shadow:0 4px 14px var(--slot-glow);
-}
-.btn.ghost{
-  background:transparent;border:1px solid var(--border);color:var(--text);box-shadow:none;
-}
-.btn.ghost:hover{border-color:var(--slot-color, var(--accent));color:var(--slot-color, var(--accent))}
-.btn.small{padding:6px 10px;font-size:11px}
-.btn.danger{background:transparent;border:1px solid var(--err);color:var(--err);box-shadow:none}
-.btn.danger:hover{background:var(--err);color:#fff}
-
-/* Abas list (compacta) */
-.tab-list{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
-.tab-item{
-  padding:8px 10px;
-  background:var(--bg);border:1px solid var(--border);border-radius:6px;
-  display:flex;flex-direction:column;gap:2px;
-}
-.tab-item .t-title{font-size:12px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.tab-item .t-url{font-size:10px;color:var(--muted);font-family:"JetBrains Mono",monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-
-/* GATE (quando app não tá conectado) */
+/* GATE quando app não tá aberto */
 .gate{
   padding:60px 32px;
   text-align:center;
@@ -230,10 +128,10 @@ main{
 }
 .gate h1{
   font-family:"Sora",sans-serif;font-weight:700;
-  font-size:32px;line-height:1;letter-spacing:-.02em;margin-bottom:16px;
+  font-size:28px;line-height:1;letter-spacing:-.02em;margin-bottom:14px;
 }
 .gate h1 em{font-style:normal;color:var(--accent)}
-.gate p{color:var(--muted-hi);margin-bottom:22px;font-size:14.5px;line-height:1.55}
+.gate p{color:var(--muted-hi);margin-bottom:20px;font-size:14px;line-height:1.55}
 .gate code{
   font-family:"JetBrains Mono",monospace;font-size:12px;
   background:var(--bg);padding:2px 8px;border-radius:4px;color:var(--accent);
@@ -241,109 +139,207 @@ main{
 }
 .gate .link-download{
   display:inline-flex;align-items:center;gap:8px;
-  padding:12px 22px;
+  padding:10px 20px;
   background:var(--accent);color:#fff;text-decoration:none;font-weight:600;
-  border-radius:100px;font-size:14px;
+  border-radius:100px;font-size:13px;
   box-shadow:0 8px 24px var(--accent-glow);
 }
 
-/* SHARED PANELS (banners + log) */
-.shared-grid{
-  display:grid;grid-template-columns:1.4fr 1fr;gap:20px;
+/* 3-COLUMN LAYOUT PER LIVE */
+.live-grid{
+  display:grid;
+  grid-template-columns:300px 1fr 280px;
+  gap:14px;
 }
-@media (max-width:1000px){
-  .shared-grid{grid-template-columns:1fr}
+@media (max-width:1200px){
+  .live-grid{grid-template-columns:280px 1fr}
+  .live-grid .col-right{grid-column:1/-1}
 }
-.shared-panel{
-  background:linear-gradient(180deg,#161624,var(--panel));
-  border:1px solid var(--border);border-radius:16px;padding:18px;
-}
-.shared-panel h2{
-  font-family:"Sora",sans-serif;font-weight:600;font-size:13px;
-  letter-spacing:-.005em;color:var(--text);
-  margin-bottom:12px;
-  display:flex;align-items:center;gap:10px;
-}
-.shared-panel h2::before{
-  content:"";width:12px;height:1px;background:var(--accent);
+@media (max-width:800px){
+  .live-grid{grid-template-columns:1fr}
 }
 
-/* BANNERS */
+.col{
+  background:linear-gradient(180deg,#161624,var(--panel));
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:16px;
+  display:flex;flex-direction:column;gap:14px;
+  overflow:hidden;
+}
+
+/* SECTION HEADING */
+.sec{
+  display:flex;flex-direction:column;gap:8px;
+}
+.sec-label{
+  display:flex;align-items:center;gap:8px;
+  font-family:"Sora",sans-serif;font-weight:600;font-size:11px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--muted-hi);
+}
+.sec-label .bar{
+  width:12px;height:1px;background:var(--slot-color,var(--accent));
+}
+.sec-label .extra{
+  margin-left:auto;
+  font-family:"JetBrains Mono",monospace;font-size:9.5px;
+  color:var(--muted);font-weight:400;letter-spacing:.1em;
+}
+
+/* SLOT-COLORED CONTEXT */
+.slot-context{
+  --slot-color:var(--slot-a);
+  --slot-glow:var(--slot-a-glow);
+}
+.slot-context[data-slot="1"]{
+  --slot-color:var(--slot-b);
+  --slot-glow:var(--slot-b-glow);
+}
+
+/* FORM ELEMENTS */
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{
+  font-family:"JetBrains Mono",monospace;font-size:10px;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+}
+.field input, .field textarea, .field select{
+  background:var(--bg);border:1px solid var(--border);
+  color:var(--text);font-family:inherit;font-size:12.5px;
+  padding:8px 10px;border-radius:6px;
+  outline:none;transition:border-color .15s;
+  width:100%;
+}
+.field input:focus, .field textarea:focus, .field select:focus{
+  border-color:var(--slot-color,var(--accent));
+}
+.field textarea{min-height:60px;resize:vertical;font-family:inherit}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+/* BUTTONS */
+.btn{
+  padding:8px 14px;
+  background:var(--accent);color:#fff;border:0;border-radius:100px;
+  font-family:inherit;font-weight:600;font-size:12px;cursor:pointer;
+  transition:all .15s;white-space:nowrap;
+  box-shadow:0 4px 12px var(--accent-glow);
+}
+.btn:hover{transform:translateY(-1px)}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
+.btn.slot-color{
+  background:var(--slot-color);color:#000;
+  box-shadow:0 4px 12px var(--slot-glow);
+}
+.btn.ghost{
+  background:transparent;border:1px solid var(--border);color:var(--text);box-shadow:none;
+}
+.btn.ghost:hover{border-color:var(--slot-color,var(--accent));color:var(--slot-color,var(--accent))}
+.btn.small{padding:6px 10px;font-size:11px}
+.btn.tiny{padding:4px 8px;font-size:10.5px}
+.btn.danger{background:transparent;border:1px solid var(--err);color:var(--err);box-shadow:none}
+.btn.danger:hover{background:var(--err);color:#fff}
+.btn.wide{width:100%}
+
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+
+/* UPLOAD */
 .upload-box{
-  padding:20px;text-align:center;
-  border:2px dashed var(--border);border-radius:10px;
+  padding:14px;text-align:center;
+  border:1.5px dashed var(--border);border-radius:8px;
   color:var(--muted);cursor:pointer;transition:all .15s;
-  margin-bottom:14px;font-size:13px;
+  font-size:12px;
 }
-.upload-box:hover{border-color:var(--accent);color:var(--accent)}
+.upload-box:hover{border-color:var(--slot-color,var(--accent));color:var(--slot-color,var(--accent))}
 .upload-box input{display:none}
-.banner-grid{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
-  gap:10px;
-}
-.banner-card{
-  background:var(--bg);border:1px solid var(--border);border-radius:10px;
-  overflow:hidden;display:flex;flex-direction:column;
-  transition:border-color .15s;
-}
-.banner-card:hover{border-color:var(--border-hi)}
-.banner-card.playing-a{border-color:var(--slot-a);box-shadow:0 0 16px var(--slot-a-glow)}
-.banner-card.playing-b{border-color:var(--slot-b);box-shadow:0 0 16px var(--slot-b-glow)}
-.banner-card.playing-ab{
-  border-image:linear-gradient(90deg,var(--slot-a),var(--slot-b)) 1;
-  box-shadow:0 0 20px var(--slot-a-glow),0 0 20px var(--slot-b-glow);
-}
-.banner-thumb{
-  aspect-ratio:16/9;background:#000;
+
+/* VIDEO PREVIEW */
+.video-thumb{
+  aspect-ratio:16/9;background:#000;border-radius:6px;overflow:hidden;
   display:flex;align-items:center;justify-content:center;
-  overflow:hidden;position:relative;
+  position:relative;border:1px solid var(--border);
 }
-.banner-thumb img{max-width:100%;max-height:100%;object-fit:cover}
-.banner-thumb .live-badge{
+.video-thumb video{max-width:100%;max-height:100%}
+.video-thumb .placeholder{
+  color:var(--muted);font-family:"JetBrains Mono",monospace;font-size:10px;
+  letter-spacing:.1em;text-transform:uppercase;
+}
+.video-thumb .live-badge{
   position:absolute;top:6px;right:6px;
   font-family:"JetBrains Mono",monospace;font-size:9px;font-weight:600;
   padding:2px 6px;border-radius:6px;letter-spacing:.1em;
-  background:rgba(0,0,0,.7);color:#fff;
+  background:var(--slot-color);color:#000;
 }
-.banner-meta{padding:8px 10px;display:flex;flex-direction:column;gap:6px}
-.banner-name{
-  font-size:11px;color:var(--text);
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+
+/* BANNERS COMPACT */
+.banner-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));
+  gap:6px;
 }
-.banner-interval{
-  display:flex;align-items:center;gap:5px;
-  font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--muted);
+.banner-card{
+  background:var(--bg);border:1px solid var(--border);border-radius:6px;
+  overflow:hidden;position:relative;
+  transition:border-color .15s;
 }
-.banner-interval input{
-  width:52px;padding:3px 6px;
-  background:var(--panel);border:1px solid var(--border);border-radius:5px;
-  color:var(--text);font-family:inherit;font-size:10.5px;
-  outline:none;
+.banner-card.playing{border-color:var(--slot-color);box-shadow:0 0 10px var(--slot-glow)}
+.banner-thumb{aspect-ratio:16/9;background:#000;display:flex;align-items:center;justify-content:center}
+.banner-thumb img{max-width:100%;max-height:100%;object-fit:cover}
+.banner-card .card-actions{
+  display:flex;gap:1px;background:var(--bg-2);
+  padding:2px;
 }
-.banner-interval input:focus{border-color:var(--accent)}
-.banner-actions-row{
-  display:flex;gap:3px;flex-wrap:wrap;justify-content:space-between;
-  padding:0 10px 8px;
+.banner-card .card-actions button{
+  flex:1;padding:3px 4px;font-size:9.5px;background:transparent;color:var(--muted);
+  border:0;cursor:pointer;transition:all .1s;font-family:inherit;
 }
-.banner-actions-row button{
-  padding:3px 6px;font-size:10px;background:transparent;color:var(--muted);
-  border:1px solid var(--border);border-radius:4px;cursor:pointer;
-  transition:all .15s;
+.banner-card .card-actions button:hover{color:var(--slot-color)}
+.banner-card .card-actions button.danger:hover{color:var(--err)}
+
+/* TABS */
+.tab-list{display:flex;flex-direction:column;gap:5px;max-height:180px;overflow-y:auto}
+.tab-item{
+  padding:7px 9px;
+  background:var(--bg);border:1px solid var(--border);border-radius:6px;
+  display:flex;flex-direction:column;gap:1px;
 }
-.banner-actions-row button:hover{color:var(--text);border-color:var(--border-hi)}
-.banner-actions-row button.apply-a:hover{color:var(--slot-a);border-color:var(--slot-a)}
-.banner-actions-row button.apply-b:hover{color:var(--slot-b);border-color:var(--slot-b)}
-.banner-actions-row button.danger:hover{color:var(--err);border-color:var(--err)}
+.tab-item .t-title{font-size:11.5px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tab-item .t-url{font-size:10px;color:var(--muted);font-family:"JetBrains Mono",monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* MONITOR */
+.monitor-box{
+  aspect-ratio:16/9;background:#000;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--border);position:relative;
+  overflow:hidden;
+}
+.monitor-box img{max-width:100%;max-height:100%}
+.monitor-box .placeholder{color:var(--muted);font-size:11px;text-align:center;padding:20px}
+
+/* TOGGLES ROW (Câmera ao vivo) */
+.toggle-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 10px;background:var(--bg);border:1px solid var(--border);
+  border-radius:6px;
+}
+.toggle-row .label{font-size:11.5px;color:var(--text)}
+.toggle-row .switch{
+  width:32px;height:18px;background:var(--border);border-radius:100px;
+  position:relative;cursor:pointer;transition:background .15s;
+}
+.toggle-row .switch::before{
+  content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;
+  border-radius:50%;background:var(--muted);transition:all .15s;
+}
+.toggle-row.on .switch{background:var(--slot-glow)}
+.toggle-row.on .switch::before{left:16px;background:var(--slot-color)}
 
 /* LOG */
 .log{
   background:#08080E;
   border:1px solid var(--border);
-  border-radius:10px;
-  padding:12px;
-  font-family:"JetBrains Mono",monospace;font-size:11px;line-height:1.55;
+  border-radius:8px;
+  padding:10px;
+  font-family:"JetBrains Mono",monospace;font-size:10.5px;line-height:1.5;
   color:var(--muted-hi);
-  max-height:340px;overflow-y:auto;
+  max-height:180px;overflow-y:auto;
   white-space:pre-wrap;
 }
 .log .ok{color:var(--signal)}
@@ -352,6 +348,48 @@ main{
 .log .cmd{color:var(--accent)}
 .log .a{color:var(--slot-a)}
 .log .b{color:var(--slot-b)}
+
+/* TRANSMISSION PANEL */
+.tx-status{
+  padding:10px 12px;background:var(--bg);border:1px solid var(--border);
+  border-radius:8px;display:flex;flex-direction:column;gap:4px;
+}
+.tx-status .l1{
+  font-family:"JetBrains Mono",monospace;font-size:9.5px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+}
+.tx-status .l2{font-size:14px;font-weight:600;color:var(--slot-color)}
+.tx-status.off .l2{color:var(--muted-hi)}
+
+.big-btn{
+  padding:14px 18px;font-size:13px;font-weight:700;
+  background:var(--slot-color);color:#000;border:0;border-radius:10px;
+  cursor:pointer;box-shadow:0 6px 20px var(--slot-glow);
+  transition:all .15s;
+  width:100%;
+}
+.big-btn:hover{transform:translateY(-1px)}
+.big-btn:disabled{opacity:.35;transform:none;box-shadow:none;cursor:not-allowed}
+.big-btn.danger{background:var(--err);color:#fff;box-shadow:0 6px 20px rgba(255,71,87,.4)}
+
+/* PLACEHOLDER SOON */
+.soon{
+  padding:16px;background:var(--bg);border:1.5px dashed var(--border);
+  border-radius:8px;text-align:center;
+  color:var(--muted);font-size:11.5px;line-height:1.4;
+}
+.soon strong{color:var(--muted-hi);display:block;margin-bottom:3px;font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+
+/* CONFIG TAB (compartilhado) */
+.config-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:16px;
+}
+@media (max-width:900px){
+  .config-grid{grid-template-columns:1fr}
+}
+
+/* SLIDER */
+input[type="range"]{width:100%;accent-color:var(--slot-color,var(--accent))}
 </style>
 </head>
 <body>
@@ -361,457 +399,570 @@ main{
     <img src="../assets/qyvo-symbol.svg" alt="Qyvo">
     <div class="brand-name">Argos <em>Pro</em></div>
   </div>
-  <div class="meta">v0.1.0 · fase 3 · 2 lives simultâneas</div>
-</header>
 
-<div class="status-strip" id="statusStrip">
-  <span class="status-item" id="stApp"><span class="dot"></span>App local</span>
-  <span class="status-item" id="stSlotA"><span class="dot"></span>Live A · CDP:9322</span>
-  <span class="status-item" id="stSlotB"><span class="dot"></span>Live B · CDP:9323</span>
-  <span class="spacer"></span>
-  <span class="info">localhost:8903</span>
-</div>
+  <div class="tab-bar">
+    <button class="tab active" data-tab="0"><span class="dot" id="tabDot0"></span>Live A</button>
+    <button class="tab" data-tab="1"><span class="dot" id="tabDot1"></span>Live B</button>
+    <button class="tab" data-tab="config">⚙ Config</button>
+  </div>
+
+  <div class="header-right">
+    <span class="status-chip" id="stApp"><span class="dot"></span>App local</span>
+    <span>v0.1.0 · fase 4</span>
+  </div>
+</header>
 
 <div id="gate" class="gate" style="display:none">
   <h1>Argos <em>Pro</em> não está aberto</h1>
-  <p>Este painel controla o app Argos Pro que roda no seu Mac/Windows.<br>Abre o app pra continuar — ele fica na barra de menu (Mac) ou na bandeja (Windows).</p>
-  <p style="font-size:13px">O app expõe um servidor local em <code>127.0.0.1:8903</code> que este site consulta.</p>
-  <p><a class="link-download" href="https://github.com/qyvoaudio/argos-pro-releases/releases/latest" target="_blank">▸ Baixar Argos Pro</a></p>
+  <p>Este painel controla o app Argos Pro que roda no seu Mac/Windows.<br>Abre o app pra continuar.</p>
+  <p style="font-size:12px">Servidor local esperado em <code>127.0.0.1:8903</code></p>
+  <p><a class="link-download" href="https://github.com/qyvoaudio/argos-pro/actions" target="_blank">▸ Baixar Argos Pro</a></p>
 </div>
 
 <main id="app" style="display:none">
-
-  <!-- 2 slots lado a lado -->
-  <div class="slots-row">
-    <!-- SLOT 0 (Live A) -->
-    <section class="slot" data-slot="0">
-      <div class="slot-header">
-        <div class="slot-tag">
-          <span class="badge">Live A</span>
-          <span>slot 0 · :9222</span>
+  <!-- TAB PANEL: LIVE A -->
+  <div class="tab-panel active" data-tab-panel="0"></div>
+  <!-- TAB PANEL: LIVE B -->
+  <div class="tab-panel" data-tab-panel="1"></div>
+  <!-- TAB PANEL: CONFIG -->
+  <div class="tab-panel" data-tab-panel="config">
+    <div class="config-grid">
+      <section class="col">
+        <div class="sec">
+          <div class="sec-label"><span class="bar"></span>Banners compartilhados <span class="extra">reusados por Live A e B</span></div>
+          <label class="upload-box" for="uplBannersGlobal">
+            📁 Sobe imagens (múltiplas)
+            <input type="file" id="uplBannersGlobal" accept="image/*" multiple>
+          </label>
+          <div class="banner-grid" id="bannersGlobalGrid"></div>
+          <div class="row" style="margin-top:8px">
+            <button class="btn ghost tiny" id="btnClearBannersGlobal" style="margin-left:auto">🗑 Limpar todos</button>
+          </div>
         </div>
-        <span class="slot-state" id="stateSlot0">desconectado</span>
-      </div>
+      </section>
 
-      <div class="row">
-        <button class="btn slot-color small" data-open-chrome="0">▸ Abrir Chrome</button>
-        <button class="btn ghost small" data-close-chrome="0">■ Fechar</button>
-        <button class="btn ghost small" data-refresh-tabs="0">⟳ Abas</button>
-        <button class="btn ghost small" data-screenshot="0">📷</button>
-      </div>
-
-      <div class="section-title">Nova aba</div>
-      <div class="field">
-        <input type="text" data-url-input="0" value="https://shop.tiktok.com/streamer/live" placeholder="https://..." spellcheck="false">
-      </div>
-      <button class="btn ghost small" data-open-tab="0">▸ Abrir</button>
-
-      <div class="section-title">Chat</div>
-      <div class="field">
-        <textarea data-chat-input="0" placeholder="Bem-vindos à live! 💜"></textarea>
-      </div>
-      <button class="btn slot-color small" data-send-chat="0">▶ Enviar</button>
-
-      <div class="section-title">Abas <span class="extra" data-tab-count="0"></span></div>
-      <div class="tab-list" data-tab-list="0"></div>
-
-      <div class="section-title">Rotação de banner <span class="extra" data-rot-status="0">parado</span></div>
-      <div class="row">
-        <button class="btn slot-color small" data-start-rotation="0">▶ Iniciar</button>
-        <button class="btn ghost small" data-stop-rotation="0">■ Parar</button>
-      </div>
-    </section>
-
-    <!-- SLOT 1 (Live B) -->
-    <section class="slot" data-slot="1">
-      <div class="slot-header">
-        <div class="slot-tag">
-          <span class="badge">Live B</span>
-          <span>slot 1 · :9223</span>
+      <section class="col">
+        <div class="sec">
+          <div class="sec-label"><span class="bar"></span>Vídeos compartilhados <span class="extra">webcam fake por live</span></div>
+          <label class="upload-box" for="uplVideosGlobal">
+            🎥 Sobe vídeos .mp4/.webm
+            <input type="file" id="uplVideosGlobal" accept="video/*" multiple>
+          </label>
+          <div class="banner-grid" id="videosGlobalGrid"></div>
+          <div class="row" style="margin-top:8px">
+            <button class="btn ghost tiny" id="btnClearVideosGlobal" style="margin-left:auto">🗑 Limpar todos</button>
+          </div>
         </div>
-        <span class="slot-state" id="stateSlot1">desconectado</span>
-      </div>
 
-      <div class="row">
-        <button class="btn slot-color small" data-open-chrome="1">▸ Abrir Chrome</button>
-        <button class="btn ghost small" data-close-chrome="1">■ Fechar</button>
-        <button class="btn ghost small" data-refresh-tabs="1">⟳ Abas</button>
-        <button class="btn ghost small" data-screenshot="1">📷</button>
-      </div>
-
-      <div class="section-title">Nova aba</div>
-      <div class="field">
-        <input type="text" data-url-input="1" value="https://shop.tiktok.com/streamer/live" placeholder="https://..." spellcheck="false">
-      </div>
-      <button class="btn ghost small" data-open-tab="1">▸ Abrir</button>
-
-      <div class="section-title">Chat</div>
-      <div class="field">
-        <textarea data-chat-input="1" placeholder="Bem-vindos à live! 💜"></textarea>
-      </div>
-      <button class="btn slot-color small" data-send-chat="1">▶ Enviar</button>
-
-      <div class="section-title">Abas <span class="extra" data-tab-count="1"></span></div>
-      <div class="tab-list" data-tab-list="1"></div>
-
-      <div class="section-title">Rotação de banner <span class="extra" data-rot-status="1">parado</span></div>
-      <div class="row">
-        <button class="btn slot-color small" data-start-rotation="1">▶ Iniciar</button>
-        <button class="btn ghost small" data-stop-rotation="1">■ Parar</button>
-      </div>
-    </section>
+        <div class="sec">
+          <div class="sec-label"><span class="bar"></span>Log global</div>
+          <div class="log" id="log"></div>
+        </div>
+      </section>
+    </div>
   </div>
-
-  <!-- Banners compartilhados + Log -->
-  <div class="shared-grid">
-    <section class="shared-panel">
-      <h2>Banners <span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase">compartilhados entre lives</span></h2>
-
-      <label class="upload-box" for="bannerUpload">
-        📁 Clique pra subir imagens (múltiplas)
-        <input type="file" id="bannerUpload" accept="image/*" multiple>
-      </label>
-
-      <div class="row" style="margin-bottom:12px">
-        <button class="btn ghost small" id="btnClearBanners" style="margin-left:auto">🗑 Limpar todos</button>
-      </div>
-
-      <div class="banner-grid" id="bannerGrid"></div>
-    </section>
-
-    <section class="shared-panel">
-      <h2>Log</h2>
-      <div class="log" id="log"></div>
-    </section>
-  </div>
-
 </main>
+
+<!-- TEMPLATE PRO CONTEÚDO DE CADA LIVE (clonado por JS) -->
+<template id="liveTemplate">
+  <div class="slot-context">
+    <div class="live-grid">
+
+      <!-- ═══ COLUNA ESQUERDA — PRODUTO / CONFIG ═══ -->
+      <div class="col col-left">
+        <div class="sec">
+          <div class="sec-label"><span class="bar"></span>Produto <span class="extra">config</span></div>
+          <div class="field"><label>Nome</label><input type="text" data-p="nome" placeholder="Ex: Escova dental sônica"></div>
+          <div class="field"><label>Descrição</label><textarea data-p="desc" placeholder="Descrição curta"></textarea></div>
+          <div class="field-row">
+            <div class="field"><label>Preço venda</label><input type="text" data-p="preco" placeholder="R$"></div>
+            <div class="field"><label>De</label><input type="text" data-p="preco_de" placeholder="R$"></div>
+          </div>
+          <div class="field"><label>Parcela</label><input type="text" data-p="parcela" placeholder="10x sem juros"></div>
+          <div class="soon"><strong>Aplicar via CDP</strong>na Fase 5 — botão preenche automático os campos da TikTok Shop</div>
+        </div>
+
+        <div class="sec">
+          <div class="sec-label"><span class="bar"></span>Vídeo (webcam fake) <span class="extra" data-video-status>nenhum</span></div>
+          <div class="video-thumb" data-video-preview>
+            <div class="placeholder">nenhum vídeo aplicado</div>
+          </div>
+          <select data-video-select class="field"></select>
+          <div class="row">
+            <button class="btn slot-color small" data-btn-apply-video>Aplicar</button>
+            <button class="btn ghost small" data-btn-clear-video>Remover</button>
+          </div>
+        </div>
+
+        <div class="sec">
+          <div class="sec-label"><span class="bar"></span>Banners <span class="extra" data-banner-count>0</span></div>
+          <div class="banner-grid" data-banner-grid></div>
+          <div class="row">
+            <button class="btn slot-color small" data-btn-rot-start>▶ Iniciar rotação</button>
+            <button class="btn ghost small" data-btn-rot-stop>■ Parar</button>
+          </div>
+        </div>
+
+        <div class="sec">
+          <div class="sec-label"><span class="bar"></span>Proxy <span class="extra">opcional</span></div>
+          <div class="field"><input type="text" data-p="proxy" placeholder="host:porta ou host:porta:user:pass"></div>
+          <button class="btn ghost small" data-btn-save-proxy>Salvar proxy</button>
+          <div style="font-size:10.5px;color:var(--muted);margin-top:4px">Aplica no próximo "Abrir Chrome"</div>
+        </div>
+      </div>
+
+      <!-- ═══ COLUNA CENTRO — CONTROLES + MONITOR ═══ -->
+      <div class="col col-center">
+        <div class="sec">
+          <div class="sec-label"><span class="bar"></span>Chrome + abas</div>
+          <div class="row">
+            <button class="btn slot-color small" data-btn-open-chrome>▸ Abrir Chrome</button>
+            <button class="btn ghost small" data-btn-close-chrome>■ Fechar</button>
+            <button class="btn ghost small" data-btn-refresh-tabs>⟳ Abas</button>
+            <button class="btn ghost small" data-btn-screenshot>📷 Snap</button>
+          </div>
+          <div class="tab-list" data-tab-list></div>
+        </div>
+
+        <div class="sec">
+          <div class="sec-label"><span class="bar"></span>Chat <span class="extra">envio direto</span></div>
+          <div class="field"><textarea data-chat-input placeholder="Escreve mensagem pro chat..."></textarea></div>
+          <button class="btn slot-color small" data-btn-send-chat>▶ Enviar no chat</button>
+        </div>
+
+        <div class="sec">
+          <div class="sec-label"><span class="bar"></span>Cérebro <span class="extra">roteiro IA</span></div>
+          <div class="soon">
+            <strong>Fase 6 — Cérebro</strong>
+            8 blocos de fala (Abertura, Benefício, Preço, Urgência, Objeções, Social, CTA, Engajamento).<br>
+            IA gera roteiro e envia no chat com timing.
+          </div>
+        </div>
+
+        <div class="sec">
+          <div class="sec-label"><span class="bar"></span>Monitor da Live <span class="extra">snapshot ao vivo</span></div>
+          <div class="monitor-box" data-monitor>
+            <div class="placeholder">Aperta 📷 Snap acima pra ver o Chrome</div>
+          </div>
+        </div>
+
+        <div class="sec">
+          <div class="sec-label"><span class="bar"></span>Câmera ao vivo <span class="extra">ambiente sonoro</span></div>
+          <div class="soon">
+            <strong>Fase 6 — ambiente</strong>
+            Toggles pra ruído de sala, respirações, digitação, cliques etc. Alimentado pela QT integrada.
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ COLUNA DIREITA — TRANSMISSÃO ═══ -->
+      <div class="col col-right">
+        <div class="sec">
+          <div class="sec-label"><span class="bar"></span>Estúdio de transmissão</div>
+          <div class="tx-status" data-tx-status>
+            <span class="l1">Chrome CDP</span>
+            <span class="l2" data-tx-l2>Desconectado</span>
+          </div>
+        </div>
+
+        <div class="sec">
+          <div class="sec-label"><span class="bar"></span>TikTok Shop</div>
+          <div class="soon" style="text-align:left">
+            Pra ir ao vivo:<br>
+            1. Aperta ▸ Abrir Chrome<br>
+            2. Loga TikTok Shop<br>
+            3. Vai em <em>Live Center</em><br>
+            4. Aperta <em>Iniciar Live</em>
+          </div>
+        </div>
+
+        <div class="sec">
+          <div class="sec-label"><span class="bar"></span>Live Preview</div>
+          <div class="monitor-box" data-live-preview>
+            <div class="placeholder">Aparece após primeiro Snap</div>
+          </div>
+        </div>
+
+        <div class="sec">
+          <div class="sec-label"><span class="bar"></span>Volume ambiente</div>
+          <div class="field"><label>Volume geral</label><input type="range" min="0" max="100" value="80" data-slider="vol"></div>
+          <div class="field"><label>Ambiente</label><input type="range" min="0" max="100" value="40" data-slider="amb"></div>
+          <div style="font-size:10.5px;color:var(--muted);margin-top:4px">Controles ativam quando QT integrada estiver ativa</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</template>
 
 <script>
 const API = "http://127.0.0.1:8903";
 const $ = (id) => document.getElementById(id);
-const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
 
-const log = (msg, cls = "info") => {
-  const el = $("log");
-  const stamp = new Date().toLocaleTimeString();
-  el.insertAdjacentHTML("afterbegin", `<span class="${cls}">[${stamp}] ${msg}</span>\n`);
+const state = {
+  slots: [
+    { open: false, connected: false, tabs: [], appliedVideoId: null, proxy: null },
+    { open: false, connected: false, tabs: [], appliedVideoId: null, proxy: null },
+  ],
+  banners: [],
+  videos: [],
+  activeTab: "0",
 };
 
-async function api(path, body) {
-  const opts = body
-    ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }
-    : { method: "GET" };
-  const r = await fetch(API + path, opts);
+// ─── LOG ─────────────────────────────────────────────────────────────────────
+function log(msg, cls = "info") {
+  const el = $("log");
+  if (!el) return;
+  const stamp = new Date().toLocaleTimeString();
+  el.insertAdjacentHTML("afterbegin", `<span class="${cls}">[${stamp}] ${msg}</span>\n`);
+}
+const slotLabel = (s) => (String(s) === "0" ? "A" : "B");
+
+// ─── API ─────────────────────────────────────────────────────────────────────
+async function api(path, body, opts = {}) {
+  const init = body === undefined
+    ? { method: "GET" }
+    : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };
+  Object.assign(init, opts);
+  const r = await fetch(API + path, init);
   return await r.json();
 }
-
-// slot query helper
 const sq = (s) => `?slot=${s}`;
+function esc(s) { return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 
 // ─── STATUS ──────────────────────────────────────────────────────────────────
-
 async function checkStatus() {
   try {
     const s = await api("/ping");
-    if (!s.ok) throw new Error("ping falhou");
-    $("stApp").classList.add("on");
+    if (!s.ok) throw new Error("ping fail");
+    $("stApp").className = "status-chip on";
     (s.slots || []).forEach((sl, i) => {
-      const chip = $(`stSlot${i === 0 ? "A" : "B"}`);
-      const state = $(`stateSlot${i}`);
-      chip.classList.remove("on", "off", "warn");
-      state.classList.remove("on");
-      if (sl.chrome_open && sl.cdp_connected) {
-        chip.classList.add("on");
-        state.classList.add("on");
-        state.textContent = "conectado";
-      } else if (sl.chrome_open) {
-        chip.classList.add("warn");
-        state.textContent = "Chrome sem CDP";
-      } else {
-        chip.classList.add("off");
-        state.textContent = "desconectado";
+      state.slots[i].open = sl.chrome_open;
+      state.slots[i].connected = sl.cdp_connected;
+      state.slots[i].appliedVideoId = sl.applied_video_id;
+      state.slots[i].proxy = sl.proxy;
+      const dot = $(`tabDot${i}`);
+      if (dot) dot.className = "dot" + (sl.cdp_connected ? " on" : "");
+
+      const panel = document.querySelector(`[data-tab-panel="${i}"]`);
+      if (panel) {
+        const txL2 = panel.querySelector("[data-tx-l2]");
+        const txSt = panel.querySelector("[data-tx-status]");
+        if (txL2) {
+          if (sl.chrome_open && sl.cdp_connected) { txL2.textContent = "Conectado"; txSt.classList.remove("off"); }
+          else if (sl.chrome_open) { txL2.textContent = "Chrome sem CDP"; }
+          else { txL2.textContent = "Desconectado"; txSt.classList.add("off"); }
+        }
       }
     });
     $("gate").style.display = "none";
     $("app").style.display = "";
     return s;
   } catch (e) {
-    $("stApp").classList.remove("on"); $("stApp").classList.add("off");
-    ["A","B"].forEach(k => { $("stSlot"+k).classList.remove("on","warn"); $("stSlot"+k).classList.add("off"); });
+    $("stApp").className = "status-chip off";
     $("gate").style.display = "";
     $("app").style.display = "none";
     return null;
   }
 }
 
-// ─── CHROME OPEN / CLOSE (por slot) ──────────────────────────────────────────
-
-$$("[data-open-chrome]").forEach(b => {
-  b.addEventListener("click", async () => {
-    const s = b.dataset.openChrome;
-    const label = s === "0" ? "A" : "B";
-    log(`[Live ${label}] ▸ abrindo Chrome`, label === "A" ? "a" : "b");
-    const r = await api(`/open-chrome${sq(s)}`, {});
-    r.ok ? log(`[Live ${label}] ✓ Chrome conectado`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
-    await checkStatus();
-    await refreshTabs(parseInt(s, 10));
+// ─── RENDER LIVE PANELS ──────────────────────────────────────────────────────
+function renderLivePanels() {
+  const tmpl = $("liveTemplate");
+  ["0", "1"].forEach(slot => {
+    const container = document.querySelector(`[data-tab-panel="${slot}"]`);
+    if (container.dataset.rendered) return;
+    container.dataset.rendered = "1";
+    const clone = tmpl.content.cloneNode(true);
+    const wrap = clone.querySelector(".slot-context");
+    wrap.dataset.slot = slot;
+    container.appendChild(clone);
+    bindLivePanel(slot);
   });
-});
-$$("[data-close-chrome]").forEach(b => {
-  b.addEventListener("click", async () => {
-    const s = b.dataset.closeChrome;
-    const label = s === "0" ? "A" : "B";
-    const r = await api(`/close-chrome${sq(s)}`, {});
-    r.ok ? log(`[Live ${label}] ✓ Chrome fechado`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
-    await checkStatus();
-  });
-});
-
-// ─── ABAS ────────────────────────────────────────────────────────────────────
-
-async function refreshTabs(slot) {
-  const s = String(slot);
-  try {
-    const r = await api(`/tabs${sq(s)}`);
-    const list = document.querySelector(`[data-tab-list="${s}"]`);
-    const count = document.querySelector(`[data-tab-count="${s}"]`);
-    if (!r.ok) { list.innerHTML = ""; count.textContent = "—"; return; }
-    list.innerHTML = "";
-    r.tabs.forEach(t => {
-      const div = document.createElement("div");
-      div.className = "tab-item";
-      div.innerHTML = `<div class="t-title">${escHtml(t.title || "(sem título)")}</div><div class="t-url">${escHtml(t.url)}</div>`;
-      list.appendChild(div);
-    });
-    count.textContent = `${r.tabs.length} aba(s)`;
-  } catch (e) {}
 }
 
-$$("[data-refresh-tabs]").forEach(b => {
-  b.addEventListener("click", () => refreshTabs(parseInt(b.dataset.refreshTabs, 10)));
-});
+function bindLivePanel(slot) {
+  const panel = document.querySelector(`[data-tab-panel="${slot}"]`);
+  if (!panel) return;
+  const q = (sel) => panel.querySelector(sel);
+  const qq = (sel) => Array.from(panel.querySelectorAll(sel));
 
-$$("[data-open-tab]").forEach(b => {
-  b.addEventListener("click", async () => {
-    const s = b.dataset.openTab;
-    const label = s === "0" ? "A" : "B";
-    const url = document.querySelector(`[data-url-input="${s}"]`).value.trim();
-    if (!url) return;
-    log(`[Live ${label}] ▸ abrir aba: ${url}`, "cmd");
-    const r = await api(`/open-tab${sq(s)}`, { url });
-    r.ok ? log(`[Live ${label}] ✓ aba aberta`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
-    await refreshTabs(parseInt(s, 10));
+  q("[data-btn-open-chrome]")?.addEventListener("click", async () => {
+    const label = slotLabel(slot);
+    log(`[Live ${label}] ▸ abrindo Chrome`, label === "A" ? "a" : "b");
+    const r = await api(`/open-chrome${sq(slot)}`, {});
+    r.ok ? log(`[Live ${label}] ✓ Chrome conectado`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+    await refreshAll();
   });
-});
-
-$$("[data-send-chat]").forEach(b => {
-  b.addEventListener("click", async () => {
-    const s = b.dataset.sendChat;
-    const label = s === "0" ? "A" : "B";
-    const text = document.querySelector(`[data-chat-input="${s}"]`).value.trim();
-    if (!text) return;
-    log(`[Live ${label}] ▸ enviar: "${text}"`, "cmd");
-    const r = await api(`/send-chat${sq(s)}`, { text });
-    r.ok ? log(`[Live ${label}] ✓ mensagem injetada`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+  q("[data-btn-close-chrome]")?.addEventListener("click", async () => {
+    const label = slotLabel(slot);
+    const r = await api(`/close-chrome${sq(slot)}`, {});
+    r.ok ? log(`[Live ${label}] ✓ Chrome fechado`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+    await refreshAll();
   });
-});
-
-$$("[data-screenshot]").forEach(b => {
-  b.addEventListener("click", async () => {
-    const s = b.dataset.screenshot;
-    const label = s === "0" ? "A" : "B";
+  q("[data-btn-refresh-tabs]")?.addEventListener("click", () => refreshTabs(slot));
+  q("[data-btn-screenshot]")?.addEventListener("click", async () => {
+    const label = slotLabel(slot);
     log(`[Live ${label}] ▸ screenshot`, "cmd");
-    const r = await api(`/screenshot${sq(s)}`, {});
+    const r = await api(`/screenshot${sq(slot)}`, {});
     if (!r.ok) return log(`[Live ${label}] ✗ ${r.error}`, "err");
-    const win = window.open("", "_blank");
-    win.document.write(`<img src="data:image/png;base64,${r.png_base64}" style="max-width:100%">`);
-    log(`[Live ${label}] ✓ screenshot aberto`, "ok");
+    const monitor = q("[data-monitor]");
+    const preview = q("[data-live-preview]");
+    const img = `<img src="data:image/png;base64,${r.png_base64}">`;
+    if (monitor) monitor.innerHTML = img;
+    if (preview) preview.innerHTML = img;
+    log(`[Live ${label}] ✓ snapshot`, "ok");
   });
-});
-
-// ─── ROTATION (por slot) ─────────────────────────────────────────────────────
-
-$$("[data-start-rotation]").forEach(b => {
-  b.addEventListener("click", async () => {
-    const s = b.dataset.startRotation;
-    const label = s === "0" ? "A" : "B";
-    const r = await api(`/rotation/start${sq(s)}`, {});
+  q("[data-btn-send-chat]")?.addEventListener("click", async () => {
+    const label = slotLabel(slot);
+    const text = q("[data-chat-input]").value.trim();
+    if (!text) return;
+    log(`[Live ${label}] ▸ chat: "${text}"`, "cmd");
+    const r = await api(`/send-chat${sq(slot)}`, { text });
+    r.ok ? log(`[Live ${label}] ✓ enviado`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+  });
+  q("[data-btn-apply-video]")?.addEventListener("click", async () => {
+    const label = slotLabel(slot);
+    const sel = q("[data-video-select]");
+    if (!sel.value) return log(`[Live ${label}] ✗ escolhe um vídeo primeiro`, "err");
+    const r = await api(`/video/apply${sq(slot)}`, { video_id: sel.value });
+    r.ok ? log(`[Live ${label}] ✓ vídeo aplicado (${r.note || 'aplicado'})`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+    await refreshAll();
+  });
+  q("[data-btn-clear-video]")?.addEventListener("click", async () => {
+    const label = slotLabel(slot);
+    const r = await api(`/video/clear${sq(slot)}`, {});
+    r.ok ? log(`[Live ${label}] ✓ vídeo removido do slot`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+    await refreshAll();
+  });
+  q("[data-btn-save-proxy]")?.addEventListener("click", async () => {
+    const label = slotLabel(slot);
+    const proxy = q("[data-p='proxy']").value.trim() || null;
+    const r = await api(`/proxy${sq(slot)}`, { proxy });
+    r.ok ? log(`[Live ${label}] ✓ proxy salvo (aplica no próximo Abrir)`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+  });
+  q("[data-btn-rot-start]")?.addEventListener("click", async () => {
+    const label = slotLabel(slot);
+    const r = await api(`/rotation/start${sq(slot)}`, {});
     r.ok ? log(`[Live ${label}] ✓ rotação iniciada`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
     await refreshBanners();
   });
-});
-$$("[data-stop-rotation]").forEach(b => {
-  b.addEventListener("click", async () => {
-    const s = b.dataset.stopRotation;
-    const label = s === "0" ? "A" : "B";
-    const r = await api(`/rotation/stop${sq(s)}`, {});
+  q("[data-btn-rot-stop]")?.addEventListener("click", async () => {
+    const label = slotLabel(slot);
+    const r = await api(`/rotation/stop${sq(slot)}`, {});
     r.ok ? log(`[Live ${label}] ✓ rotação parada`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
     await refreshBanners();
   });
-});
+}
 
-// ─── BANNERS ─────────────────────────────────────────────────────────────────
-
-let bannersCache = [];
+async function refreshTabs(slot) {
+  try {
+    const r = await api(`/tabs${sq(slot)}`);
+    if (!r.ok) return;
+    state.slots[slot].tabs = r.tabs;
+    const panel = document.querySelector(`[data-tab-panel="${slot}"]`);
+    if (!panel) return;
+    const list = panel.querySelector("[data-tab-list]");
+    if (!list) return;
+    list.innerHTML = r.tabs.length
+      ? r.tabs.slice(0, 5).map(t => `<div class="tab-item"><div class="t-title">${esc(t.title || '(sem título)')}</div><div class="t-url">${esc(t.url)}</div></div>`).join("")
+      : `<div style="color:var(--muted);font-size:11px;padding:4px 0">nenhuma aba aberta</div>`;
+  } catch {}
+}
 
 async function refreshBanners() {
   try {
     const r = await api("/banners");
     if (!r.ok) return;
-    bannersCache = r.banners || [];
+    state.banners = r.banners;
+
+    // Config tab: banner grid global
+    const globalGrid = $("bannersGlobalGrid");
+    if (globalGrid) {
+      globalGrid.innerHTML = state.banners.length
+        ? state.banners.map((b, i) => `
+          <div class="banner-card">
+            <div class="banner-thumb"><img src="${API}/banners/${b.id}/file" alt=""></div>
+            <div class="card-actions">
+              <button class="danger" data-glo-del="${b.id}">×</button>
+            </div>
+          </div>`).join("")
+        : `<div style="grid-column:1/-1;color:var(--muted);font-size:11px;text-align:center;padding:12px">nenhum banner ainda</div>`;
+      globalGrid.querySelectorAll("[data-glo-del]").forEach(b => {
+        b.addEventListener("click", async () => {
+          if (!confirm("Remover banner?")) return;
+          await fetch(`${API}/banners/${b.dataset.gloDel}`, { method: "DELETE" });
+          await refreshBanners();
+        });
+      });
+    }
 
     // Rotation status por slot
-    const [rot0, rot1] = await Promise.all([
-      api(`/rotation/status${sq(0)}`),
-      api(`/rotation/status${sq(1)}`)
-    ]);
-    const cur0 = rot0.active ? rot0.current_banner_id : null;
-    const cur1 = rot1.active ? rot1.current_banner_id : null;
-
-    document.querySelector(`[data-rot-status="0"]`).textContent =
-      rot0.active ? `▶ rotacionando · ${bannersCache.length} banner(s)` : "parado";
-    document.querySelector(`[data-rot-status="0"]`).style.color = rot0.active ? "var(--slot-a)" : "";
-    document.querySelector(`[data-rot-status="1"]`).textContent =
-      rot1.active ? `▶ rotacionando · ${bannersCache.length} banner(s)` : "parado";
-    document.querySelector(`[data-rot-status="1"]`).style.color = rot1.active ? "var(--slot-b)" : "";
-
-    const grid = $("bannerGrid");
-    grid.innerHTML = "";
-    if (!bannersCache.length) {
-      grid.innerHTML = `<div style="grid-column:1/-1;color:var(--muted);font-size:12px;text-align:center;padding:14px">nenhum banner ainda — sobe imagens acima</div>`;
-      return;
-    }
-    bannersCache.forEach((b, i) => {
-      const inA = b.id === cur0;
-      const inB = b.id === cur1;
-      let cls = "banner-card";
-      if (inA && inB) cls += " playing-ab";
-      else if (inA) cls += " playing-a";
-      else if (inB) cls += " playing-b";
-
-      const card = document.createElement("div");
-      card.className = cls;
-      const imgSrc = `${API}/banners/${b.id}/file`;
-      let liveBadge = "";
-      if (inA && inB) liveBadge = `<span class="live-badge" style="color:var(--slot-a)">A</span><span class="live-badge" style="right:22px;color:var(--slot-b)">B</span>`;
-      else if (inA) liveBadge = `<span class="live-badge" style="color:var(--slot-a)">A</span>`;
-      else if (inB) liveBadge = `<span class="live-badge" style="color:var(--slot-b)">B</span>`;
-
-      card.innerHTML = `
-        <div class="banner-thumb">${liveBadge}<img src="${imgSrc}" alt="" onerror="this.parentElement.innerHTML+='<span style=color:var(--muted);font-size:11px>#${i+1}</span>'"></div>
-        <div class="banner-meta">
-          <div class="banner-name" title="${escHtml(b.original_name)}">${escHtml(b.original_name)}</div>
-          <div class="banner-interval">
-            <input type="number" min="5" max="600" value="${b.interval_s}" data-bid="${b.id}" class="int-input">
-            <span>seg</span>
-          </div>
-        </div>
-        <div class="banner-actions-row">
-          <button data-apply-a="${b.id}" class="apply-a">A</button>
-          <button data-apply-b="${b.id}" class="apply-b">B</button>
-          <button data-up="${b.id}" ${i===0?"disabled":""}>↑</button>
-          <button data-down="${b.id}" ${i===bannersCache.length-1?"disabled":""}>↓</button>
-          <button data-remove="${b.id}" class="danger">×</button>
-        </div>
-      `;
-      grid.appendChild(card);
-    });
-
-    grid.querySelectorAll(".int-input").forEach(inp => {
-      inp.addEventListener("change", async () => {
-        const id = inp.dataset.bid, v = parseInt(inp.value, 10);
-        if (!v || v < 5) return;
-        await api(`/banners/${id}/update`, { interval_s: v });
+    const rotStatuses = await Promise.all(["0", "1"].map(s => api(`/rotation/status${sq(s)}`)));
+    ["0", "1"].forEach(async (slot, i) => {
+      const rot = rotStatuses[i];
+      const curId = rot.active ? rot.current_banner_id : null;
+      const panel = document.querySelector(`[data-tab-panel="${slot}"]`);
+      if (!panel) return;
+      const grid = panel.querySelector("[data-banner-grid]");
+      const count = panel.querySelector("[data-banner-count]");
+      if (count) count.textContent = `${state.banners.length} · ${rot.active ? '▶ girando' : 'parado'}`;
+      if (!grid) return;
+      grid.innerHTML = state.banners.length
+        ? state.banners.map((b, i) => `
+          <div class="banner-card ${b.id === curId ? 'playing' : ''}">
+            <div class="banner-thumb"><img src="${API}/banners/${b.id}/file" alt=""></div>
+            <div class="card-actions">
+              <button data-apply="${b.id}">▸</button>
+              <button class="danger" data-del="${b.id}">×</button>
+            </div>
+          </div>`).join("")
+        : `<div style="grid-column:1/-1;color:var(--muted);font-size:10.5px;text-align:center;padding:8px">vazio — vai em ⚙ Config pra subir</div>`;
+      grid.querySelectorAll("[data-apply]").forEach(b => {
+        b.addEventListener("click", async () => {
+          const r = await api(`/set-banner${sq(slot)}`, { banner_id: b.dataset.apply });
+          r.ok ? log(`[Live ${slotLabel(slot)}] ✓ banner aplicado`, "ok") : log(`[Live ${slotLabel(slot)}] ✗ ${r.error}`, "err");
+        });
+      });
+      grid.querySelectorAll("[data-del]").forEach(b => {
+        b.addEventListener("click", async () => {
+          if (!confirm("Remover banner?")) return;
+          await fetch(`${API}/banners/${b.dataset.del}`, { method: "DELETE" });
+          await refreshBanners();
+        });
       });
     });
-    grid.querySelectorAll("button[data-apply-a]").forEach(bt => {
-      bt.addEventListener("click", async () => {
-        const r = await api(`/set-banner${sq(0)}`, { banner_id: bt.dataset.applyA });
-        r.ok ? log(`[Live A] ✓ banner aplicado`, "ok") : log(`[Live A] ✗ ${r.error}`, "err");
-      });
-    });
-    grid.querySelectorAll("button[data-apply-b]").forEach(bt => {
-      bt.addEventListener("click", async () => {
-        const r = await api(`/set-banner${sq(1)}`, { banner_id: bt.dataset.applyB });
-        r.ok ? log(`[Live B] ✓ banner aplicado`, "ok") : log(`[Live B] ✗ ${r.error}`, "err");
-      });
-    });
-    grid.querySelectorAll("button[data-up]").forEach(bt => {
-      bt.addEventListener("click", async () => {
-        const id = bt.dataset.up;
-        const i = bannersCache.findIndex(x => x.id === id);
-        if (i <= 0) return;
-        const prev = bannersCache[i-1];
-        await api(`/banners/${prev.id}/update`, { order: bannersCache[i].order });
-        await api(`/banners/${id}/update`, { order: prev.order });
-        await refreshBanners();
-      });
-    });
-    grid.querySelectorAll("button[data-down]").forEach(bt => {
-      bt.addEventListener("click", async () => {
-        const id = bt.dataset.down;
-        const i = bannersCache.findIndex(x => x.id === id);
-        if (i < 0 || i >= bannersCache.length - 1) return;
-        const next = bannersCache[i+1];
-        await api(`/banners/${next.id}/update`, { order: bannersCache[i].order });
-        await api(`/banners/${id}/update`, { order: next.order });
-        await refreshBanners();
-      });
-    });
-    grid.querySelectorAll("button[data-remove]").forEach(bt => {
-      bt.addEventListener("click", async () => {
-        if (!confirm("Remover este banner?")) return;
-        await fetch(`${API}/banners/${bt.dataset.remove}`, { method: "DELETE" });
-        await refreshBanners();
-        log(`✓ banner removido`, "ok");
-      });
-    });
-  } catch (e) { log(`refreshBanners: ${e.message}`, "err"); }
+  } catch (e) {}
 }
 
-function escHtml(s) { return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+async function refreshVideos() {
+  try {
+    const r = await api("/videos");
+    if (!r.ok) return;
+    state.videos = r.videos;
 
-$("bannerUpload").addEventListener("change", async (ev) => {
-  const files = Array.from(ev.target.files || []);
-  if (!files.length) return;
-  log(`▸ subindo ${files.length} imagem(ns)`, "cmd");
+    // Config tab: video grid global
+    const globalGrid = $("videosGlobalGrid");
+    if (globalGrid) {
+      globalGrid.innerHTML = state.videos.length
+        ? state.videos.map((v, i) => `
+          <div class="banner-card">
+            <div class="banner-thumb"><video src="${API}/videos/${v.id}/file" muted></video></div>
+            <div style="padding:4px 6px;font-size:9.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(v.original_name)}</div>
+            <div class="card-actions">
+              <button class="danger" data-glo-vid-del="${v.id}">×</button>
+            </div>
+          </div>`).join("")
+        : `<div style="grid-column:1/-1;color:var(--muted);font-size:11px;text-align:center;padding:12px">nenhum vídeo ainda</div>`;
+      globalGrid.querySelectorAll("[data-glo-vid-del]").forEach(b => {
+        b.addEventListener("click", async () => {
+          if (!confirm("Remover vídeo?")) return;
+          await fetch(`${API}/videos/${b.dataset.gloVidDel}`, { method: "DELETE" });
+          await refreshVideos();
+        });
+      });
+    }
+
+    // Cada slot: select de vídeo + status
+    ["0", "1"].forEach(slot => {
+      const panel = document.querySelector(`[data-tab-panel="${slot}"]`);
+      if (!panel) return;
+      const sel = panel.querySelector("[data-video-select]");
+      const status = panel.querySelector("[data-video-status]");
+      const preview = panel.querySelector("[data-video-preview]");
+      const applied = state.slots[slot].appliedVideoId;
+      const appliedVideo = state.videos.find(v => v.id === applied);
+      if (sel) {
+        sel.innerHTML = `<option value="">— escolhe vídeo —</option>` +
+          state.videos.map(v => `<option value="${v.id}" ${v.id === applied ? 'selected' : ''}>${esc(v.original_name)}</option>`).join("");
+      }
+      if (status) status.textContent = appliedVideo ? esc(appliedVideo.original_name) : "nenhum";
+      if (preview) {
+        if (appliedVideo) {
+          preview.innerHTML = `<video src="${API}/videos/${appliedVideo.id}/file" muted autoplay loop playsinline></video><span class="live-badge">${slotLabel(slot)}</span>`;
+        } else {
+          preview.innerHTML = `<div class="placeholder">nenhum vídeo aplicado</div>`;
+        }
+      }
+      // Preenche campo proxy salvo
+      const proxyInput = panel.querySelector("[data-p='proxy']");
+      if (proxyInput && state.slots[slot].proxy && !proxyInput.dataset.userTouched) {
+        proxyInput.value = state.slots[slot].proxy;
+      }
+    });
+  } catch (e) {}
+}
+
+// ─── UPLOADS ─────────────────────────────────────────────────────────────────
+async function uploadFiles(files, endpoint, kind) {
+  log(`▸ subindo ${files.length} ${kind}(s)`, "cmd");
   for (const f of files) {
     const fd = new FormData();
     fd.append("file", f);
-    fd.append("interval_s", "60");
+    if (endpoint.includes("banners")) fd.append("interval_s", "60");
     try {
-      const r = await fetch(`${API}/banners/upload`, { method: "POST", body: fd });
+      const r = await fetch(`${API}${endpoint}`, { method: "POST", body: fd });
       const j = await r.json();
       j.ok ? log(`✓ ${f.name}`, "ok") : log(`✗ ${f.name}: ${j.error}`, "err");
     } catch (e) { log(`✗ ${f.name}: ${e.message}`, "err"); }
   }
+}
+
+$("uplBannersGlobal")?.addEventListener("change", async (ev) => {
+  const files = Array.from(ev.target.files || []);
+  if (!files.length) return;
+  await uploadFiles(files, "/banners/upload", "imagem");
   ev.target.value = "";
   await refreshBanners();
 });
-
-$("btnClearBanners").addEventListener("click", async () => {
+$("uplVideosGlobal")?.addEventListener("change", async (ev) => {
+  const files = Array.from(ev.target.files || []);
+  if (!files.length) return;
+  await uploadFiles(files, "/videos/upload", "vídeo");
+  ev.target.value = "";
+  await refreshVideos();
+});
+$("btnClearBannersGlobal")?.addEventListener("click", async () => {
   if (!confirm("Remover TODOS os banners?")) return;
   const r = await api("/banners/clear", {});
-  r.ok ? log(`✓ banners removidos`, "ok") : log(`✗ ${r.error}`, "err");
+  r.ok ? log("✓ banners removidos", "ok") : log(`✗ ${r.error}`, "err");
   await refreshBanners();
 });
+$("btnClearVideosGlobal")?.addEventListener("click", async () => {
+  if (!confirm("Remover TODOS os vídeos?")) return;
+  const r = await api("/videos/clear", {});
+  r.ok ? log("✓ vídeos removidos", "ok") : log(`✗ ${r.error}`, "err");
+  await refreshVideos();
+});
 
-// ─── BOOT + POLLING ──────────────────────────────────────────────────────────
+// ─── TABS ────────────────────────────────────────────────────────────────────
+$$(".tab").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const t = btn.dataset.tab;
+    state.activeTab = t;
+    $$(".tab").forEach(x => x.classList.toggle("active", x.dataset.tab === t));
+    $$(".tab-panel").forEach(x => x.classList.toggle("active", x.dataset.tabPanel === t));
+  });
+});
 
+// ─── REFRESH ALL ─────────────────────────────────────────────────────────────
+async function refreshAll() {
+  const s = await checkStatus();
+  if (!s) return;
+  await Promise.all([
+    refreshTabs("0"),
+    refreshTabs("1"),
+    refreshBanners(),
+    refreshVideos(),
+  ]);
+}
+
+// ─── BOOT ────────────────────────────────────────────────────────────────────
 (async () => {
-  await checkStatus();
-  await refreshTabs(0);
-  await refreshTabs(1);
-  await refreshBanners();
-  setInterval(async () => {
-    const s = await checkStatus();
-    if (s) {
-      if (s.slots?.[0]?.cdp_connected) await refreshTabs(0);
-      if (s.slots?.[1]?.cdp_connected) await refreshTabs(1);
-      await refreshBanners();
-    }
-  }, 3000);
+  renderLivePanels();
+  await refreshAll();
+  setInterval(refreshAll, 3500);
 })();
 </script>
 </body>
