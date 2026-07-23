@@ -471,15 +471,18 @@ input[type="range"]{width:100%;accent-color:var(--slot-color,var(--accent))}
       <!-- ═══ COLUNA ESQUERDA — PRODUTO / CONFIG ═══ -->
       <div class="col col-left">
         <div class="sec">
-          <div class="sec-label"><span class="bar"></span>Produto <span class="extra">config</span></div>
-          <div class="field"><label>Nome</label><input type="text" data-p="nome" placeholder="Ex: Escova dental sônica"></div>
-          <div class="field"><label>Descrição</label><textarea data-p="desc" placeholder="Descrição curta"></textarea></div>
-          <div class="field-row">
-            <div class="field"><label>Preço venda</label><input type="text" data-p="preco" placeholder="R$"></div>
-            <div class="field"><label>De</label><input type="text" data-p="preco_de" placeholder="R$"></div>
+          <div class="sec-label"><span class="bar"></span>Config da live <span class="extra">preenche na TikTok Shop</span></div>
+          <div class="field"><label>Título</label><input type="text" data-lc="title" placeholder="Ex: MEGA PROMOÇÃO 🔥 Escova sônica"></div>
+          <div class="field"><label>Descrição</label><textarea data-lc="description" placeholder="Descrição que aparece antes de entrar na live"></textarea></div>
+          <div class="field">
+            <label>Capa da live</label>
+            <select data-lc="cover_banner_id" class="field"></select>
           </div>
-          <div class="field"><label>Parcela</label><input type="text" data-p="parcela" placeholder="10x sem juros"></div>
-          <div class="soon"><strong>Aplicar via CDP</strong>na Fase 5 — botão preenche automático os campos da TikTok Shop</div>
+          <div class="row">
+            <button class="btn ghost small" data-btn-save-live-config>💾 Salvar</button>
+            <button class="btn slot-color small" data-btn-apply-live-config>▸ Aplicar no Chrome</button>
+          </div>
+          <div style="font-size:10.5px;color:var(--muted);margin-top:4px">Chrome precisa estar aberto na tela de configuração da live</div>
         </div>
 
         <div class="sec">
@@ -602,8 +605,8 @@ const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
 
 const state = {
   slots: [
-    { open: false, connected: false, tabs: [], appliedVideoId: null, proxy: null },
-    { open: false, connected: false, tabs: [], appliedVideoId: null, proxy: null },
+    { open: false, connected: false, tabs: [], appliedVideoId: null, proxy: null, liveConfig: {} },
+    { open: false, connected: false, tabs: [], appliedVideoId: null, proxy: null, liveConfig: {} },
   ],
   banners: [],
   videos: [],
@@ -642,6 +645,7 @@ async function checkStatus() {
       state.slots[i].connected = sl.cdp_connected;
       state.slots[i].appliedVideoId = sl.applied_video_id;
       state.slots[i].proxy = sl.proxy;
+      state.slots[i].liveConfig = sl.live_config || {};
       const dot = $(`tabDot${i}`);
       if (dot) dot.className = "dot" + (sl.cdp_connected ? " on" : "");
 
@@ -687,6 +691,14 @@ function bindLivePanel(slot) {
   if (!panel) return;
   const q = (sel) => panel.querySelector(sel);
   const qq = (sel) => Array.from(panel.querySelectorAll(sel));
+
+  // Marca campos como "tocados pelo usuário" pro polling não sobrescrever
+  ["[data-lc='title']", "[data-lc='description']", "[data-p='proxy']"].forEach(sel => {
+    const el = q(sel);
+    if (el) el.addEventListener("input", () => { el.dataset.userTouched = "1"; });
+  });
+  const coverSel = q("[data-lc='cover_banner_id']");
+  if (coverSel) coverSel.addEventListener("change", () => { coverSel.dataset.userChanged = "1"; });
 
   q("[data-btn-open-chrome]")?.addEventListener("click", async () => {
     const label = slotLabel(slot);
@@ -741,6 +753,34 @@ function bindLivePanel(slot) {
     const proxy = q("[data-p='proxy']").value.trim() || null;
     const r = await api(`/proxy${sq(slot)}`, { proxy });
     r.ok ? log(`[Live ${label}] ✓ proxy salvo (aplica no próximo Abrir)`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+  });
+  q("[data-btn-save-live-config]")?.addEventListener("click", async () => {
+    const label = slotLabel(slot);
+    const payload = {
+      title: q("[data-lc='title']").value.trim(),
+      description: q("[data-lc='description']").value.trim(),
+      cover_banner_id: q("[data-lc='cover_banner_id']").value || null,
+    };
+    const r = await api(`/live-config${sq(slot)}`, payload);
+    r.ok ? log(`[Live ${label}] ✓ config da live salva`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+  });
+  q("[data-btn-apply-live-config]")?.addEventListener("click", async () => {
+    const label = slotLabel(slot);
+    // Salva antes de aplicar (garante que backend tem o valor mais recente)
+    const payload = {
+      title: q("[data-lc='title']").value.trim(),
+      description: q("[data-lc='description']").value.trim(),
+      cover_banner_id: q("[data-lc='cover_banner_id']").value || null,
+    };
+    await api(`/live-config${sq(slot)}`, payload);
+    const r = await api(`/live-config/apply${sq(slot)}`, {});
+    if (!r.ok) return log(`[Live ${label}] ✗ ${r.error}`, "err");
+    const parts = [];
+    if (r.fill?.title) parts.push(`título: ${r.fill.title}`);
+    if (r.fill?.desc) parts.push(`descrição: ${r.fill.desc}`);
+    if (r.cover?.ok) parts.push("capa: ok");
+    else if (r.cover?.error) parts.push(`capa: ${r.cover.error}`);
+    log(`[Live ${label}] ✓ aplicado — ${parts.join(" | ")}`, "ok");
   });
   q("[data-btn-rot-start]")?.addEventListener("click", async () => {
     const label = slotLabel(slot);
@@ -863,6 +903,24 @@ async function refreshVideos() {
         });
       });
     }
+
+    // Popula dropdown de capa (cover_banner_id) usando banners como opções
+    ["0", "1"].forEach(slot => {
+      const panel = document.querySelector(`[data-tab-panel="${slot}"]`);
+      if (!panel) return;
+      const coverSel = panel.querySelector("[data-lc='cover_banner_id']");
+      if (coverSel) {
+        const currentCover = state.slots[slot].liveConfig?.cover_banner_id || "";
+        const savedValue = coverSel.dataset.userChanged ? coverSel.value : currentCover;
+        coverSel.innerHTML = `<option value="">— sem capa —</option>` +
+          state.banners.map(b => `<option value="${b.id}" ${b.id === savedValue ? 'selected' : ''}>${esc(b.original_name)}</option>`).join("");
+      }
+      // Popula título e descrição do backend (se usuário ainda não editou)
+      const titleInput = panel.querySelector("[data-lc='title']");
+      const descInput = panel.querySelector("[data-lc='description']");
+      if (titleInput && !titleInput.dataset.userTouched) titleInput.value = state.slots[slot].liveConfig?.title || "";
+      if (descInput && !descInput.dataset.userTouched) descInput.value = state.slots[slot].liveConfig?.description || "";
+    });
 
     // Cada slot: select de vídeo + status
     ["0", "1"].forEach(slot => {
