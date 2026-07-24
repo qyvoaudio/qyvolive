@@ -665,10 +665,11 @@ input[type="range"]{width:100%;accent-color:var(--slot-color,var(--accent))}
 
         <div class="sec">
           <div class="sec-label"><span class="bar"></span>TikTok Shop</div>
-          <button class="btn slot-color small wide" data-btn-goto-live>▸ Abrir TikTok Live Center</button>
+          <button class="btn ghost small wide" data-btn-goto-live>▸ Abrir Live Center</button>
+          <div style="font-size:10.5px;color:var(--muted);margin-top:6px;margin-bottom:8px">Precisa estar logado no TikTok Shop</div>
+          <button class="big-btn" data-btn-start-live>▶ INICIAR LIVE</button>
           <div style="font-size:10.5px;color:var(--muted);margin-top:6px;line-height:1.5">
-            Abre <code style="color:var(--muted-hi)">business.tiktokshop.com</code> no Chrome desse slot.
-            Se ainda não tá logado, faz login uma vez que a sessão fica salva no perfil isolado.
+            Injeta teu vídeo + clica no botão "Iniciar LIVE" do TikTok. <strong>Aplica o vídeo primeiro</strong>, senão TikTok pede tua webcam real.
           </div>
         </div>
 
@@ -1086,9 +1087,38 @@ function bindLivePanel(slot) {
     const label = slotLabel(slot);
     if (!state.slots[slot].connected) return log(`[Live ${label}] ✗ Chrome não conectado — abre Chrome primeiro`, "err");
     log(`[Live ${label}] ▸ abrindo TikTok Live Center`, "cmd");
-    const r = await api(`/open-tab${sq(slot)}`, { url: "https://business.tiktokshop.com/us/creator/live" });
+    const r = await api(`/open-tab${sq(slot)}`, { url: "https://shop.tiktok.com/streamer/live/product/dashboard" });
     r.ok ? log(`[Live ${label}] ✓ aba aberta`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
     await refreshTabs(slot);
+  });
+  q("[data-btn-start-live]")?.addEventListener("click", async (ev) => {
+    const label = slotLabel(slot);
+    const btn = ev.currentTarget;
+    if (!state.slots[slot].connected) return log(`[Live ${label}] ✗ Chrome não conectado`, "err");
+    if (!state.slots[slot].appliedVideoId) {
+      if (!confirm("Nenhum vídeo aplicado — TikTok vai pedir tua webcam real. Continuar?")) return;
+    }
+    btn.disabled = true;
+    const orig = btn.textContent;
+    btn.textContent = "▸ Iniciando…";
+    log(`[Live ${label}] ▸ INICIAR LIVE no TikTok`, "cmd");
+    try {
+      const r = await api(`/tiktok/start-live${sq(slot)}`, {});
+      if (r.ok) {
+        log(`[Live ${label}] ✓ botão "${r.clicked}" clicado — ${r.note}`, "ok");
+        btn.textContent = "✓ Live no ar!";
+        btn.classList.add("danger");
+        setTimeout(() => { btn.textContent = "■ ENCERRAR LIVE"; }, 1500);
+      } else {
+        log(`[Live ${label}] ✗ ${r.error || r.note}`, "err");
+        btn.textContent = orig;
+      }
+    } catch (e) {
+      log(`[Live ${label}] ✗ ${e.message}`, "err");
+      btn.textContent = orig;
+    } finally {
+      btn.disabled = false;
+    }
   });
   q("[data-btn-open-brain]")?.addEventListener("click", () => brainOpen(slot));
   q("[data-btn-start-brain]")?.addEventListener("click", async () => {
