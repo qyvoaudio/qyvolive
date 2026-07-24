@@ -29,6 +29,12 @@
   --slot-a-glow:rgba(0,255,157,.28);
   --slot-b:#00B8FF;
   --slot-b-glow:rgba(0,184,255,.28);
+  --slot-c:#B87CFF;
+  --slot-c-glow:rgba(184,124,255,.28);
+  --slot-d:#FFB800;
+  --slot-d-glow:rgba(255,184,0,.28);
+  --slot-e:#FF7B54;
+  --slot-e-glow:rgba(255,123,84,.28);
   --signal:#00FF9D;
   --signal-glow:rgba(0,255,157,.28);
   --warn:#FFB800;
@@ -84,15 +90,12 @@ header{
   transition:all .15s;
 }
 .tab:hover{color:var(--text)}
-.tab.active{color:var(--text)}
-.tab[data-tab="0"].active{border-bottom-color:var(--slot-a)}
-.tab[data-tab="1"].active{border-bottom-color:var(--slot-b)}
+.tab.active{color:var(--text);border-bottom-color:var(--slot-color, var(--accent))}
 .tab[data-tab="config"].active{border-bottom-color:var(--accent)}
 .tab .dot{
   width:8px;height:8px;border-radius:50%;background:var(--muted);
 }
-.tab[data-tab="0"] .dot.on{background:var(--slot-a);box-shadow:0 0 6px var(--slot-a-glow)}
-.tab[data-tab="1"] .dot.on{background:var(--slot-b);box-shadow:0 0 6px var(--slot-b-glow)}
+.tab .dot.on{background:var(--slot-color, var(--signal));box-shadow:0 0 6px var(--slot-color, var(--signal-glow))}
 
 .header-right{
   margin-left:auto;
@@ -195,6 +198,9 @@ main{
   --slot-color:var(--slot-b);
   --slot-glow:var(--slot-b-glow);
 }
+.slot-context[data-slot="2"]{ --slot-color:var(--slot-c); --slot-glow:var(--slot-c-glow); }
+.slot-context[data-slot="3"]{ --slot-color:var(--slot-d); --slot-glow:var(--slot-d-glow); }
+.slot-context[data-slot="4"]{ --slot-color:var(--slot-e); --slot-glow:var(--slot-e-glow); }
 
 /* FORM ELEMENTS */
 .field{display:flex;flex-direction:column;gap:5px}
@@ -400,10 +406,8 @@ input[type="range"]{width:100%;accent-color:var(--slot-color,var(--accent))}
     <div class="brand-name">Argos <em>Pro</em></div>
   </div>
 
-  <div class="tab-bar">
-    <button class="tab active" data-tab="0"><span class="dot" id="tabDot0"></span>Live A</button>
-    <button class="tab" data-tab="1"><span class="dot" id="tabDot1"></span>Live B</button>
-    <button class="tab" data-tab="config">📋 Log</button>
+  <div class="tab-bar" id="tabBar">
+    <!-- tabs dinâmicos: 1 por slot + botão log -->
   </div>
 
   <div class="header-right">
@@ -692,13 +696,22 @@ const API = "http://127.0.0.1:8903";
 const $ = (id) => document.getElementById(id);
 const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
 
+function mkSlotState() {
+  return { name: "", open: false, connected: false, tabs: [], appliedVideoId: null, proxy: null, liveConfig: {}, audioConfig: {}, audioDevices: [], banners: [], videos: [], visible: true };
+}
+const MAX_SLOTS_FRONT = 5;
 const state = {
-  slots: [
-    { open: false, connected: false, tabs: [], appliedVideoId: null, proxy: null, liveConfig: {}, audioConfig: {}, audioDevices: [], banners: [], videos: [] },
-    { open: false, connected: false, tabs: [], appliedVideoId: null, proxy: null, liveConfig: {}, audioConfig: {}, audioDevices: [], banners: [], videos: [] },
-  ],
+  slots: Array.from({ length: MAX_SLOTS_FRONT }, () => mkSlotState()),
+  visibleCount: 2, // por default só Live A/B, "+ Nova" adiciona mais
   activeTab: "0",
 };
+// Slots atualmente visíveis (índices como strings pra compatibilidade)
+function SLOTS() {
+  return Array.from({ length: state.visibleCount }, (_, i) => String(i));
+}
+// Cor CSS var por slot (5 slots = 5 cores)
+const SLOT_COLORS = ["--slot-a", "--slot-b", "--slot-c", "--slot-d", "--slot-e"];
+function slotColor(slot) { return `var(${SLOT_COLORS[parseInt(slot, 10)] || "--accent"})`; }
 
 function populateAudioSelect(slot) {
   const panel = document.querySelector(`[data-tab-panel="${slot}"]`);
@@ -750,10 +763,16 @@ async function checkStatus() {
     }
     $("licenseGate").style.display = "none";
     (s.slots || []).forEach((sl, i) => {
+      state.slots[i].name = sl.name || state.slots[i].name;
       state.slots[i].open = sl.chrome_open;
       state.slots[i].connected = sl.cdp_connected;
       state.slots[i].appliedVideoId = sl.applied_video_id;
       state.slots[i].proxy = sl.proxy;
+      // Auto-mostra slot se foi renomeado (indica que usuário mexeu antes)
+      const defaultName = `Live ${String.fromCharCode(65 + i)}`;
+      if (sl.name && sl.name !== defaultName && i >= state.visibleCount) {
+        state.visibleCount = i + 1;
+      }
       state.slots[i].liveConfig = sl.live_config || {};
       state.slots[i].audioConfig = sl.audio_config || {};
       state.slots[i].brainConfig = sl.brain_config || {};
@@ -818,11 +837,80 @@ $("licenseKey")?.addEventListener("keydown", (ev) => {
   if (ev.key === "Enter") $("btnActivate").click();
 });
 
-// ─── RENDER LIVE PANELS ──────────────────────────────────────────────────────
+// ─── RENDER TABS + LIVE PANELS (dinâmico) ────────────────────────────────────
+function renderTabs() {
+  const bar = $("tabBar");
+  if (!bar) return;
+  const active = state.activeTab;
+  bar.innerHTML = "";
+  SLOTS().forEach(slot => {
+    const btn = document.createElement("button");
+    btn.className = "tab" + (String(active) === slot ? " active" : "");
+    btn.dataset.tab = slot;
+    btn.style.setProperty("--slot-color", slotColor(slot));
+    const name = state.slots[slot]?.name || `Live ${String.fromCharCode(65 + parseInt(slot, 10))}`;
+    btn.innerHTML = `<span class="dot" id="tabDot${slot}"></span><span class="tab-name">${esc(name)}</span> <span class="tab-edit" title="renomear" style="opacity:.5;font-size:11px;margin-left:4px">✎</span>`;
+    btn.addEventListener("click", (ev) => {
+      if (ev.target.classList.contains("tab-edit")) return renameTab(slot);
+      switchTab(slot);
+    });
+    btn.addEventListener("dblclick", () => renameTab(slot));
+    bar.appendChild(btn);
+  });
+  if (state.visibleCount < MAX_SLOTS_FRONT) {
+    const add = document.createElement("button");
+    add.className = "tab";
+    add.style.opacity = ".55";
+    add.textContent = "+ Nova live";
+    add.addEventListener("click", () => {
+      state.visibleCount++;
+      const newSlot = String(state.visibleCount - 1);
+      renderLivePanels();
+      renderTabs();
+      switchTab(newSlot);
+    });
+    bar.appendChild(add);
+  }
+  const logBtn = document.createElement("button");
+  logBtn.className = "tab" + (active === "config" ? " active" : "");
+  logBtn.dataset.tab = "config";
+  logBtn.textContent = "📋 Log";
+  logBtn.addEventListener("click", () => switchTab("config"));
+  bar.appendChild(logBtn);
+}
+
+function switchTab(t) {
+  state.activeTab = t;
+  document.querySelectorAll("#tabBar .tab").forEach(x => x.classList.toggle("active", x.dataset.tab === t));
+  document.querySelectorAll(".tab-panel").forEach(x => x.classList.toggle("active", x.dataset.tabPanel === t));
+}
+
+async function renameTab(slot) {
+  const cur = state.slots[slot]?.name || "";
+  const nome = prompt(`Novo nome pra essa live:`, cur);
+  if (!nome || !nome.trim()) return;
+  const r = await api(`/slot/rename${sq(slot)}`, { name: nome.trim() });
+  if (r.ok) {
+    state.slots[slot].name = r.name;
+    renderTabs();
+    log(`✓ Renomeado pra "${r.name}"`, "ok");
+  } else {
+    log(`✗ ${r.error}`, "err");
+  }
+}
+
 function renderLivePanels() {
   const tmpl = $("liveTemplate");
-  ["0", "1"].forEach(slot => {
-    const container = document.querySelector(`[data-tab-panel="${slot}"]`);
+  const main = $("app");
+  SLOTS().forEach(slot => {
+    let container = document.querySelector(`[data-tab-panel="${slot}"]`);
+    if (!container) {
+      container = document.createElement("div");
+      container.className = "tab-panel";
+      container.dataset.tabPanel = slot;
+      const configPanel = document.querySelector(`[data-tab-panel="config"]`);
+      main.insertBefore(container, configPanel);
+    }
     if (container.dataset.rendered) return;
     container.dataset.rendered = "1";
     const clone = tmpl.content.cloneNode(true);
@@ -831,6 +919,7 @@ function renderLivePanels() {
     container.appendChild(clone);
     bindLivePanel(slot);
   });
+  document.querySelectorAll(".tab-panel").forEach(p => p.classList.toggle("active", p.dataset.tabPanel === state.activeTab));
 }
 
 function bindLivePanel(slot) {
@@ -1042,14 +1131,14 @@ async function refreshTabs(slot) {
 async function refreshBanners() {
   try {
     // Carrega banners de cada slot separadamente
-    const perSlot = await Promise.all(["0", "1"].map(async s => {
+    const perSlot = await Promise.all(SLOTS().map(async s => {
       const r = await api(`/banners${sq(s)}`);
       return r.ok ? r.banners : [];
     }));
-    ["0", "1"].forEach((slot, i) => { state.slots[slot].banners = perSlot[i]; });
+    SLOTS().forEach((slot, i) => { state.slots[slot].banners = perSlot[i]; });
 
-    const rotStatuses = await Promise.all(["0", "1"].map(s => api(`/rotation/status${sq(s)}`)));
-    ["0", "1"].forEach((slot, i) => {
+    const rotStatuses = await Promise.all(SLOTS().map(s => api(`/rotation/status${sq(s)}`)));
+    SLOTS().forEach((slot, i) => {
       const rot = rotStatuses[i];
       const banners = state.slots[slot].banners;
       const curId = rot.active ? rot.current_banner_id : null;
@@ -1088,14 +1177,14 @@ async function refreshBanners() {
 
 async function refreshVideos() {
   try {
-    const perSlot = await Promise.all(["0", "1"].map(async s => {
+    const perSlot = await Promise.all(SLOTS().map(async s => {
       const r = await api(`/videos${sq(s)}`);
       return r.ok ? r.videos : [];
     }));
-    ["0", "1"].forEach((slot, i) => { state.slots[slot].videos = perSlot[i]; });
+    SLOTS().forEach((slot, i) => { state.slots[slot].videos = perSlot[i]; });
 
     // Popula dropdown de capa (cover_banner_id) usando banners DO PRÓPRIO SLOT
-    ["0", "1"].forEach(slot => {
+    SLOTS().forEach(slot => {
       const panel = document.querySelector(`[data-tab-panel="${slot}"]`);
       if (!panel) return;
       const coverSel = panel.querySelector("[data-lc='cover_banner_id']");
@@ -1112,7 +1201,7 @@ async function refreshVideos() {
     });
 
     // Cada slot: select de vídeo + status
-    ["0", "1"].forEach(slot => {
+    SLOTS().forEach(slot => {
       const panel = document.querySelector(`[data-tab-panel="${slot}"]`);
       if (!panel) return;
       const sel = panel.querySelector("[data-video-select]");
@@ -1142,14 +1231,7 @@ async function refreshVideos() {
 }
 
 // ─── TABS ────────────────────────────────────────────────────────────────────
-$$(".tab").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const t = btn.dataset.tab;
-    state.activeTab = t;
-    $$(".tab").forEach(x => x.classList.toggle("active", x.dataset.tab === t));
-    $$(".tab-panel").forEach(x => x.classList.toggle("active", x.dataset.tabPanel === t));
-  });
-});
+// (renderTabs + switchTab estão acima)
 
 // ─── CÉREBRO ─────────────────────────────────────────────────────────────────
 
@@ -1399,7 +1481,7 @@ $("brainSaveStart").addEventListener("click", () => brainSaveBackend(brainEditor
 
 // ─── REFRESH ALL ─────────────────────────────────────────────────────────────
 async function refreshBrainCurrent() {
-  for (const slot of ["0", "1"]) {
+  for (const slot of SLOTS()) {
     if (!state.slots[slot].brainRunning) continue;
     try {
       const r = await api(`/brain/status${sq(slot)}`);
@@ -1430,8 +1512,11 @@ async function refreshAll() {
 // ─── BOOT ────────────────────────────────────────────────────────────────────
 (async () => {
   renderLivePanels();
+  renderTabs();
   await refreshAll();
-  setInterval(refreshAll, 3500);
+  renderLivePanels();
+  renderTabs();
+  setInterval(async () => { await refreshAll(); renderTabs(); }, 3500);
 })();
 </script>
 </body>
