@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Argos Pro · Painel de controle</title>
+<meta name="description" content="Painel de controle do Argos Pro — rode lives no TikTok Shop direto pelo Chrome, sem Live Studio.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/svg+xml" href="../../assets/qyvo-symbol.svg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#0A0A10;
+  --bg-2:#0F0F17;
+  --panel:#141420;
+  --panel-hi:#1A1A26;
+  --border:#22222E;
+  --border-hi:#2D2D3A;
+  --text:#F5F2E8;
+  --muted:#6B6B7A;
+  --muted-hi:#9C9CAA;
+  --accent:#FF1F8E;
+  --accent-glow:rgba(255,31,142,.35);
+  --slot-a:#00FF9D;
+  --slot-a-glow:rgba(0,255,157,.28);
+  --slot-b:#00B8FF;
+  --slot-b-glow:rgba(0,184,255,.28);
+  --signal:#00FF9D;
+  --signal-glow:rgba(0,255,157,.28);
+  --warn:#FFB800;
+  --err:#FF4757;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:"DM Sans",system-ui,sans-serif;
+  font-size:14px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+  display:flex;flex-direction:column;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:1000;opacity:.02;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  mix-blend-mode:overlay;
+}
+
+/* HEADER + TABS */
+header{
+  padding:0 24px;
+  display:flex;align-items:center;
+  border-bottom:1px solid var(--border);
+  background:rgba(10,10,16,.85);
+  backdrop-filter:blur(20px);
+  position:sticky;top:0;z-index:100;
+  height:52px;
+  gap:20px;
+}
+.brand{
+  display:flex;align-items:center;gap:10px;
+}
+.brand img{width:24px;height:24px}
+.brand-name{
+  font-family:"Sora",sans-serif;font-weight:700;font-size:15px;letter-spacing:-.01em;
+}
+.brand-name em{font-style:normal;color:var(--accent)}
+
+.tab-bar{
+  display:flex;gap:2px;height:100%;align-items:stretch;
+  margin-left:20px;
+}
+.tab{
+  display:flex;align-items:center;gap:8px;padding:0 16px;
+  border:0;background:transparent;color:var(--muted);cursor:pointer;
+  font-family:inherit;font-size:12.5px;font-weight:500;
+  letter-spacing:.02em;
+  border-bottom:2px solid transparent;
+  transition:all .15s;
+}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--text)}
+.tab[data-tab="0"].active{border-bottom-color:var(--slot-a)}
+.tab[data-tab="1"].active{border-bottom-color:var(--slot-b)}
+.tab[data-tab="config"].active{border-bottom-color:var(--accent)}
+.tab .dot{
+  width:8px;height:8px;border-radius:50%;background:var(--muted);
+}
+.tab[data-tab="0"] .dot.on{background:var(--slot-a);box-shadow:0 0 6px var(--slot-a-glow)}
+.tab[data-tab="1"] .dot.on{background:var(--slot-b);box-shadow:0 0 6px var(--slot-b-glow)}
+
+.header-right{
+  margin-left:auto;
+  display:flex;align-items:center;gap:12px;
+  font-family:"JetBrains Mono",monospace;font-size:10.5px;
+  color:var(--muted);letter-spacing:.08em;
+}
+.status-chip{
+  display:flex;align-items:center;gap:6px;
+  padding:4px 10px;border:1px solid var(--border);border-radius:100px;
+}
+.status-chip .dot{width:6px;height:6px;border-radius:50%;background:var(--muted)}
+.status-chip.on{border-color:var(--signal);color:var(--signal)}
+.status-chip.on .dot{background:var(--signal);box-shadow:0 0 6px var(--signal-glow)}
+.status-chip.off{border-color:var(--err);color:var(--err)}
+.status-chip.off .dot{background:var(--err)}
+
+/* MAIN LAYOUT */
+main{
+  flex:1;
+  padding:16px 24px 32px;
+  max-width:1800px;margin:0 auto;width:100%;
+}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* GATE quando app não tá aberto */
+.gate{
+  padding:60px 32px;
+  text-align:center;
+  max-width:520px;margin:40px auto;
+  background:var(--panel);border:1px solid var(--border);border-radius:16px;
+}
+.gate h1{
+  font-family:"Sora",sans-serif;font-weight:700;
+  font-size:28px;line-height:1;letter-spacing:-.02em;margin-bottom:14px;
+}
+.gate h1 em{font-style:normal;color:var(--accent)}
+.gate p{color:var(--muted-hi);margin-bottom:20px;font-size:14px;line-height:1.55}
+.gate code{
+  font-family:"JetBrains Mono",monospace;font-size:12px;
+  background:var(--bg);padding:2px 8px;border-radius:4px;color:var(--accent);
+  border:1px solid var(--border);
+}
+.gate .link-download{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 20px;
+  background:var(--accent);color:#fff;text-decoration:none;font-weight:600;
+  border-radius:100px;font-size:13px;
+  box-shadow:0 8px 24px var(--accent-glow);
+}
+
+/* 3-COLUMN LAYOUT PER LIVE */
+.live-grid{
+  display:grid;
+  grid-template-columns:300px 1fr 280px;
+  gap:14px;
+}
+@media (max-width:1200px){
+  .live-grid{grid-template-columns:280px 1fr}
+  .live-grid .col-right{grid-column:1/-1}
+}
+@media (max-width:800px){
+  .live-grid{grid-template-columns:1fr}
+}
+
+.col{
+  background:linear-gradient(180deg,#161624,var(--panel));
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:16px;
+  display:flex;flex-direction:column;gap:14px;
+  overflow:hidden;
+}
+
+/* SECTION HEADING */
+.sec{
+  display:flex;flex-direction:column;gap:8px;
+}
+.sec-label{
+  display:flex;align-items:center;gap:8px;
+  font-family:"Sora",sans-serif;font-weight:600;font-size:11px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--muted-hi);
+}
+.sec-label .bar{
+  width:12px;height:1px;background:var(--slot-color,var(--accent));
+}
+.sec-label .extra{
+  margin-left:auto;
+  font-family:"JetBrains Mono",monospace;font-size:9.5px;
+  color:var(--muted);font-weight:400;letter-spacing:.1em;
+}
+
+/* SLOT-COLORED CONTEXT */
+.slot-context{
+  --slot-color:var(--slot-a);
+  --slot-glow:var(--slot-a-glow);
+}
+.slot-context[data-slot="1"]{
+  --slot-color:var(--slot-b);
+  --slot-glow:var(--slot-b-glow);
+}
+
+/* FORM ELEMENTS */
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{
+  font-family:"JetBrains Mono",monospace;font-size:10px;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+}
+.field input, .field textarea, .field select{
+  background:var(--bg);border:1px solid var(--border);
+  color:var(--text);font-family:inherit;font-size:12.5px;
+  padding:8px 10px;border-radius:6px;
+  outline:none;transition:border-color .15s;
+  width:100%;
+}
+.field input:focus, .field textarea:focus, .field select:focus{
+  border-color:var(--slot-color,var(--accent));
+}
+.field textarea{min-height:60px;resize:vertical;font-family:inherit}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+/* BUTTONS */
+.btn{
+  padding:8px 14px;
+  background:var(--accent);color:#fff;border:0;border-radius:100px;
+  font-family:inherit;font-weight:600;font-size:12px;cursor:pointer;
+  transition:all .15s;white-space:nowrap;
+  box-shadow:0 4px 12px var(--accent-glow);
+}
+.btn:hover{transform:translateY(-1px)}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
+.btn.slot-color{
+  background:var(--slot-color);color:#000;
+  box-shadow:0 4px 12px var(--slot-glow);
+}
+.btn.ghost{
+  background:transparent;border:1px solid var(--border);color:var(--text);box-shadow:none;
+}
+.btn.ghost:hover{border-color:var(--slot-color,var(--accent));color:var(--slot-color,var(--accent))}
+.btn.small{padding:6px 10px;font-size:11px}
+.btn.tiny{padding:4px 8px;font-size:10.5px}
+.btn.danger{background:transparent;border:1px solid var(--err);color:var(--err);box-shadow:none}
+.btn.danger:hover{background:var(--err);color:#fff}
+.btn.wide{width:100%}
+
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+
+/* UPLOAD */
+.upload-box{
+  padding:14px;text-align:center;
+  border:1.5px dashed var(--border);border-radius:8px;
+  color:var(--muted);cursor:pointer;transition:all .15s;
+  font-size:12px;
+}
+.upload-box:hover{border-color:var(--slot-color,var(--accent));color:var(--slot-color,var(--accent))}
+.upload-box input{display:none}
+
+/* VIDEO PREVIEW */
+.video-thumb{
+  aspect-ratio:16/9;background:#000;border-radius:6px;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;border:1px solid var(--border);
+}
+.video-thumb video{max-width:100%;max-height:100%}
+.video-thumb .placeholder{
+  color:var(--muted);font-family:"JetBrains Mono",monospace;font-size:10px;
+  letter-spacing:.1em;text-transform:uppercase;
+}
+.video-thumb .live-badge{
+  position:absolute;top:6px;right:6px;
+  font-family:"JetBrains Mono",monospace;font-size:9px;font-weight:600;
+  padding:2px 6px;border-radius:6px;letter-spacing:.1em;
+  background:var(--slot-color);color:#000;
+}
+
+/* BANNERS COMPACT */
+.banner-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));
+  gap:6px;
+}
+.banner-card{
+  background:var(--bg);border:1px solid var(--border);border-radius:6px;
+  overflow:hidden;position:relative;
+  transition:border-color .15s;
+}
+.banner-card.playing{border-color:var(--slot-color);box-shadow:0 0 10px var(--slot-glow)}
+.banner-thumb{aspect-ratio:16/9;background:#000;display:flex;align-items:center;justify-content:center}
+.banner-thumb img{max-width:100%;max-height:100%;object-fit:cover}
+.banner-card .card-actions{
+  display:flex;gap:1px;background:var(--bg-2);
+  padding:2px;
+}
+.banner-card .card-actions button{
+  flex:1;padding:3px 4px;font-size:9.5px;background:transparent;color:var(--muted);
+  border:0;cursor:pointer;transition:all .1s;font-family:inherit;
+}
+.banner-card .card-actions button:hover{color:var(--slot-color)}
+.banner-card .card-actions button.danger:hover{color:var(--err)}
+
+/* TABS */
+.tab-list{display:flex;flex-direction:column;gap:5px;max-height:180px;overflow-y:auto}
+.tab-item{
+  padding:7px 9px;
+  background:var(--bg);border:1px solid var(--border);border-radius:6px;
+  display:flex;flex-direction:column;gap:1px;
+}
+.tab-item .t-title{font-size:11.5px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tab-item .t-url{font-size:10px;color:var(--muted);font-family:"JetBrains Mono",monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* MONITOR */
+.monitor-box{
+  aspect-ratio:16/9;background:#000;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--border);position:relative;
+  overflow:hidden;
+}
+.monitor-box img{max-width:100%;max-height:100%}
+.monitor-box .placeholder{color:var(--muted);font-size:11px;text-align:center;padding:20px}
+
+/* TOGGLES ROW (Câmera ao vivo) */
+.toggle-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 10px;background:var(--bg);border:1px solid var(--border);
+  border-radius:6px;
+}
+.toggle-row .label{font-size:11.5px;color:var(--text)}
+.toggle-row .switch{
+  width:32px;height:18px;background:var(--border);border-radius:100px;
+  position:relative;cursor:pointer;transition:background .15s;
+}
+.toggle-row .switch::before{
+  content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;
+  border-radius:50%;background:var(--muted);transition:all .15s;
+}
+.toggle-row.on .switch{background:var(--slot-glow)}
+.toggle-row.on .switch::before{left:16px;background:var(--slot-color)}
+
+/* LOG */
+.log{
+  background:#08080E;
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:10px;
+  font-family:"JetBrains Mono",monospace;font-size:10.5px;line-height:1.5;
+  color:var(--muted-hi);
+  max-height:180px;overflow-y:auto;
+  white-space:pre-wrap;
+}
+.log .ok{color:var(--signal)}
+.log .err{color:var(--err)}
+.log .info{color:var(--muted-hi)}
+.log .cmd{color:var(--accent)}
+.log .a{color:var(--slot-a)}
+.log .b{color:var(--slot-b)}
+
+/* TRANSMISSION PANEL */
+.tx-status{
+  padding:10px 12px;background:var(--bg);border:1px solid var(--border);
+  border-radius:8px;display:flex;flex-direction:column;gap:4px;
+}
+.tx-status .l1{
+  font-family:"JetBrains Mono",monospace;font-size:9.5px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+}
+.tx-status .l2{font-size:14px;font-weight:600;color:var(--slot-color)}
+.tx-status.off .l2{color:var(--muted-hi)}
+
+.big-btn{
+  padding:14px 18px;font-size:13px;font-weight:700;
+  background:var(--slot-color);color:#000;border:0;border-radius:10px;
+  cursor:pointer;box-shadow:0 6px 20px var(--slot-glow);
+  transition:all .15s;
+  width:100%;
+}
+.big-btn:hover{transform:translateY(-1px)}
+.big-btn:disabled{opacity:.35;transform:none;box-shadow:none;cursor:not-allowed}
+.big-btn.danger{background:var(--err);color:#fff;box-shadow:0 6px 20px rgba(255,71,87,.4)}
+
+/* PLACEHOLDER SOON */
+.soon{
+  padding:16px;background:var(--bg);border:1.5px dashed var(--border);
+  border-radius:8px;text-align:center;
+  color:var(--muted);font-size:11.5px;line-height:1.4;
+}
+.soon strong{color:var(--muted-hi);display:block;margin-bottom:3px;font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+
+/* CONFIG TAB (compartilhado) */
+.config-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:16px;
+}
+@media (max-width:900px){
+  .config-grid{grid-template-columns:1fr}
+}
+
+/* SLIDER */
+input[type="range"]{width:100%;accent-color:var(--slot-color,var(--accent))}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <img src="../../assets/qyvo-symbol.svg" alt="Qyvo">
+    <div class="brand-name">Argos <em>Pro</em></div>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab active" data-tab="0"><span class="dot" id="tabDot0"></span>Live A</button>
+    <button class="tab" data-tab="1"><span class="dot" id="tabDot1"></span>Live B</button>
+    <button class="tab" data-tab="config">📋 Log</button>
+  </div>
+
+  <div class="header-right">
+    <span class="status-chip" id="stApp"><span class="dot"></span>App local</span>
+    <span>v0.1.0 · fase 4</span>
+  </div>
+</header>
+
+<div id="gate" class="gate" style="display:none">
+  <h1>Argos <em>Pro</em> não está aberto</h1>
+  <p>Este painel controla o app Argos Pro que roda no seu Mac/Windows.<br>Abre o app pra continuar.</p>
+  <p style="font-size:12px">Servidor local esperado em <code>127.0.0.1:8903</code></p>
+  <p><a class="link-download" href="https://github.com/qyvoaudio/argos-pro/actions" target="_blank">▸ Baixar Argos Pro</a></p>
+</div>
+
+<div id="licenseGate" class="gate" style="display:none">
+  <h1>Ativa sua <em>chave</em></h1>
+  <p>Cola a chave que chegou no seu email pra desbloquear o painel.<br>Formato: <code>APR-XXXX-XXXX-XXXX</code></p>
+  <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:20px 0">
+    <input type="text" id="licenseKey" placeholder="APR-XXXX-XXXX-XXXX" style="flex:1;min-width:240px;max-width:340px;padding:12px 14px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:100px;font-family:inherit;font-size:14px;text-align:center;letter-spacing:.05em;text-transform:uppercase">
+    <button class="link-download" id="btnActivate" style="border:0;cursor:pointer">▸ Ativar</button>
+  </div>
+  <p id="licenseError" style="color:var(--err);font-size:13px;min-height:18px"></p>
+  <p style="font-size:11.5px;color:var(--muted)">Não tem chave? <a href="https://qyvolive.com.br/argos-pro/" style="color:var(--accent)">Comprar aqui</a></p>
+</div>
+
+<main id="app" style="display:none">
+  <!-- TAB PANEL: LIVE A -->
+  <div class="tab-panel active" data-tab-panel="0"></div>
+  <!-- TAB PANEL: LIVE B -->
+  <div class="tab-panel" data-tab-panel="1"></div>
+  <!-- TAB PANEL: LOG -->
+  <div class="tab-panel" data-tab-panel="config">
+    <section class="col">
+      <div class="sec">
+        <div class="sec-label"><span class="bar"></span>Log global <span class="extra">todas as lives</span></div>
+        <div class="log" id="log" style="max-height:70vh"></div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- ═══ MODAL CÉREBRO (compartilhado entre slots) ═══ -->
+<div id="brainModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;padding:24px;overflow-y:auto">
+  <div style="max-width:1100px;margin:0 auto;background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:22px;position:relative">
+    <button id="brainModalClose" style="position:absolute;top:16px;right:16px;background:transparent;border:1px solid var(--border);color:var(--text);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px">×</button>
+    <h2 style="font-family:'Sora',sans-serif;font-weight:700;font-size:19px;margin-bottom:4px">Cérebro <span id="brainSlotLabel" style="color:var(--muted-hi);font-weight:400;font-size:13px"></span></h2>
+    <p style="color:var(--muted-hi);font-size:12.5px;margin-bottom:16px">
+      Roteiro que a IA gera e o Argos manda no chat da live automaticamente, com intervalo entre falas.
+    </p>
+
+    <!-- Briefing + Gerar -->
+    <div class="col" style="padding:14px;margin-bottom:14px">
+      <div class="sec-label" style="margin-bottom:8px"><span class="bar" style="background:var(--accent)"></span>Briefing pra IA</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div class="field"><label>Produto</label><input type="text" id="brainProduct" placeholder="Ex: Escova sônica"></div>
+        <div class="field"><label>Preço</label><input type="text" id="brainPrice" placeholder="Ex: R$97 (de R$197)"></div>
+      </div>
+      <div class="field" style="margin-top:6px"><label>Benefício-chave</label><input type="text" id="brainBenefit" placeholder="Ex: 3x mais limpo em 2 minutos"></div>
+      <div class="field"><label>Observações extras</label><textarea id="brainNotes" placeholder="Público, urgência (frete grátis até meia-noite), objeções comuns..."></textarea></div>
+      <div class="row" style="margin-top:8px">
+        <select id="brainProvider" style="padding:8px 10px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:6px;font-family:inherit;font-size:12.5px">
+          <option value="claude">Claude (Anthropic)</option>
+          <option value="openai">GPT (OpenAI)</option>
+          <option value="gemini">Gemini (Google)</option>
+        </select>
+        <input type="password" id="brainApiKey" placeholder="Cola sua API key (guardada só no navegador)" style="flex:1;min-width:200px;padding:8px 10px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:6px;font-family:inherit;font-size:12px">
+        <button class="btn" id="brainGenerate">🧠 Gerar roteiro</button>
+      </div>
+      <div style="font-size:10.5px;color:var(--muted);margin-top:4px">API key fica no localStorage do teu navegador. Nunca sai daqui.</div>
+    </div>
+
+    <!-- Tabs de blocos -->
+    <div style="display:flex;gap:2px;border-bottom:1px solid var(--border);margin-bottom:12px;overflow-x:auto">
+      <button class="brain-block-tab active" data-block="ABERTURA">Abertura</button>
+      <button class="brain-block-tab" data-block="BENEFICIO">Benefício</button>
+      <button class="brain-block-tab" data-block="PRECO">Preço</button>
+      <button class="brain-block-tab" data-block="URGENCIA">Urgência</button>
+      <button class="brain-block-tab" data-block="OBJECOES">Objeções</button>
+      <button class="brain-block-tab" data-block="SOCIAL">Social</button>
+      <button class="brain-block-tab" data-block="CTA">CTA</button>
+      <button class="brain-block-tab" data-block="ENGAJAMENTO">Engajamento</button>
+    </div>
+
+    <div id="brainBlockContent" style="min-height:220px;margin-bottom:14px"></div>
+
+    <!-- Config + salvar -->
+    <div class="col" style="padding:14px;margin-bottom:12px">
+      <div class="sec-label" style="margin-bottom:8px"><span class="bar" style="background:var(--accent)"></span>Config de envio</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:end">
+        <div class="field"><label>Intervalo entre falas (segundos)</label><input type="number" id="brainInterval" min="10" max="600" value="45"></div>
+        <div style="display:flex;align-items:center;gap:8px;padding-bottom:6px">
+          <input type="checkbox" id="brainShuffle" style="width:16px;height:16px;accent-color:var(--accent)">
+          <label for="brainShuffle" style="font-size:12.5px">Embaralhar a cada rodada</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="row" style="justify-content:space-between">
+      <div style="font-size:11.5px;color:var(--muted)" id="brainCount">0 falas</div>
+      <div class="row">
+        <button class="btn ghost" id="brainSave">💾 Salvar roteiro</button>
+        <button class="btn" id="brainSaveStart">💾 Salvar e ▶ Iniciar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.brain-block-tab{
+  padding:8px 14px;background:transparent;border:0;color:var(--muted);cursor:pointer;
+  font-family:inherit;font-size:12.5px;font-weight:500;border-bottom:2px solid transparent;
+  white-space:nowrap;transition:all .15s;
+}
+.brain-block-tab:hover{color:var(--text)}
+.brain-block-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.brain-line{
+  display:flex;gap:6px;align-items:flex-start;margin-bottom:5px;
+}
+.brain-line textarea{
+  flex:1;background:var(--bg);border:1px solid var(--border);color:var(--text);
+  padding:7px 10px;border-radius:6px;font-family:inherit;font-size:12.5px;
+  min-height:36px;resize:vertical;
+}
+.brain-line button{
+  padding:6px 9px;font-size:11px;background:transparent;border:1px solid var(--border);
+  color:var(--muted);border-radius:6px;cursor:pointer;
+}
+.brain-line button:hover{color:var(--err);border-color:var(--err)}
+</style>
+
+<!-- TEMPLATE PRO CONTEÚDO DE CADA LIVE (clonado por JS) -->
+<template id="liveTemplate">
+  <div class="slot-context">
+    <div class="live-grid">
+
+      <!-- ═══ COLUNA ESQUERDA — PRODUTO / CONFIG ═══ -->
+      <div class="col col-left">
+        <div class="sec">
+          <div class="sec-label"><span class="bar"></span>Config da live <span class="extra">preenche na TikTok Shop</span></div>
+          <div class="field"><label>Título</label><input type="text" data-lc="title" placeholder="Ex: MEGA PROMOÇÃO 🔥 Escova sônica"></div>
+          <div class="field"><label>Descrição</label><textarea data-lc="description" placeholder="Descrição que aparece antes de entrar na live"></textarea></div>
+          <div class="field">
+            <label>Capa da live</label>
+            <select data-lc="cover_banner_id" class="field"></select>
+          </div>
+          <div class="row">
+            <button class="btn ghost small" data-btn-save-live-config>💾 Salvar</button>
+            <button class="btn slot-color small" data-btn-apply-live-config>▸ Aplicar no Chrome</button>
+          </div>
+          <div style="font-size:10.5px;color:var(--muted);margin-top:4px">Chrome precisa estar aberto na tela de configuração da live</div>
+        </div>
+
+        <div class="sec">
+          <div class="sec-label"><span class="bar"></span>Vídeo pra live <span class="extra" data-video-status>nenhum</span></div>
+          <div class="video-thumb" data-video-preview>
+            <div class="placeholder">nenhum vídeo aplicado</div>
+          </div>
+          <label class="upload-box" data-upl-video-label>
+            🎥 Sobe vídeo (.mp4/.webm)
+            <input type="file" data-upl-video accept="video/*">
+          </label>
+          <select data-video-select class="field"></select>
+          <div class="row">
+            <button class="btn slot-color small" data-btn-apply-video>Aplicar</button>
+            <button class="btn ghost small" data-btn-clear-video>Remover</button>
+          </div>
+        </div>
+
+        <div class="sec">
+          <div class="sec-label"><span class="bar"></span>Banners <span class="extra" data-banner-count>0</span></div>
+          <label class="upload-box" data-upl-banner-label>
+            📁 Sobe imagens (múltiplas)
+            <input type="file" data-upl-banner accept="image/*" multiple>
+          </label>
+          <div class="banner-grid" data-banner-grid></div>
+          <div class="row">
+            <button class="btn slot-color small" data-btn-rot-start>▶ Iniciar rotação</button>
+            <button class="btn ghost small" data-btn-rot-stop>■ Parar</button>
+          </div>
+        </div>
+
+        <div class="sec">
+          <div class="sec-label"><span class="bar"></span>Áudio (mic) <span class="extra" data-audio-status>padrão do sistema</span></div>
+          <select data-audio-select class="field"><option value="">— padrão do sistema —</option></select>
+          <div class="row">
+            <button class="btn ghost small" data-btn-reload-audio>⟳ Listar mics</button>
+            <button class="btn slot-color small" data-btn-save-audio>💾 Salvar</button>
+          </div>
+          <div style="font-size:10.5px;color:var(--muted);margin-top:4px">Precisa do Chrome aberto pra listar mics. Aplica na próxima captura.</div>
+        </div>
+
+        <div class="sec">
+          <div class="sec-label"><span class="bar"></span>Proxy <span class="extra">opcional</span></div>
+          <div class="field"><input type="text" data-p="proxy" placeholder="host:porta ou host:porta:user:pass"></div>
+          <button class="btn ghost small" data-btn-save-proxy>Salvar proxy</button>
+          <div style="font-size:10.5px;color:var(--muted);margin-top:4px">Aplica no próximo "Abrir Chrome"</div>
+        </div>
+      </div>
+
+      <!-- ═══ COLUNA CENTRO — CONTROLES + MONITOR ═══ -->
+      <div class="col col-center">
+        <div class="sec">
+          <div class="sec-label"><span class="bar"></span>Chrome + abas</div>
+          <div class="row">
+            <button class="btn slot-color small" data-btn-open-chrome>▸ Abrir Chrome</button>
+            <button class="btn ghost small" data-btn-close-chrome>■ Fechar</button>
+            <button class="btn ghost small" data-btn-refresh-tabs>⟳ Abas</button>
+            <button class="btn ghost small" data-btn-screenshot>📷 Snap</button>
+          </div>
+          <div class="tab-list" data-tab-list></div>
+        </div>
+
+        <div class="sec">
+          <div class="sec-label"><span class="bar"></span>Chat <span class="extra">envio direto</span></div>
+          <div class="field"><textarea data-chat-input placeholder="Escreve mensagem pro chat..."></textarea></div>
+          <button class="btn slot-color small" data-btn-send-chat>▶ Enviar no chat</button>
+        </div>
+
+        <div class="sec">
+          <div class="sec-label"><span class="bar"></span>Cérebro <span class="extra" data-brain-status>parado</span></div>
+          <div class="row">
+            <button class="btn slot-color small" data-btn-open-brain>✎ Editar roteiro</button>
+            <button class="btn slot-color small" data-btn-start-brain>▶ Iniciar</button>
+            <button class="btn ghost small" data-btn-stop-brain>■ Parar</button>
+          </div>
+          <div style="font-size:10.5px;color:var(--muted);margin-top:2px" data-brain-current>—</div>
+        </div>
+
+        <div class="sec">
+          <div class="sec-label"><span class="bar"></span>Monitor da Live <span class="extra">snapshot ao vivo</span></div>
+          <div class="monitor-box" data-monitor>
+            <div class="placeholder">Aperta 📷 Snap acima pra ver o Chrome</div>
+          </div>
+        </div>
+
+        <div class="sec">
+          <div class="sec-label"><span class="bar"></span>Câmera ao vivo <span class="extra">ambiente sonoro</span></div>
+          <div class="soon">
+            <strong>Fase 6 — ambiente</strong>
+            Toggles pra ruído de sala, respirações, digitação, cliques etc. Alimentado pela QT integrada.
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ COLUNA DIREITA — TRANSMISSÃO ═══ -->
+      <div class="col col-right">
+        <div class="sec">
+          <div class="sec-label"><span class="bar"></span>Estúdio de transmissão</div>
+          <div class="tx-status" data-tx-status>
+            <span class="l1">Chrome CDP</span>
+            <span class="l2" data-tx-l2>Desconectado</span>
+          </div>
+        </div>
+
+        <div class="sec">
+          <div class="sec-label"><span class="bar"></span>TikTok Shop</div>
+          <button class="btn slot-color small wide" data-btn-goto-live>▸ Abrir TikTok Live Center</button>
+          <div style="font-size:10.5px;color:var(--muted);margin-top:6px;line-height:1.5">
+            Abre <code style="color:var(--muted-hi)">business.tiktokshop.com</code> no Chrome desse slot.
+            Se ainda não tá logado, faz login uma vez que a sessão fica salva no perfil isolado.
+          </div>
+        </div>
+
+        <div class="sec">
+          <div class="sec-label"><span class="bar"></span>Live Preview</div>
+          <div class="monitor-box" data-live-preview>
+            <div class="placeholder">Aparece após primeiro Snap</div>
+          </div>
+        </div>
+
+        <div class="sec">
+          <div class="sec-label"><span class="bar"></span>Volume ambiente</div>
+          <div class="field"><label>Volume geral</label><input type="range" min="0" max="100" value="80" data-slider="vol"></div>
+          <div class="field"><label>Ambiente</label><input type="range" min="0" max="100" value="40" data-slider="amb"></div>
+          <div style="font-size:10.5px;color:var(--muted);margin-top:4px">Controles ativam quando QT integrada estiver ativa</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</template>
+
+<script>
+const API = "http://127.0.0.1:8903";
+const $ = (id) => document.getElementById(id);
+const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
+
+const state = {
+  slots: [
+    { open: false, connected: false, tabs: [], appliedVideoId: null, proxy: null, liveConfig: {}, audioConfig: {}, audioDevices: [], banners: [], videos: [] },
+    { open: false, connected: false, tabs: [], appliedVideoId: null, proxy: null, liveConfig: {}, audioConfig: {}, audioDevices: [], banners: [], videos: [] },
+  ],
+  activeTab: "0",
+};
+
+function populateAudioSelect(slot) {
+  const panel = document.querySelector(`[data-tab-panel="${slot}"]`);
+  if (!panel) return;
+  const sel = panel.querySelector("[data-audio-select]");
+  const status = panel.querySelector("[data-audio-status]");
+  if (!sel) return;
+  const current = state.slots[slot].audioConfig?.device_id || "";
+  const devices = state.slots[slot].audioDevices || [];
+  sel.innerHTML = `<option value="">— padrão do sistema —</option>` +
+    devices.map(d => `<option value="${esc(d.id)}" ${d.id === current ? 'selected' : ''}>${esc(d.label)}</option>`).join("");
+  if (status) status.textContent = state.slots[slot].audioConfig?.device_label || "padrão do sistema";
+}
+
+// ─── LOG ─────────────────────────────────────────────────────────────────────
+function log(msg, cls = "info") {
+  const el = $("log");
+  if (!el) return;
+  const stamp = new Date().toLocaleTimeString();
+  el.insertAdjacentHTML("afterbegin", `<span class="${cls}">[${stamp}] ${msg}</span>\n`);
+}
+const slotLabel = (s) => (String(s) === "0" ? "A" : "B");
+
+// ─── API ─────────────────────────────────────────────────────────────────────
+async function api(path, body, opts = {}) {
+  const init = body === undefined
+    ? { method: "GET" }
+    : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };
+  Object.assign(init, opts);
+  const r = await fetch(API + path, init);
+  return await r.json();
+}
+const sq = (s) => `?slot=${s}`;
+function esc(s) { return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+// ─── STATUS ──────────────────────────────────────────────────────────────────
+async function checkStatus() {
+  try {
+    const s = await api("/ping");
+    if (!s.ok) throw new Error("ping fail");
+    $("stApp").className = "status-chip on";
+    // Fase 11: verifica licença antes de mostrar painel
+    const lic = await api("/license/status");
+    if (!lic.active) {
+      $("gate").style.display = "none";
+      $("licenseGate").style.display = "";
+      $("app").style.display = "none";
+      return s;
+    }
+    $("licenseGate").style.display = "none";
+    (s.slots || []).forEach((sl, i) => {
+      state.slots[i].open = sl.chrome_open;
+      state.slots[i].connected = sl.cdp_connected;
+      state.slots[i].appliedVideoId = sl.applied_video_id;
+      state.slots[i].proxy = sl.proxy;
+      state.slots[i].liveConfig = sl.live_config || {};
+      state.slots[i].audioConfig = sl.audio_config || {};
+      state.slots[i].brainConfig = sl.brain_config || {};
+      state.slots[i].brainRunning = !!sl.brain_running;
+      populateAudioSelect(String(i));
+
+      const dot = $(`tabDot${i}`);
+      if (dot) dot.className = "dot" + (sl.cdp_connected ? " on" : "");
+
+      const panel = document.querySelector(`[data-tab-panel="${i}"]`);
+      if (panel) {
+        // Status cérebro
+        const bStatus = panel.querySelector("[data-brain-status]");
+        if (bStatus) {
+          const total = (sl.brain_config?.lines || []).length;
+          bStatus.textContent = sl.brain_running ? `▶ rodando · ${total} falas` : (total ? `${total} falas salvas` : "sem roteiro");
+          bStatus.style.color = sl.brain_running ? "var(--slot-color)" : "";
+        }
+        // Status transmissão
+        const txL2 = panel.querySelector("[data-tx-l2]");
+        const txSt = panel.querySelector("[data-tx-status]");
+        if (txL2) {
+          if (sl.chrome_open && sl.cdp_connected) { txL2.textContent = "Conectado"; txSt.classList.remove("off"); }
+          else if (sl.chrome_open) { txL2.textContent = "Chrome sem CDP"; }
+          else { txL2.textContent = "Desconectado"; txSt.classList.add("off"); }
+        }
+      }
+    });
+    $("gate").style.display = "none";
+    $("app").style.display = "";
+    return s;
+  } catch (e) {
+    $("stApp").className = "status-chip off";
+    $("gate").style.display = "";
+    $("licenseGate").style.display = "none";
+    $("app").style.display = "none";
+    return null;
+  }
+}
+
+$("btnActivate")?.addEventListener("click", async () => {
+  const key = $("licenseKey").value.trim().toUpperCase();
+  const btn = $("btnActivate");
+  const errEl = $("licenseError");
+  errEl.textContent = "";
+  if (!key.startsWith("APR-")) { errEl.textContent = "Chave inválida — precisa começar com APR-"; return; }
+  btn.disabled = true; btn.textContent = "Ativando…";
+  try {
+    const r = await api("/license/activate", { key });
+    if (!r.ok) {
+      errEl.textContent = `Erro: ${r.reason || r.error || 'chave inválida'}`;
+    } else {
+      await refreshAll();
+    }
+  } catch (e) {
+    errEl.textContent = `Erro: ${e.message}`;
+  } finally {
+    btn.disabled = false; btn.textContent = "▸ Ativar";
+  }
+});
+$("licenseKey")?.addEventListener("keydown", (ev) => {
+  if (ev.key === "Enter") $("btnActivate").click();
+});
+
+// ─── RENDER LIVE PANELS ──────────────────────────────────────────────────────
+function renderLivePanels() {
+  const tmpl = $("liveTemplate");
+  ["0", "1"].forEach(slot => {
+    const container = document.querySelector(`[data-tab-panel="${slot}"]`);
+    if (container.dataset.rendered) return;
+    container.dataset.rendered = "1";
+    const clone = tmpl.content.cloneNode(true);
+    const wrap = clone.querySelector(".slot-context");
+    wrap.dataset.slot = slot;
+    container.appendChild(clone);
+    bindLivePanel(slot);
+  });
+}
+
+function bindLivePanel(slot) {
+  const panel = document.querySelector(`[data-tab-panel="${slot}"]`);
+  if (!panel) return;
+  const q = (sel) => panel.querySelector(sel);
+  const qq = (sel) => Array.from(panel.querySelectorAll(sel));
+
+  // Marca campos como "tocados pelo usuário" pro polling não sobrescrever
+  ["[data-lc='title']", "[data-lc='description']", "[data-p='proxy']"].forEach(sel => {
+    const el = q(sel);
+    if (el) el.addEventListener("input", () => { el.dataset.userTouched = "1"; });
+  });
+  const coverSel = q("[data-lc='cover_banner_id']");
+  if (coverSel) coverSel.addEventListener("change", () => { coverSel.dataset.userChanged = "1"; });
+
+  // Upload de banners por slot
+  q("[data-upl-banner]")?.addEventListener("change", async (ev) => {
+    const files = Array.from(ev.target.files || []);
+    if (!files.length) return;
+    const label = slotLabel(slot);
+    log(`[Live ${label}] ▸ subindo ${files.length} imagem(ns)`, "cmd");
+    for (const f of files) {
+      const fd = new FormData();
+      fd.append("file", f);
+      fd.append("interval_s", "60");
+      try {
+        const r = await fetch(`${API}/banners/upload${sq(slot)}`, { method: "POST", body: fd });
+        const j = await r.json();
+        j.ok ? log(`[Live ${label}] ✓ ${f.name}`, "ok") : log(`[Live ${label}] ✗ ${f.name}: ${j.error}`, "err");
+      } catch (e) { log(`[Live ${label}] ✗ ${f.name}: ${e.message}`, "err"); }
+    }
+    ev.target.value = "";
+    await refreshBanners();
+  });
+
+  // Upload de vídeo por slot
+  q("[data-upl-video]")?.addEventListener("change", async (ev) => {
+    const files = Array.from(ev.target.files || []);
+    if (!files.length) return;
+    const label = slotLabel(slot);
+    for (const f of files) {
+      log(`[Live ${label}] ▸ subindo vídeo: ${f.name} (${(f.size/1024/1024).toFixed(1)}MB)`, "cmd");
+      const fd = new FormData();
+      fd.append("file", f);
+      try {
+        const r = await fetch(`${API}/videos/upload${sq(slot)}`, { method: "POST", body: fd });
+        const j = await r.json();
+        j.ok ? log(`[Live ${label}] ✓ vídeo salvo`, "ok") : log(`[Live ${label}] ✗ ${j.error}`, "err");
+      } catch (e) { log(`[Live ${label}] ✗ ${f.name}: ${e.message}`, "err"); }
+    }
+    ev.target.value = "";
+    await refreshVideos();
+  });
+
+  q("[data-btn-open-chrome]")?.addEventListener("click", async () => {
+    const label = slotLabel(slot);
+    log(`[Live ${label}] ▸ abrindo Chrome`, label === "A" ? "a" : "b");
+    const r = await api(`/open-chrome${sq(slot)}`, {});
+    r.ok ? log(`[Live ${label}] ✓ Chrome conectado`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+    await refreshAll();
+  });
+  q("[data-btn-close-chrome]")?.addEventListener("click", async () => {
+    const label = slotLabel(slot);
+    const r = await api(`/close-chrome${sq(slot)}`, {});
+    r.ok ? log(`[Live ${label}] ✓ Chrome fechado`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+    await refreshAll();
+  });
+  q("[data-btn-refresh-tabs]")?.addEventListener("click", () => refreshTabs(slot));
+  q("[data-btn-screenshot]")?.addEventListener("click", async () => {
+    const label = slotLabel(slot);
+    log(`[Live ${label}] ▸ screenshot`, "cmd");
+    const r = await api(`/screenshot${sq(slot)}`, {});
+    if (!r.ok) return log(`[Live ${label}] ✗ ${r.error}`, "err");
+    const monitor = q("[data-monitor]");
+    const preview = q("[data-live-preview]");
+    const img = `<img src="data:image/png;base64,${r.png_base64}">`;
+    if (monitor) monitor.innerHTML = img;
+    if (preview) preview.innerHTML = img;
+    log(`[Live ${label}] ✓ snapshot`, "ok");
+  });
+  q("[data-btn-send-chat]")?.addEventListener("click", async () => {
+    const label = slotLabel(slot);
+    const text = q("[data-chat-input]").value.trim();
+    if (!text) return;
+    log(`[Live ${label}] ▸ chat: "${text}"`, "cmd");
+    const r = await api(`/send-chat${sq(slot)}`, { text });
+    r.ok ? log(`[Live ${label}] ✓ enviado`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+  });
+  q("[data-btn-apply-video]")?.addEventListener("click", async () => {
+    const label = slotLabel(slot);
+    const sel = q("[data-video-select]");
+    if (!sel.value) return log(`[Live ${label}] ✗ escolhe um vídeo primeiro`, "err");
+    const r = await api(`/video/apply${sq(slot)}`, { video_id: sel.value });
+    r.ok ? log(`[Live ${label}] ✓ vídeo aplicado (${r.note || 'aplicado'})`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+    await refreshAll();
+  });
+  q("[data-btn-clear-video]")?.addEventListener("click", async () => {
+    const label = slotLabel(slot);
+    const r = await api(`/video/clear${sq(slot)}`, {});
+    r.ok ? log(`[Live ${label}] ✓ vídeo removido do slot`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+    await refreshAll();
+  });
+  q("[data-btn-save-proxy]")?.addEventListener("click", async () => {
+    const label = slotLabel(slot);
+    const proxy = q("[data-p='proxy']").value.trim() || null;
+    const r = await api(`/proxy${sq(slot)}`, { proxy });
+    r.ok ? log(`[Live ${label}] ✓ proxy salvo (aplica no próximo Abrir)`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+  });
+  q("[data-btn-reload-audio]")?.addEventListener("click", async () => {
+    const label = slotLabel(slot);
+    if (!state.slots[slot].connected) return log(`[Live ${label}] ✗ Chrome não conectado`, "err");
+    log(`[Live ${label}] ▸ listando mics`, "cmd");
+    const r = await api(`/audio-devices${sq(slot)}`);
+    if (!r.ok) return log(`[Live ${label}] ✗ ${r.error}`, "err");
+    state.slots[slot].audioDevices = r.devices || [];
+    populateAudioSelect(slot);
+    log(`[Live ${label}] ✓ ${r.devices.length} mic(s) encontrado(s)`, "ok");
+  });
+  q("[data-btn-save-audio]")?.addEventListener("click", async () => {
+    const label = slotLabel(slot);
+    const sel = q("[data-audio-select]");
+    const opt = sel.options[sel.selectedIndex];
+    const payload = {
+      device_id: sel.value || null,
+      device_label: sel.value ? opt.textContent : null,
+    };
+    const r = await api(`/audio-config${sq(slot)}`, payload);
+    r.ok ? log(`[Live ${label}] ✓ mic salvo: ${payload.device_label || 'padrão'}`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+  });
+  q("[data-btn-save-live-config]")?.addEventListener("click", async () => {
+    const label = slotLabel(slot);
+    const payload = {
+      title: q("[data-lc='title']").value.trim(),
+      description: q("[data-lc='description']").value.trim(),
+      cover_banner_id: q("[data-lc='cover_banner_id']").value || null,
+    };
+    const r = await api(`/live-config${sq(slot)}`, payload);
+    r.ok ? log(`[Live ${label}] ✓ config da live salva`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+  });
+  q("[data-btn-goto-live]")?.addEventListener("click", async () => {
+    const label = slotLabel(slot);
+    if (!state.slots[slot].connected) return log(`[Live ${label}] ✗ Chrome não conectado — abre Chrome primeiro`, "err");
+    log(`[Live ${label}] ▸ abrindo TikTok Live Center`, "cmd");
+    const r = await api(`/open-tab${sq(slot)}`, { url: "https://business.tiktokshop.com/us/creator/live" });
+    r.ok ? log(`[Live ${label}] ✓ aba aberta`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+    await refreshTabs(slot);
+  });
+  q("[data-btn-open-brain]")?.addEventListener("click", () => brainOpen(slot));
+  q("[data-btn-start-brain]")?.addEventListener("click", async () => {
+    const label = slotLabel(slot);
+    const r = await api(`/brain/start${sq(slot)}`, {});
+    r.ok ? log(`[Live ${label}] ✓ Cérebro iniciado`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+    await refreshAll();
+  });
+  q("[data-btn-stop-brain]")?.addEventListener("click", async () => {
+    const label = slotLabel(slot);
+    const r = await api(`/brain/stop${sq(slot)}`, {});
+    r.ok ? log(`[Live ${label}] ✓ Cérebro parado`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+    await refreshAll();
+  });
+  q("[data-btn-apply-live-config]")?.addEventListener("click", async () => {
+    const label = slotLabel(slot);
+    // Salva antes de aplicar (garante que backend tem o valor mais recente)
+    const payload = {
+      title: q("[data-lc='title']").value.trim(),
+      description: q("[data-lc='description']").value.trim(),
+      cover_banner_id: q("[data-lc='cover_banner_id']").value || null,
+    };
+    await api(`/live-config${sq(slot)}`, payload);
+    const r = await api(`/live-config/apply${sq(slot)}`, {});
+    if (!r.ok) return log(`[Live ${label}] ✗ ${r.error}`, "err");
+    const parts = [];
+    if (r.fill?.title) parts.push(`título: ${r.fill.title}`);
+    if (r.fill?.desc) parts.push(`descrição: ${r.fill.desc}`);
+    if (r.cover?.ok) parts.push("capa: ok");
+    else if (r.cover?.error) parts.push(`capa: ${r.cover.error}`);
+    log(`[Live ${label}] ✓ aplicado — ${parts.join(" | ")}`, "ok");
+  });
+  q("[data-btn-rot-start]")?.addEventListener("click", async () => {
+    const label = slotLabel(slot);
+    const r = await api(`/rotation/start${sq(slot)}`, {});
+    r.ok ? log(`[Live ${label}] ✓ rotação iniciada`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+    await refreshBanners();
+  });
+  q("[data-btn-rot-stop]")?.addEventListener("click", async () => {
+    const label = slotLabel(slot);
+    const r = await api(`/rotation/stop${sq(slot)}`, {});
+    r.ok ? log(`[Live ${label}] ✓ rotação parada`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+    await refreshBanners();
+  });
+}
+
+async function refreshTabs(slot) {
+  try {
+    const r = await api(`/tabs${sq(slot)}`);
+    if (!r.ok) return;
+    state.slots[slot].tabs = r.tabs;
+    const panel = document.querySelector(`[data-tab-panel="${slot}"]`);
+    if (!panel) return;
+    const list = panel.querySelector("[data-tab-list]");
+    if (!list) return;
+    list.innerHTML = r.tabs.length
+      ? r.tabs.slice(0, 5).map(t => `<div class="tab-item"><div class="t-title">${esc(t.title || '(sem título)')}</div><div class="t-url">${esc(t.url)}</div></div>`).join("")
+      : `<div style="color:var(--muted);font-size:11px;padding:4px 0">nenhuma aba aberta</div>`;
+  } catch {}
+}
+
+async function refreshBanners() {
+  try {
+    // Carrega banners de cada slot separadamente
+    const perSlot = await Promise.all(["0", "1"].map(async s => {
+      const r = await api(`/banners${sq(s)}`);
+      return r.ok ? r.banners : [];
+    }));
+    ["0", "1"].forEach((slot, i) => { state.slots[slot].banners = perSlot[i]; });
+
+    const rotStatuses = await Promise.all(["0", "1"].map(s => api(`/rotation/status${sq(s)}`)));
+    ["0", "1"].forEach((slot, i) => {
+      const rot = rotStatuses[i];
+      const banners = state.slots[slot].banners;
+      const curId = rot.active ? rot.current_banner_id : null;
+      const panel = document.querySelector(`[data-tab-panel="${slot}"]`);
+      if (!panel) return;
+      const grid = panel.querySelector("[data-banner-grid]");
+      const count = panel.querySelector("[data-banner-count]");
+      if (count) count.textContent = `${banners.length} · ${rot.active ? '▶ girando' : 'parado'}`;
+      if (!grid) return;
+      grid.innerHTML = banners.length
+        ? banners.map((b, i) => `
+          <div class="banner-card ${b.id === curId ? 'playing' : ''}">
+            <div class="banner-thumb"><img src="${API}/banners/${b.id}/file${sq(slot)}" alt=""></div>
+            <div class="card-actions">
+              <button data-apply="${b.id}">▸</button>
+              <button class="danger" data-del="${b.id}">×</button>
+            </div>
+          </div>`).join("")
+        : `<div style="grid-column:1/-1;color:var(--muted);font-size:10.5px;text-align:center;padding:8px">vazio — sobe imagem acima</div>`;
+      grid.querySelectorAll("[data-apply]").forEach(b => {
+        b.addEventListener("click", async () => {
+          const r = await api(`/set-banner${sq(slot)}`, { banner_id: b.dataset.apply });
+          r.ok ? log(`[Live ${slotLabel(slot)}] ✓ banner aplicado`, "ok") : log(`[Live ${slotLabel(slot)}] ✗ ${r.error}`, "err");
+        });
+      });
+      grid.querySelectorAll("[data-del]").forEach(b => {
+        b.addEventListener("click", async () => {
+          if (!confirm("Remover banner?")) return;
+          await fetch(`${API}/banners/${b.dataset.del}${sq(slot)}`, { method: "DELETE" });
+          await refreshBanners();
+        });
+      });
+    });
+  } catch (e) {}
+}
+
+async function refreshVideos() {
+  try {
+    const perSlot = await Promise.all(["0", "1"].map(async s => {
+      const r = await api(`/videos${sq(s)}`);
+      return r.ok ? r.videos : [];
+    }));
+    ["0", "1"].forEach((slot, i) => { state.slots[slot].videos = perSlot[i]; });
+
+    // Popula dropdown de capa (cover_banner_id) usando banners DO PRÓPRIO SLOT
+    ["0", "1"].forEach(slot => {
+      const panel = document.querySelector(`[data-tab-panel="${slot}"]`);
+      if (!panel) return;
+      const coverSel = panel.querySelector("[data-lc='cover_banner_id']");
+      if (coverSel) {
+        const currentCover = state.slots[slot].liveConfig?.cover_banner_id || "";
+        const savedValue = coverSel.dataset.userChanged ? coverSel.value : currentCover;
+        coverSel.innerHTML = `<option value="">— sem capa —</option>` +
+          state.slots[slot].banners.map(b => `<option value="${b.id}" ${b.id === savedValue ? 'selected' : ''}>${esc(b.original_name)}</option>`).join("");
+      }
+      const titleInput = panel.querySelector("[data-lc='title']");
+      const descInput = panel.querySelector("[data-lc='description']");
+      if (titleInput && !titleInput.dataset.userTouched) titleInput.value = state.slots[slot].liveConfig?.title || "";
+      if (descInput && !descInput.dataset.userTouched) descInput.value = state.slots[slot].liveConfig?.description || "";
+    });
+
+    // Cada slot: select de vídeo + status
+    ["0", "1"].forEach(slot => {
+      const panel = document.querySelector(`[data-tab-panel="${slot}"]`);
+      if (!panel) return;
+      const sel = panel.querySelector("[data-video-select]");
+      const status = panel.querySelector("[data-video-status]");
+      const preview = panel.querySelector("[data-video-preview]");
+      const videos = state.slots[slot].videos;
+      const applied = state.slots[slot].appliedVideoId;
+      const appliedVideo = videos.find(v => v.id === applied);
+      if (sel) {
+        sel.innerHTML = `<option value="">— escolhe vídeo —</option>` +
+          videos.map(v => `<option value="${v.id}" ${v.id === applied ? 'selected' : ''}>${esc(v.original_name)}</option>`).join("");
+      }
+      if (status) status.textContent = appliedVideo ? esc(appliedVideo.original_name) : "nenhum";
+      if (preview) {
+        if (appliedVideo) {
+          preview.innerHTML = `<video src="${API}/videos/${appliedVideo.id}/file${sq(slot)}" muted autoplay loop playsinline></video><span class="live-badge">${slotLabel(slot)}</span>`;
+        } else {
+          preview.innerHTML = `<div class="placeholder">nenhum vídeo aplicado</div>`;
+        }
+      }
+      const proxyInput = panel.querySelector("[data-p='proxy']");
+      if (proxyInput && state.slots[slot].proxy && !proxyInput.dataset.userTouched) {
+        proxyInput.value = state.slots[slot].proxy;
+      }
+    });
+  } catch (e) {}
+}
+
+// ─── TABS ────────────────────────────────────────────────────────────────────
+$$(".tab").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const t = btn.dataset.tab;
+    state.activeTab = t;
+    $$(".tab").forEach(x => x.classList.toggle("active", x.dataset.tab === t));
+    $$(".tab-panel").forEach(x => x.classList.toggle("active", x.dataset.tabPanel === t));
+  });
+});
+
+// ─── CÉREBRO ─────────────────────────────────────────────────────────────────
+
+const BRAIN_BLOCKS = ["ABERTURA", "BENEFICIO", "PRECO", "URGENCIA", "OBJECOES", "SOCIAL", "CTA", "ENGAJAMENTO"];
+
+// Editor state: por bloco, lista de falas em edição
+let brainEditor = {
+  slot: "0",
+  activeBlock: "ABERTURA",
+  lines: {}, // { ABERTURA: [{text: "..."}], ... }
+};
+
+function brainOpen(slot) {
+  brainEditor.slot = slot;
+  $("brainSlotLabel").textContent = `— Live ${slotLabel(slot)}`;
+  // Carrega roteiro atual do slot
+  const cfg = state.slots[slot].brainConfig || {};
+  brainEditor.lines = {};
+  BRAIN_BLOCKS.forEach(b => brainEditor.lines[b] = []);
+  (cfg.lines || []).forEach(l => {
+    const b = BRAIN_BLOCKS.includes(l.block) ? l.block : "ABERTURA";
+    brainEditor.lines[b].push({ text: l.text });
+  });
+  $("brainInterval").value = cfg.interval_s || 45;
+  $("brainShuffle").checked = !!cfg.shuffle;
+  // Carrega API key salva
+  const provider = localStorage.getItem("argos-brain-provider") || "claude";
+  $("brainProvider").value = provider;
+  $("brainApiKey").value = localStorage.getItem(`argos-brain-key-${provider}`) || "";
+  // Renderiza bloco ativo
+  brainRenderBlock();
+  $("brainModal").style.display = "block";
+}
+function brainClose() { $("brainModal").style.display = "none"; }
+
+function brainRenderBlock() {
+  const b = brainEditor.activeBlock;
+  const lines = brainEditor.lines[b] || [];
+  const container = $("brainBlockContent");
+  container.innerHTML = "";
+  lines.forEach((l, i) => {
+    const row = document.createElement("div");
+    row.className = "brain-line";
+    row.innerHTML = `
+      <textarea data-idx="${i}" placeholder="Fala pra chat">${esc(l.text)}</textarea>
+      <button data-del="${i}">×</button>
+    `;
+    row.querySelector("textarea").addEventListener("input", (ev) => {
+      brainEditor.lines[b][parseInt(ev.target.dataset.idx, 10)].text = ev.target.value;
+      brainUpdateCount();
+    });
+    row.querySelector("button").addEventListener("click", () => {
+      brainEditor.lines[b].splice(i, 1);
+      brainRenderBlock();
+      brainUpdateCount();
+    });
+    container.appendChild(row);
+  });
+  // Botão + adicionar fala vazia
+  const addBtn = document.createElement("button");
+  addBtn.className = "btn ghost small";
+  addBtn.textContent = "+ Adicionar fala";
+  addBtn.style.marginTop = "6px";
+  addBtn.addEventListener("click", () => {
+    brainEditor.lines[b].push({ text: "" });
+    brainRenderBlock();
+  });
+  container.appendChild(addBtn);
+  brainUpdateCount();
+}
+
+function brainUpdateCount() {
+  const total = Object.values(brainEditor.lines).reduce((s, arr) => s + arr.filter(l => l.text.trim()).length, 0);
+  $("brainCount").textContent = `${total} falas`;
+}
+
+// Tab clicks
+$$(".brain-block-tab").forEach(t => {
+  t.addEventListener("click", () => {
+    $$(".brain-block-tab").forEach(x => x.classList.remove("active"));
+    t.classList.add("active");
+    brainEditor.activeBlock = t.dataset.block;
+    brainRenderBlock();
+  });
+});
+
+$("brainModalClose").addEventListener("click", brainClose);
+$("brainModal").addEventListener("click", (ev) => {
+  if (ev.target.id === "brainModal") brainClose();
+});
+
+// Provider select — carrega key salva do provider escolhido
+$("brainProvider").addEventListener("change", () => {
+  const p = $("brainProvider").value;
+  localStorage.setItem("argos-brain-provider", p);
+  $("brainApiKey").value = localStorage.getItem(`argos-brain-key-${p}`) || "";
+});
+$("brainApiKey").addEventListener("change", () => {
+  const p = $("brainProvider").value;
+  localStorage.setItem(`argos-brain-key-${p}`, $("brainApiKey").value);
+});
+
+// LLM prompt
+function brainPrompt(product, price, benefit, notes) {
+  return `Você é uma vendedora TikTok Shop brasileira, tom espontâneo e amigável, gírias sutis. Nunca robô.
+Gera JSON com 8 blocos, cada bloco com 3-5 falas curtas (max 90 caracteres cada) pra postar no chat da live.
+
+Produto: ${product || "(não informado)"}
+Preço: ${price || "(não informado)"}
+Benefício-chave: ${benefit || "(não informado)"}
+Observações: ${notes || "(nenhuma)"}
+
+Blocos e o que cada um deve fazer:
+- ABERTURA: cumprimenta a galera que tá entrando, cria clima ("boa noite gente linda 💜")
+- BENEFICIO: destaca o principal benefício do produto, causa desejo
+- PRECO: menciona o preço/oferta de forma direta e leve
+- URGENCIA: cria pressa (estoque, tempo, brinde limitado)
+- OBJECOES: responde dúvidas comuns (durabilidade, qualidade, prazo)
+- SOCIAL: menciona prova social ("milhares já compraram", depoimentos)
+- CTA: chama pra ação ("clica no carrinho no cantinho ↘")
+- ENGAJAMENTO: pergunta pro chat, gera interação ("de onde vc tá?", "manda 🔥 se curtiu")
+
+Regras:
+- Fala natural, sem parecer script
+- Emojis moderados (1 por fala no máximo)
+- Nada de "compre agora" cru — usa gírias tipo "corre lá"
+- Não repete a mesma frase
+- PT-BR
+
+Responde APENAS o JSON, sem markdown, sem explicação:
+{"ABERTURA":["fala1","fala2",...],"BENEFICIO":[...],"PRECO":[...],"URGENCIA":[...],"OBJECOES":[...],"SOCIAL":[...],"CTA":[...],"ENGAJAMENTO":[...]}`;
+}
+
+async function brainCallLLM(prompt, provider, apiKey) {
+  if (!apiKey) throw new Error("cola a API key primeiro");
+  if (provider === "claude") {
+    const r = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true",
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-5",
+        max_tokens: 2048,
+        messages: [{ role: "user", content: prompt }],
+      }),
+    });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error?.message || "Claude erro");
+    return j.content?.[0]?.text || "";
+  }
+  if (provider === "openai") {
+    const r = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: { "content-type": "application/json", authorization: `Bearer ${apiKey}` },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        response_format: { type: "json_object" },
+        messages: [{ role: "user", content: prompt }],
+      }),
+    });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error?.message || "OpenAI erro");
+    return j.choices?.[0]?.message?.content || "";
+  }
+  if (provider === "gemini") {
+    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { responseMimeType: "application/json", thinkingConfig: { thinkingBudget: 0 } },
+      }),
+    });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error?.message || "Gemini erro");
+    return j.candidates?.[0]?.content?.parts?.[0]?.text || "";
+  }
+  throw new Error(`provider ${provider} desconhecido`);
+}
+
+$("brainGenerate").addEventListener("click", async () => {
+  const prompt = brainPrompt(
+    $("brainProduct").value.trim(),
+    $("brainPrice").value.trim(),
+    $("brainBenefit").value.trim(),
+    $("brainNotes").value.trim(),
+  );
+  const provider = $("brainProvider").value;
+  const apiKey = $("brainApiKey").value.trim();
+  localStorage.setItem(`argos-brain-key-${provider}`, apiKey);
+  const btn = $("brainGenerate");
+  btn.disabled = true; btn.textContent = "🧠 Gerando…";
+  try {
+    const raw = await brainCallLLM(prompt, provider, apiKey);
+    // Extrai JSON (às vezes vem com markdown fences)
+    const match = raw.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error("resposta sem JSON — tenta de novo");
+    const data = JSON.parse(match[0]);
+    // Preenche editor
+    BRAIN_BLOCKS.forEach(b => {
+      brainEditor.lines[b] = (data[b] || []).map(t => ({ text: String(t) }));
+    });
+    brainRenderBlock();
+    brainUpdateCount();
+    log("[Cérebro] ✓ roteiro gerado", "ok");
+  } catch (e) {
+    log(`[Cérebro] ✗ ${e.message}`, "err");
+    alert(`Erro gerando roteiro: ${e.message}`);
+  } finally {
+    btn.disabled = false; btn.textContent = "🧠 Gerar roteiro";
+  }
+});
+
+function brainCollectLines() {
+  const lines = [];
+  BRAIN_BLOCKS.forEach(b => {
+    (brainEditor.lines[b] || []).forEach(l => {
+      if (l.text.trim()) lines.push({ block: b, text: l.text.trim() });
+    });
+  });
+  return lines;
+}
+
+async function brainSaveBackend(slot, andStart = false) {
+  const payload = {
+    lines: brainCollectLines(),
+    interval_s: Math.max(10, parseInt($("brainInterval").value, 10) || 45),
+    shuffle: $("brainShuffle").checked,
+  };
+  const r = await api(`/brain${sq(slot)}`, payload);
+  if (!r.ok) { log(`[Live ${slotLabel(slot)}] ✗ ${r.error}`, "err"); return; }
+  log(`[Live ${slotLabel(slot)}] ✓ roteiro salvo (${r.lines_count} falas)`, "ok");
+  if (andStart) {
+    const s = await api(`/brain/start${sq(slot)}`, {});
+    s.ok ? log(`[Live ${slotLabel(slot)}] ✓ Cérebro iniciado`, "ok") : log(`[Live ${slotLabel(slot)}] ✗ ${s.error}`, "err");
+  }
+  brainClose();
+  await refreshAll();
+}
+
+$("brainSave").addEventListener("click", () => brainSaveBackend(brainEditor.slot, false));
+$("brainSaveStart").addEventListener("click", () => brainSaveBackend(brainEditor.slot, true));
+
+// ─── REFRESH ALL ─────────────────────────────────────────────────────────────
+async function refreshBrainCurrent() {
+  for (const slot of ["0", "1"]) {
+    if (!state.slots[slot].brainRunning) continue;
+    try {
+      const r = await api(`/brain/status${sq(slot)}`);
+      if (!r.ok) continue;
+      const panel = document.querySelector(`[data-tab-panel="${slot}"]`);
+      const el = panel?.querySelector("[data-brain-current]");
+      if (el) {
+        el.textContent = r.current_text
+          ? `→ ${r.current_text.length > 60 ? r.current_text.slice(0, 60) + "…" : r.current_text}`
+          : "—";
+      }
+    } catch {}
+  }
+}
+
+async function refreshAll() {
+  const s = await checkStatus();
+  if (!s) return;
+  await Promise.all([
+    refreshTabs("0"),
+    refreshTabs("1"),
+    refreshBanners(),
+    refreshVideos(),
+    refreshBrainCurrent(),
+  ]);
+}
+
+// ─── BOOT ────────────────────────────────────────────────────────────────────
+(async () => {
+  renderLivePanels();
+  await refreshAll();
+  setInterval(refreshAll, 3500);
+})();
+</script>
+</body>
+</html>
