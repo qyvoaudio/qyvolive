@@ -739,22 +739,19 @@ async function checkStatus() {
       state.slots[i].brainConfig = sl.brain_config || {};
       state.slots[i].brainRunning = !!sl.brain_running;
 
-      // Atualiza status "▶ rodando · N falas" / "parado" na coluna central
-      const panel = document.querySelector(`[data-tab-panel="${i}"]`);
-      if (panel) {
-        const bStatus = panel.querySelector("[data-brain-status]");
-        const bCurrent = panel.querySelector("[data-brain-current]");
-        if (bStatus) {
-          const total = (sl.brain_config?.lines || []).length;
-          bStatus.textContent = sl.brain_running ? `▶ rodando · ${total} falas` : (total ? `${total} falas salvas` : "sem roteiro");
-          bStatus.style.color = sl.brain_running ? "var(--slot-color)" : "";
-        }
-      }
       const dot = $(`tabDot${i}`);
       if (dot) dot.className = "dot" + (sl.cdp_connected ? " on" : "");
 
       const panel = document.querySelector(`[data-tab-panel="${i}"]`);
       if (panel) {
+        // Status cérebro
+        const bStatus = panel.querySelector("[data-brain-status]");
+        if (bStatus) {
+          const total = (sl.brain_config?.lines || []).length;
+          bStatus.textContent = sl.brain_running ? `▶ rodando · ${total} falas` : (total ? `${total} falas salvas` : "sem roteiro");
+          bStatus.style.color = sl.brain_running ? "var(--slot-color)" : "";
+        }
+        // Status transmissão
         const txL2 = panel.querySelector("[data-tx-l2]");
         const txSt = panel.querySelector("[data-tx-status]");
         if (txL2) {
