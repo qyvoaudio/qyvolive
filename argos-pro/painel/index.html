@@ -747,6 +747,16 @@ async function api(path, body, opts = {}) {
 const sq = (s) => `?slot=${s}`;
 function esc(s) { return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 
+// Visual feedback quando um botão salva com sucesso
+function flashSaved(btn, msg = "✓ Salvo!") {
+  if (!btn) return;
+  const orig = btn.textContent;
+  btn.textContent = msg;
+  btn.style.background = "var(--signal)";
+  btn.style.color = "#000";
+  setTimeout(() => { btn.textContent = orig; btn.style.background = ""; btn.style.color = ""; }, 2000);
+}
+
 // ─── STATUS ──────────────────────────────────────────────────────────────────
 async function checkStatus() {
   try {
@@ -1023,11 +1033,21 @@ function bindLivePanel(slot) {
     r.ok ? log(`[Live ${label}] ✓ vídeo removido do slot`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
     await refreshAll();
   });
-  q("[data-btn-save-proxy]")?.addEventListener("click", async () => {
+  q("[data-btn-save-proxy]")?.addEventListener("click", async (ev) => {
     const label = slotLabel(slot);
+    const btn = ev.currentTarget;
     const proxy = q("[data-p='proxy']").value.trim() || null;
     const r = await api(`/proxy${sq(slot)}`, { proxy });
-    r.ok ? log(`[Live ${label}] ✓ proxy salvo (aplica no próximo Abrir)`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+    if (r.ok) {
+      log(`[Live ${label}] ✓ proxy salvo (aplica no próximo Abrir)`, "ok");
+      const orig = btn.textContent;
+      btn.textContent = "✓ Salvo!";
+      btn.style.background = "var(--signal)";
+      btn.style.color = "#000";
+      setTimeout(() => { btn.textContent = orig; btn.style.background = ""; btn.style.color = ""; }, 2000);
+    } else {
+      log(`[Live ${label}] ✗ ${r.error}`, "err");
+    }
   });
   q("[data-btn-reload-audio]")?.addEventListener("click", async () => {
     const label = slotLabel(slot);
@@ -1039,7 +1059,7 @@ function bindLivePanel(slot) {
     populateAudioSelect(slot);
     log(`[Live ${label}] ✓ ${r.devices.length} mic(s) encontrado(s)`, "ok");
   });
-  q("[data-btn-save-audio]")?.addEventListener("click", async () => {
+  q("[data-btn-save-audio]")?.addEventListener("click", async (ev) => {
     const label = slotLabel(slot);
     const sel = q("[data-audio-select]");
     const opt = sel.options[sel.selectedIndex];
@@ -1048,9 +1068,10 @@ function bindLivePanel(slot) {
       device_label: sel.value ? opt.textContent : null,
     };
     const r = await api(`/audio-config${sq(slot)}`, payload);
-    r.ok ? log(`[Live ${label}] ✓ mic salvo: ${payload.device_label || 'padrão'}`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+    if (r.ok) { log(`[Live ${label}] ✓ mic salvo: ${payload.device_label || 'padrão'}`, "ok"); flashSaved(ev.currentTarget); }
+    else log(`[Live ${label}] ✗ ${r.error}`, "err");
   });
-  q("[data-btn-save-live-config]")?.addEventListener("click", async () => {
+  q("[data-btn-save-live-config]")?.addEventListener("click", async (ev) => {
     const label = slotLabel(slot);
     const payload = {
       title: q("[data-lc='title']").value.trim(),
@@ -1058,7 +1079,8 @@ function bindLivePanel(slot) {
       cover_banner_id: q("[data-lc='cover_banner_id']").value || null,
     };
     const r = await api(`/live-config${sq(slot)}`, payload);
-    r.ok ? log(`[Live ${label}] ✓ config da live salva`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+    if (r.ok) { log(`[Live ${label}] ✓ config da live salva`, "ok"); flashSaved(ev.currentTarget); }
+    else log(`[Live ${label}] ✗ ${r.error}`, "err");
   });
   q("[data-btn-goto-live]")?.addEventListener("click", async () => {
     const label = slotLabel(slot);
@@ -1152,12 +1174,24 @@ async function refreshBanners() {
         ? banners.map((b, i) => `
           <div class="banner-card ${b.id === curId ? 'playing' : ''}">
             <div class="banner-thumb"><img src="${API}/banners/${b.id}/file${sq(slot)}" alt=""></div>
+            <div style="display:flex;align-items:center;gap:4px;padding:4px 6px;font-size:10.5px;color:var(--muted);background:var(--bg-2)">
+              <input type="number" min="5" max="600" value="${b.interval_s || 60}" data-int="${b.id}" style="width:44px;padding:2px 4px;background:var(--bg);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:inherit;font-size:10.5px">
+              <span>seg</span>
+            </div>
             <div class="card-actions">
               <button data-apply="${b.id}">▸</button>
               <button class="danger" data-del="${b.id}">×</button>
             </div>
           </div>`).join("")
         : `<div style="grid-column:1/-1;color:var(--muted);font-size:10.5px;text-align:center;padding:8px">vazio — sobe imagem acima</div>`;
+      grid.querySelectorAll("[data-int]").forEach(inp => {
+        inp.addEventListener("change", async () => {
+          const id = inp.dataset.int;
+          const v = parseInt(inp.value, 10);
+          if (!v || v < 5) return;
+          await api(`/banners/${id}/update${sq(slot)}`, { interval_s: v });
+        });
+      });
       grid.querySelectorAll("[data-apply]").forEach(b => {
         b.addEventListener("click", async () => {
           const r = await api(`/set-banner${sq(slot)}`, { banner_id: b.dataset.apply });
@@ -1509,6 +1543,22 @@ async function refreshAll() {
   ]);
 }
 
+// ─── SNAPSHOT AUTO (monitor da live ao vivo) ─────────────────────────────────
+async function snapshotActiveTab() {
+  const slot = state.activeTab;
+  if (slot === "config" || !state.slots[slot]?.connected) return;
+  try {
+    const r = await api(`/screenshot${sq(slot)}`, {});
+    if (!r.ok) return;
+    const panel = document.querySelector(`[data-tab-panel="${slot}"]`);
+    const monitor = panel?.querySelector("[data-monitor]");
+    const preview = panel?.querySelector("[data-live-preview]");
+    const img = `<img src="data:image/png;base64,${r.png_base64}" style="max-width:100%;max-height:100%">`;
+    if (monitor) monitor.innerHTML = img;
+    if (preview) preview.innerHTML = img;
+  } catch {}
+}
+
 // ─── BOOT ────────────────────────────────────────────────────────────────────
 (async () => {
   renderLivePanels();
@@ -1517,6 +1567,8 @@ async function refreshAll() {
   renderLivePanels();
   renderTabs();
   setInterval(async () => { await refreshAll(); renderTabs(); }, 3500);
+  // Snapshot ao vivo do slot ativo — a cada 3s
+  setInterval(snapshotActiveTab, 3000);
 })();
 </script>
 </body>
