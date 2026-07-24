@@ -443,7 +443,7 @@ input[type="range"]{width:100%;accent-color:var(--slot-color,var(--accent))}
 
       <section class="col">
         <div class="sec">
-          <div class="sec-label"><span class="bar"></span>Vídeos compartilhados <span class="extra">webcam fake por live</span></div>
+          <div class="sec-label"><span class="bar"></span>Vídeos <span class="extra">usados nas lives</span></div>
           <label class="upload-box" for="uplVideosGlobal">
             🎥 Sobe vídeos .mp4/.webm
             <input type="file" id="uplVideosGlobal" accept="video/*" multiple>
@@ -575,7 +575,7 @@ input[type="range"]{width:100%;accent-color:var(--slot-color,var(--accent))}
         </div>
 
         <div class="sec">
-          <div class="sec-label"><span class="bar"></span>Vídeo (webcam fake) <span class="extra" data-video-status>nenhum</span></div>
+          <div class="sec-label"><span class="bar"></span>Vídeo pra live <span class="extra" data-video-status>nenhum</span></div>
           <div class="video-thumb" data-video-preview>
             <div class="placeholder">nenhum vídeo aplicado</div>
           </div>
@@ -660,12 +660,10 @@ input[type="range"]{width:100%;accent-color:var(--slot-color,var(--accent))}
 
         <div class="sec">
           <div class="sec-label"><span class="bar"></span>TikTok Shop</div>
-          <div class="soon" style="text-align:left">
-            Pra ir ao vivo:<br>
-            1. Aperta ▸ Abrir Chrome<br>
-            2. Loga TikTok Shop<br>
-            3. Vai em <em>Live Center</em><br>
-            4. Aperta <em>Iniciar Live</em>
+          <button class="btn slot-color small wide" data-btn-goto-live>▸ Abrir TikTok Live Center</button>
+          <div style="font-size:10.5px;color:var(--muted);margin-top:6px;line-height:1.5">
+            Abre <code style="color:var(--muted-hi)">business.tiktokshop.com</code> no Chrome desse slot.
+            Se ainda não tá logado, faz login uma vez que a sessão fica salva no perfil isolado.
           </div>
         </div>
 
@@ -864,6 +862,14 @@ function bindLivePanel(slot) {
     };
     const r = await api(`/live-config${sq(slot)}`, payload);
     r.ok ? log(`[Live ${label}] ✓ config da live salva`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+  });
+  q("[data-btn-goto-live]")?.addEventListener("click", async () => {
+    const label = slotLabel(slot);
+    if (!state.slots[slot].connected) return log(`[Live ${label}] ✗ Chrome não conectado — abre Chrome primeiro`, "err");
+    log(`[Live ${label}] ▸ abrindo TikTok Live Center`, "cmd");
+    const r = await api(`/open-tab${sq(slot)}`, { url: "https://business.tiktokshop.com/us/creator/live" });
+    r.ok ? log(`[Live ${label}] ✓ aba aberta`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+    await refreshTabs(slot);
   });
   q("[data-btn-open-brain]")?.addEventListener("click", () => brainOpen(slot));
   q("[data-btn-start-brain]")?.addEventListener("click", async () => {
