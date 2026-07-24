@@ -419,6 +419,17 @@ input[type="range"]{width:100%;accent-color:var(--slot-color,var(--accent))}
   <p><a class="link-download" href="https://github.com/qyvoaudio/argos-pro/actions" target="_blank">▸ Baixar Argos Pro</a></p>
 </div>
 
+<div id="licenseGate" class="gate" style="display:none">
+  <h1>Ativa sua <em>chave</em></h1>
+  <p>Cola a chave que chegou no seu email pra desbloquear o painel.<br>Formato: <code>APR-XXXX-XXXX-XXXX</code></p>
+  <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:20px 0">
+    <input type="text" id="licenseKey" placeholder="APR-XXXX-XXXX-XXXX" style="flex:1;min-width:240px;max-width:340px;padding:12px 14px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:100px;font-family:inherit;font-size:14px;text-align:center;letter-spacing:.05em;text-transform:uppercase">
+    <button class="link-download" id="btnActivate" style="border:0;cursor:pointer">▸ Ativar</button>
+  </div>
+  <p id="licenseError" style="color:var(--err);font-size:13px;min-height:18px"></p>
+  <p style="font-size:11.5px;color:var(--muted)">Não tem chave? <a href="https://qyvolive.com.br/argos-pro/vendas/" style="color:var(--accent)">Comprar aqui</a></p>
+</div>
+
 <main id="app" style="display:none">
   <!-- TAB PANEL: LIVE A -->
   <div class="tab-panel active" data-tab-panel="0"></div>
@@ -729,6 +740,15 @@ async function checkStatus() {
     const s = await api("/ping");
     if (!s.ok) throw new Error("ping fail");
     $("stApp").className = "status-chip on";
+    // Fase 11: verifica licença antes de mostrar painel
+    const lic = await api("/license/status");
+    if (!lic.active) {
+      $("gate").style.display = "none";
+      $("licenseGate").style.display = "";
+      $("app").style.display = "none";
+      return s;
+    }
+    $("licenseGate").style.display = "none";
     (s.slots || []).forEach((sl, i) => {
       state.slots[i].open = sl.chrome_open;
       state.slots[i].connected = sl.cdp_connected;
@@ -768,10 +788,35 @@ async function checkStatus() {
   } catch (e) {
     $("stApp").className = "status-chip off";
     $("gate").style.display = "";
+    $("licenseGate").style.display = "none";
     $("app").style.display = "none";
     return null;
   }
 }
+
+$("btnActivate")?.addEventListener("click", async () => {
+  const key = $("licenseKey").value.trim().toUpperCase();
+  const btn = $("btnActivate");
+  const errEl = $("licenseError");
+  errEl.textContent = "";
+  if (!key.startsWith("APR-")) { errEl.textContent = "Chave inválida — precisa começar com APR-"; return; }
+  btn.disabled = true; btn.textContent = "Ativando…";
+  try {
+    const r = await api("/license/activate", { key });
+    if (!r.ok) {
+      errEl.textContent = `Erro: ${r.reason || r.error || 'chave inválida'}`;
+    } else {
+      await refreshAll();
+    }
+  } catch (e) {
+    errEl.textContent = `Erro: ${e.message}`;
+  } finally {
+    btn.disabled = false; btn.textContent = "▸ Ativar";
+  }
+});
+$("licenseKey")?.addEventListener("keydown", (ev) => {
+  if (ev.key === "Enter") $("btnActivate").click();
+});
 
 // ─── RENDER LIVE PANELS ──────────────────────────────────────────────────────
 function renderLivePanels() {
