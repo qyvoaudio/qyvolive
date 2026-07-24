@@ -576,6 +576,16 @@ input[type="range"]{width:100%;accent-color:var(--slot-color,var(--accent))}
         </div>
 
         <div class="sec">
+          <div class="sec-label"><span class="bar"></span>Áudio (mic) <span class="extra" data-audio-status>padrão do sistema</span></div>
+          <select data-audio-select class="field"><option value="">— padrão do sistema —</option></select>
+          <div class="row">
+            <button class="btn ghost small" data-btn-reload-audio>⟳ Listar mics</button>
+            <button class="btn slot-color small" data-btn-save-audio>💾 Salvar</button>
+          </div>
+          <div style="font-size:10.5px;color:var(--muted);margin-top:4px">Precisa do Chrome aberto pra listar mics. Aplica na próxima captura.</div>
+        </div>
+
+        <div class="sec">
           <div class="sec-label"><span class="bar"></span>Proxy <span class="extra">opcional</span></div>
           <div class="field"><input type="text" data-p="proxy" placeholder="host:porta ou host:porta:user:pass"></div>
           <button class="btn ghost small" data-btn-save-proxy>Salvar proxy</button>
@@ -673,11 +683,24 @@ const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
 
 const state = {
   slots: [
-    { open: false, connected: false, tabs: [], appliedVideoId: null, proxy: null, liveConfig: {}, banners: [], videos: [] },
-    { open: false, connected: false, tabs: [], appliedVideoId: null, proxy: null, liveConfig: {}, banners: [], videos: [] },
+    { open: false, connected: false, tabs: [], appliedVideoId: null, proxy: null, liveConfig: {}, audioConfig: {}, audioDevices: [], banners: [], videos: [] },
+    { open: false, connected: false, tabs: [], appliedVideoId: null, proxy: null, liveConfig: {}, audioConfig: {}, audioDevices: [], banners: [], videos: [] },
   ],
   activeTab: "0",
 };
+
+function populateAudioSelect(slot) {
+  const panel = document.querySelector(`[data-tab-panel="${slot}"]`);
+  if (!panel) return;
+  const sel = panel.querySelector("[data-audio-select]");
+  const status = panel.querySelector("[data-audio-status]");
+  if (!sel) return;
+  const current = state.slots[slot].audioConfig?.device_id || "";
+  const devices = state.slots[slot].audioDevices || [];
+  sel.innerHTML = `<option value="">— padrão do sistema —</option>` +
+    devices.map(d => `<option value="${esc(d.id)}" ${d.id === current ? 'selected' : ''}>${esc(d.label)}</option>`).join("");
+  if (status) status.textContent = state.slots[slot].audioConfig?.device_label || "padrão do sistema";
+}
 
 // ─── LOG ─────────────────────────────────────────────────────────────────────
 function log(msg, cls = "info") {
@@ -712,8 +735,10 @@ async function checkStatus() {
       state.slots[i].appliedVideoId = sl.applied_video_id;
       state.slots[i].proxy = sl.proxy;
       state.slots[i].liveConfig = sl.live_config || {};
+      state.slots[i].audioConfig = sl.audio_config || {};
       state.slots[i].brainConfig = sl.brain_config || {};
       state.slots[i].brainRunning = !!sl.brain_running;
+      populateAudioSelect(String(i));
 
       const dot = $(`tabDot${i}`);
       if (dot) dot.className = "dot" + (sl.cdp_connected ? " on" : "");
@@ -869,6 +894,27 @@ function bindLivePanel(slot) {
     const proxy = q("[data-p='proxy']").value.trim() || null;
     const r = await api(`/proxy${sq(slot)}`, { proxy });
     r.ok ? log(`[Live ${label}] ✓ proxy salvo (aplica no próximo Abrir)`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+  });
+  q("[data-btn-reload-audio]")?.addEventListener("click", async () => {
+    const label = slotLabel(slot);
+    if (!state.slots[slot].connected) return log(`[Live ${label}] ✗ Chrome não conectado`, "err");
+    log(`[Live ${label}] ▸ listando mics`, "cmd");
+    const r = await api(`/audio-devices${sq(slot)}`);
+    if (!r.ok) return log(`[Live ${label}] ✗ ${r.error}`, "err");
+    state.slots[slot].audioDevices = r.devices || [];
+    populateAudioSelect(slot);
+    log(`[Live ${label}] ✓ ${r.devices.length} mic(s) encontrado(s)`, "ok");
+  });
+  q("[data-btn-save-audio]")?.addEventListener("click", async () => {
+    const label = slotLabel(slot);
+    const sel = q("[data-audio-select]");
+    const opt = sel.options[sel.selectedIndex];
+    const payload = {
+      device_id: sel.value || null,
+      device_label: sel.value ? opt.textContent : null,
+    };
+    const r = await api(`/audio-config${sq(slot)}`, payload);
+    r.ok ? log(`[Live ${label}] ✓ mic salvo: ${payload.device_label || 'padrão'}`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
   });
   q("[data-btn-save-live-config]")?.addEventListener("click", async () => {
     const label = slotLabel(slot);
