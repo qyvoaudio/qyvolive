@@ -584,6 +584,16 @@ input[type="range"]{width:100%;accent-color:var(--slot-color,var(--accent))}
             <input type="file" data-upl-banner accept="image/*" multiple>
           </label>
           <div class="banner-grid" data-banner-grid></div>
+          <div class="field-row" style="align-items:center">
+            <div class="field" style="margin-bottom:0">
+              <label>Trocar a cada</label>
+              <div style="display:flex;align-items:center;gap:6px">
+                <input type="number" min="1" max="120" value="3" data-banner-min style="width:60px;text-align:center">
+                <span style="font-size:12px;color:var(--muted-hi)">minutos</span>
+                <button class="btn ghost tiny" data-btn-save-banner-min>💾</button>
+              </div>
+            </div>
+          </div>
           <div class="row">
             <button class="btn slot-color small" data-btn-rot-start>▶ Iniciar rotação</button>
             <button class="btn ghost small" data-btn-rot-stop>■ Parar</button>
@@ -786,6 +796,7 @@ async function checkStatus() {
       }
       state.slots[i].liveConfig = sl.live_config || {};
       state.slots[i].audioConfig = sl.audio_config || {};
+      state.slots[i].bannerRotationMinutes = sl.banner_rotation_minutes || 3;
       state.slots[i].brainConfig = sl.brain_config || {};
       state.slots[i].brainRunning = !!sl.brain_running;
       populateAudioSelect(String(i));
@@ -1095,11 +1106,32 @@ function bindLivePanel(slot) {
     const label = slotLabel(slot);
     const btn = ev.currentTarget;
     if (!state.slots[slot].connected) return log(`[Live ${label}] ✗ Chrome não conectado`, "err");
+    const isStopMode = btn.dataset.mode === "stop";
+    if (isStopMode) {
+      // Modo encerrar
+      if (!confirm("Encerrar live agora?")) return;
+      btn.disabled = true;
+      btn.textContent = "▸ Encerrando…";
+      log(`[Live ${label}] ▸ ENCERRAR LIVE`, "cmd");
+      try {
+        const r = await api(`/tiktok/stop-live${sq(slot)}`, {});
+        if (r.ok) {
+          log(`[Live ${label}] ✓ "${r.clicked}" — ${r.note || ''}`, "ok");
+          btn.textContent = "▶ INICIAR LIVE";
+          btn.classList.remove("danger");
+          delete btn.dataset.mode;
+        } else {
+          log(`[Live ${label}] ✗ ${r.error}`, "err");
+          btn.textContent = "■ ENCERRAR LIVE";
+        }
+      } finally { btn.disabled = false; }
+      return;
+    }
+    // Modo iniciar
     if (!state.slots[slot].appliedVideoId) {
       if (!confirm("Nenhum vídeo aplicado — TikTok vai pedir tua webcam real. Continuar?")) return;
     }
     btn.disabled = true;
-    const orig = btn.textContent;
     btn.textContent = "▸ Iniciando…";
     log(`[Live ${label}] ▸ INICIAR LIVE no TikTok`, "cmd");
     try {
@@ -1108,17 +1140,18 @@ function bindLivePanel(slot) {
         log(`[Live ${label}] ✓ botão "${r.clicked}" clicado — ${r.note}`, "ok");
         btn.textContent = "✓ Live no ar!";
         btn.classList.add("danger");
-        setTimeout(() => { btn.textContent = "■ ENCERRAR LIVE"; }, 1500);
+        setTimeout(() => {
+          btn.textContent = "■ ENCERRAR LIVE";
+          btn.dataset.mode = "stop";
+        }, 1500);
       } else {
         log(`[Live ${label}] ✗ ${r.error || r.note}`, "err");
-        btn.textContent = orig;
+        btn.textContent = "▶ INICIAR LIVE";
       }
     } catch (e) {
       log(`[Live ${label}] ✗ ${e.message}`, "err");
-      btn.textContent = orig;
-    } finally {
-      btn.disabled = false;
-    }
+      btn.textContent = "▶ INICIAR LIVE";
+    } finally { btn.disabled = false; }
   });
   q("[data-btn-open-brain]")?.addEventListener("click", () => brainOpen(slot));
   q("[data-btn-start-brain]")?.addEventListener("click", async () => {
@@ -1150,6 +1183,13 @@ function bindLivePanel(slot) {
     if (r.cover?.ok) parts.push("capa: ok");
     else if (r.cover?.error) parts.push(`capa: ${r.cover.error}`);
     log(`[Live ${label}] ✓ aplicado — ${parts.join(" | ")}`, "ok");
+  });
+  q("[data-btn-save-banner-min]")?.addEventListener("click", async (ev) => {
+    const label = slotLabel(slot);
+    const minutes = parseInt(q("[data-banner-min]").value, 10) || 3;
+    const r = await api(`/banner-rotation-minutes${sq(slot)}`, { minutes });
+    if (r.ok) { log(`[Live ${label}] ✓ banner troca a cada ${minutes}min`, "ok"); flashSaved(ev.currentTarget, "✓"); }
+    else log(`[Live ${label}] ✗ ${r.error}`, "err");
   });
   q("[data-btn-rot-start]")?.addEventListener("click", async () => {
     const label = slotLabel(slot);
@@ -1204,24 +1244,23 @@ async function refreshBanners() {
         ? banners.map((b, i) => `
           <div class="banner-card ${b.id === curId ? 'playing' : ''}">
             <div class="banner-thumb"><img src="${API}/banners/${b.id}/file${sq(slot)}" alt=""></div>
-            <div style="display:flex;align-items:center;gap:4px;padding:4px 6px;font-size:10.5px;color:var(--muted);background:var(--bg-2)">
-              <input type="number" min="5" max="600" value="${b.interval_s || 60}" data-int="${b.id}" style="width:44px;padding:2px 4px;background:var(--bg);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:inherit;font-size:10.5px">
-              <span>seg</span>
-            </div>
             <div class="card-actions">
               <button data-apply="${b.id}">▸</button>
               <button class="danger" data-del="${b.id}">×</button>
             </div>
           </div>`).join("")
         : `<div style="grid-column:1/-1;color:var(--muted);font-size:10.5px;text-align:center;padding:8px">vazio — sobe imagem acima</div>`;
-      grid.querySelectorAll("[data-int]").forEach(inp => {
-        inp.addEventListener("change", async () => {
-          const id = inp.dataset.int;
-          const v = parseInt(inp.value, 10);
-          if (!v || v < 5) return;
-          await api(`/banners/${id}/update${sq(slot)}`, { interval_s: v });
-        });
-      });
+
+      // Popula input de intervalo de rotação (minutos)
+      const minInput = panel.querySelector("[data-banner-min]");
+      const savedMin = state.slots[slot].bannerRotationMinutes;
+      if (minInput && savedMin && !minInput.dataset.userTouched) {
+        minInput.value = savedMin;
+      }
+      if (minInput && !minInput.dataset.bound) {
+        minInput.dataset.bound = "1";
+        minInput.addEventListener("input", () => { minInput.dataset.userTouched = "1"; });
+      }
       grid.querySelectorAll("[data-apply]").forEach(b => {
         b.addEventListener("click", async () => {
           const r = await api(`/set-banner${sq(slot)}`, { banner_id: b.dataset.apply });
