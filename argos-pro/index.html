@@ -403,7 +403,7 @@ input[type="range"]{width:100%;accent-color:var(--slot-color,var(--accent))}
   <div class="tab-bar">
     <button class="tab active" data-tab="0"><span class="dot" id="tabDot0"></span>Live A</button>
     <button class="tab" data-tab="1"><span class="dot" id="tabDot1"></span>Live B</button>
-    <button class="tab" data-tab="config">⚙ Config</button>
+    <button class="tab" data-tab="config">📋 Log</button>
   </div>
 
   <div class="header-right">
@@ -424,42 +424,14 @@ input[type="range"]{width:100%;accent-color:var(--slot-color,var(--accent))}
   <div class="tab-panel active" data-tab-panel="0"></div>
   <!-- TAB PANEL: LIVE B -->
   <div class="tab-panel" data-tab-panel="1"></div>
-  <!-- TAB PANEL: CONFIG -->
+  <!-- TAB PANEL: LOG -->
   <div class="tab-panel" data-tab-panel="config">
-    <div class="config-grid">
-      <section class="col">
-        <div class="sec">
-          <div class="sec-label"><span class="bar"></span>Banners compartilhados <span class="extra">reusados por Live A e B</span></div>
-          <label class="upload-box" for="uplBannersGlobal">
-            📁 Sobe imagens (múltiplas)
-            <input type="file" id="uplBannersGlobal" accept="image/*" multiple>
-          </label>
-          <div class="banner-grid" id="bannersGlobalGrid"></div>
-          <div class="row" style="margin-top:8px">
-            <button class="btn ghost tiny" id="btnClearBannersGlobal" style="margin-left:auto">🗑 Limpar todos</button>
-          </div>
-        </div>
-      </section>
-
-      <section class="col">
-        <div class="sec">
-          <div class="sec-label"><span class="bar"></span>Vídeos <span class="extra">usados nas lives</span></div>
-          <label class="upload-box" for="uplVideosGlobal">
-            🎥 Sobe vídeos .mp4/.webm
-            <input type="file" id="uplVideosGlobal" accept="video/*" multiple>
-          </label>
-          <div class="banner-grid" id="videosGlobalGrid"></div>
-          <div class="row" style="margin-top:8px">
-            <button class="btn ghost tiny" id="btnClearVideosGlobal" style="margin-left:auto">🗑 Limpar todos</button>
-          </div>
-        </div>
-
-        <div class="sec">
-          <div class="sec-label"><span class="bar"></span>Log global</div>
-          <div class="log" id="log"></div>
-        </div>
-      </section>
-    </div>
+    <section class="col">
+      <div class="sec">
+        <div class="sec-label"><span class="bar"></span>Log global <span class="extra">todas as lives</span></div>
+        <div class="log" id="log" style="max-height:70vh"></div>
+      </div>
+    </section>
   </div>
 </main>
 
@@ -579,6 +551,10 @@ input[type="range"]{width:100%;accent-color:var(--slot-color,var(--accent))}
           <div class="video-thumb" data-video-preview>
             <div class="placeholder">nenhum vídeo aplicado</div>
           </div>
+          <label class="upload-box" data-upl-video-label>
+            🎥 Sobe vídeo (.mp4/.webm)
+            <input type="file" data-upl-video accept="video/*">
+          </label>
           <select data-video-select class="field"></select>
           <div class="row">
             <button class="btn slot-color small" data-btn-apply-video>Aplicar</button>
@@ -588,6 +564,10 @@ input[type="range"]{width:100%;accent-color:var(--slot-color,var(--accent))}
 
         <div class="sec">
           <div class="sec-label"><span class="bar"></span>Banners <span class="extra" data-banner-count>0</span></div>
+          <label class="upload-box" data-upl-banner-label>
+            📁 Sobe imagens (múltiplas)
+            <input type="file" data-upl-banner accept="image/*" multiple>
+          </label>
           <div class="banner-grid" data-banner-grid></div>
           <div class="row">
             <button class="btn slot-color small" data-btn-rot-start>▶ Iniciar rotação</button>
@@ -693,11 +673,9 @@ const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
 
 const state = {
   slots: [
-    { open: false, connected: false, tabs: [], appliedVideoId: null, proxy: null, liveConfig: {} },
-    { open: false, connected: false, tabs: [], appliedVideoId: null, proxy: null, liveConfig: {} },
+    { open: false, connected: false, tabs: [], appliedVideoId: null, proxy: null, liveConfig: {}, banners: [], videos: [] },
+    { open: false, connected: false, tabs: [], appliedVideoId: null, proxy: null, liveConfig: {}, banners: [], videos: [] },
   ],
-  banners: [],
-  videos: [],
   activeTab: "0",
 };
 
@@ -798,6 +776,45 @@ function bindLivePanel(slot) {
   });
   const coverSel = q("[data-lc='cover_banner_id']");
   if (coverSel) coverSel.addEventListener("change", () => { coverSel.dataset.userChanged = "1"; });
+
+  // Upload de banners por slot
+  q("[data-upl-banner]")?.addEventListener("change", async (ev) => {
+    const files = Array.from(ev.target.files || []);
+    if (!files.length) return;
+    const label = slotLabel(slot);
+    log(`[Live ${label}] ▸ subindo ${files.length} imagem(ns)`, "cmd");
+    for (const f of files) {
+      const fd = new FormData();
+      fd.append("file", f);
+      fd.append("interval_s", "60");
+      try {
+        const r = await fetch(`${API}/banners/upload${sq(slot)}`, { method: "POST", body: fd });
+        const j = await r.json();
+        j.ok ? log(`[Live ${label}] ✓ ${f.name}`, "ok") : log(`[Live ${label}] ✗ ${f.name}: ${j.error}`, "err");
+      } catch (e) { log(`[Live ${label}] ✗ ${f.name}: ${e.message}`, "err"); }
+    }
+    ev.target.value = "";
+    await refreshBanners();
+  });
+
+  // Upload de vídeo por slot
+  q("[data-upl-video]")?.addEventListener("change", async (ev) => {
+    const files = Array.from(ev.target.files || []);
+    if (!files.length) return;
+    const label = slotLabel(slot);
+    for (const f of files) {
+      log(`[Live ${label}] ▸ subindo vídeo: ${f.name} (${(f.size/1024/1024).toFixed(1)}MB)`, "cmd");
+      const fd = new FormData();
+      fd.append("file", f);
+      try {
+        const r = await fetch(`${API}/videos/upload${sq(slot)}`, { method: "POST", body: fd });
+        const j = await r.json();
+        j.ok ? log(`[Live ${label}] ✓ vídeo salvo`, "ok") : log(`[Live ${label}] ✗ ${j.error}`, "err");
+      } catch (e) { log(`[Live ${label}] ✗ ${f.name}: ${e.message}`, "err"); }
+    }
+    ev.target.value = "";
+    await refreshVideos();
+  });
 
   q("[data-btn-open-chrome]")?.addEventListener("click", async () => {
     const label = slotLabel(slot);
@@ -933,52 +950,34 @@ async function refreshTabs(slot) {
 
 async function refreshBanners() {
   try {
-    const r = await api("/banners");
-    if (!r.ok) return;
-    state.banners = r.banners;
+    // Carrega banners de cada slot separadamente
+    const perSlot = await Promise.all(["0", "1"].map(async s => {
+      const r = await api(`/banners${sq(s)}`);
+      return r.ok ? r.banners : [];
+    }));
+    ["0", "1"].forEach((slot, i) => { state.slots[slot].banners = perSlot[i]; });
 
-    // Config tab: banner grid global
-    const globalGrid = $("bannersGlobalGrid");
-    if (globalGrid) {
-      globalGrid.innerHTML = state.banners.length
-        ? state.banners.map((b, i) => `
-          <div class="banner-card">
-            <div class="banner-thumb"><img src="${API}/banners/${b.id}/file" alt=""></div>
-            <div class="card-actions">
-              <button class="danger" data-glo-del="${b.id}">×</button>
-            </div>
-          </div>`).join("")
-        : `<div style="grid-column:1/-1;color:var(--muted);font-size:11px;text-align:center;padding:12px">nenhum banner ainda</div>`;
-      globalGrid.querySelectorAll("[data-glo-del]").forEach(b => {
-        b.addEventListener("click", async () => {
-          if (!confirm("Remover banner?")) return;
-          await fetch(`${API}/banners/${b.dataset.gloDel}`, { method: "DELETE" });
-          await refreshBanners();
-        });
-      });
-    }
-
-    // Rotation status por slot
     const rotStatuses = await Promise.all(["0", "1"].map(s => api(`/rotation/status${sq(s)}`)));
-    ["0", "1"].forEach(async (slot, i) => {
+    ["0", "1"].forEach((slot, i) => {
       const rot = rotStatuses[i];
+      const banners = state.slots[slot].banners;
       const curId = rot.active ? rot.current_banner_id : null;
       const panel = document.querySelector(`[data-tab-panel="${slot}"]`);
       if (!panel) return;
       const grid = panel.querySelector("[data-banner-grid]");
       const count = panel.querySelector("[data-banner-count]");
-      if (count) count.textContent = `${state.banners.length} · ${rot.active ? '▶ girando' : 'parado'}`;
+      if (count) count.textContent = `${banners.length} · ${rot.active ? '▶ girando' : 'parado'}`;
       if (!grid) return;
-      grid.innerHTML = state.banners.length
-        ? state.banners.map((b, i) => `
+      grid.innerHTML = banners.length
+        ? banners.map((b, i) => `
           <div class="banner-card ${b.id === curId ? 'playing' : ''}">
-            <div class="banner-thumb"><img src="${API}/banners/${b.id}/file" alt=""></div>
+            <div class="banner-thumb"><img src="${API}/banners/${b.id}/file${sq(slot)}" alt=""></div>
             <div class="card-actions">
               <button data-apply="${b.id}">▸</button>
               <button class="danger" data-del="${b.id}">×</button>
             </div>
           </div>`).join("")
-        : `<div style="grid-column:1/-1;color:var(--muted);font-size:10.5px;text-align:center;padding:8px">vazio — vai em ⚙ Config pra subir</div>`;
+        : `<div style="grid-column:1/-1;color:var(--muted);font-size:10.5px;text-align:center;padding:8px">vazio — sobe imagem acima</div>`;
       grid.querySelectorAll("[data-apply]").forEach(b => {
         b.addEventListener("click", async () => {
           const r = await api(`/set-banner${sq(slot)}`, { banner_id: b.dataset.apply });
@@ -988,7 +987,7 @@ async function refreshBanners() {
       grid.querySelectorAll("[data-del]").forEach(b => {
         b.addEventListener("click", async () => {
           if (!confirm("Remover banner?")) return;
-          await fetch(`${API}/banners/${b.dataset.del}`, { method: "DELETE" });
+          await fetch(`${API}/banners/${b.dataset.del}${sq(slot)}`, { method: "DELETE" });
           await refreshBanners();
         });
       });
@@ -998,33 +997,13 @@ async function refreshBanners() {
 
 async function refreshVideos() {
   try {
-    const r = await api("/videos");
-    if (!r.ok) return;
-    state.videos = r.videos;
+    const perSlot = await Promise.all(["0", "1"].map(async s => {
+      const r = await api(`/videos${sq(s)}`);
+      return r.ok ? r.videos : [];
+    }));
+    ["0", "1"].forEach((slot, i) => { state.slots[slot].videos = perSlot[i]; });
 
-    // Config tab: video grid global
-    const globalGrid = $("videosGlobalGrid");
-    if (globalGrid) {
-      globalGrid.innerHTML = state.videos.length
-        ? state.videos.map((v, i) => `
-          <div class="banner-card">
-            <div class="banner-thumb"><video src="${API}/videos/${v.id}/file" muted></video></div>
-            <div style="padding:4px 6px;font-size:9.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(v.original_name)}</div>
-            <div class="card-actions">
-              <button class="danger" data-glo-vid-del="${v.id}">×</button>
-            </div>
-          </div>`).join("")
-        : `<div style="grid-column:1/-1;color:var(--muted);font-size:11px;text-align:center;padding:12px">nenhum vídeo ainda</div>`;
-      globalGrid.querySelectorAll("[data-glo-vid-del]").forEach(b => {
-        b.addEventListener("click", async () => {
-          if (!confirm("Remover vídeo?")) return;
-          await fetch(`${API}/videos/${b.dataset.gloVidDel}`, { method: "DELETE" });
-          await refreshVideos();
-        });
-      });
-    }
-
-    // Popula dropdown de capa (cover_banner_id) usando banners como opções
+    // Popula dropdown de capa (cover_banner_id) usando banners DO PRÓPRIO SLOT
     ["0", "1"].forEach(slot => {
       const panel = document.querySelector(`[data-tab-panel="${slot}"]`);
       if (!panel) return;
@@ -1033,9 +1012,8 @@ async function refreshVideos() {
         const currentCover = state.slots[slot].liveConfig?.cover_banner_id || "";
         const savedValue = coverSel.dataset.userChanged ? coverSel.value : currentCover;
         coverSel.innerHTML = `<option value="">— sem capa —</option>` +
-          state.banners.map(b => `<option value="${b.id}" ${b.id === savedValue ? 'selected' : ''}>${esc(b.original_name)}</option>`).join("");
+          state.slots[slot].banners.map(b => `<option value="${b.id}" ${b.id === savedValue ? 'selected' : ''}>${esc(b.original_name)}</option>`).join("");
       }
-      // Popula título e descrição do backend (se usuário ainda não editou)
       const titleInput = panel.querySelector("[data-lc='title']");
       const descInput = panel.querySelector("[data-lc='description']");
       if (titleInput && !titleInput.dataset.userTouched) titleInput.value = state.slots[slot].liveConfig?.title || "";
@@ -1049,21 +1027,21 @@ async function refreshVideos() {
       const sel = panel.querySelector("[data-video-select]");
       const status = panel.querySelector("[data-video-status]");
       const preview = panel.querySelector("[data-video-preview]");
+      const videos = state.slots[slot].videos;
       const applied = state.slots[slot].appliedVideoId;
-      const appliedVideo = state.videos.find(v => v.id === applied);
+      const appliedVideo = videos.find(v => v.id === applied);
       if (sel) {
         sel.innerHTML = `<option value="">— escolhe vídeo —</option>` +
-          state.videos.map(v => `<option value="${v.id}" ${v.id === applied ? 'selected' : ''}>${esc(v.original_name)}</option>`).join("");
+          videos.map(v => `<option value="${v.id}" ${v.id === applied ? 'selected' : ''}>${esc(v.original_name)}</option>`).join("");
       }
       if (status) status.textContent = appliedVideo ? esc(appliedVideo.original_name) : "nenhum";
       if (preview) {
         if (appliedVideo) {
-          preview.innerHTML = `<video src="${API}/videos/${appliedVideo.id}/file" muted autoplay loop playsinline></video><span class="live-badge">${slotLabel(slot)}</span>`;
+          preview.innerHTML = `<video src="${API}/videos/${appliedVideo.id}/file${sq(slot)}" muted autoplay loop playsinline></video><span class="live-badge">${slotLabel(slot)}</span>`;
         } else {
           preview.innerHTML = `<div class="placeholder">nenhum vídeo aplicado</div>`;
         }
       }
-      // Preenche campo proxy salvo
       const proxyInput = panel.querySelector("[data-p='proxy']");
       if (proxyInput && state.slots[slot].proxy && !proxyInput.dataset.userTouched) {
         proxyInput.value = state.slots[slot].proxy;
@@ -1071,48 +1049,6 @@ async function refreshVideos() {
     });
   } catch (e) {}
 }
-
-// ─── UPLOADS ─────────────────────────────────────────────────────────────────
-async function uploadFiles(files, endpoint, kind) {
-  log(`▸ subindo ${files.length} ${kind}(s)`, "cmd");
-  for (const f of files) {
-    const fd = new FormData();
-    fd.append("file", f);
-    if (endpoint.includes("banners")) fd.append("interval_s", "60");
-    try {
-      const r = await fetch(`${API}${endpoint}`, { method: "POST", body: fd });
-      const j = await r.json();
-      j.ok ? log(`✓ ${f.name}`, "ok") : log(`✗ ${f.name}: ${j.error}`, "err");
-    } catch (e) { log(`✗ ${f.name}: ${e.message}`, "err"); }
-  }
-}
-
-$("uplBannersGlobal")?.addEventListener("change", async (ev) => {
-  const files = Array.from(ev.target.files || []);
-  if (!files.length) return;
-  await uploadFiles(files, "/banners/upload", "imagem");
-  ev.target.value = "";
-  await refreshBanners();
-});
-$("uplVideosGlobal")?.addEventListener("change", async (ev) => {
-  const files = Array.from(ev.target.files || []);
-  if (!files.length) return;
-  await uploadFiles(files, "/videos/upload", "vídeo");
-  ev.target.value = "";
-  await refreshVideos();
-});
-$("btnClearBannersGlobal")?.addEventListener("click", async () => {
-  if (!confirm("Remover TODOS os banners?")) return;
-  const r = await api("/banners/clear", {});
-  r.ok ? log("✓ banners removidos", "ok") : log(`✗ ${r.error}`, "err");
-  await refreshBanners();
-});
-$("btnClearVideosGlobal")?.addEventListener("click", async () => {
-  if (!confirm("Remover TODOS os vídeos?")) return;
-  const r = await api("/videos/clear", {});
-  r.ok ? log("✓ vídeos removidos", "ok") : log(`✗ ${r.error}`, "err");
-  await refreshVideos();
-});
 
 // ─── TABS ────────────────────────────────────────────────────────────────────
 $$(".tab").forEach(btn => {
