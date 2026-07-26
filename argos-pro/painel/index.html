@@ -648,7 +648,15 @@ input[type="range"]{width:100%;accent-color:var(--slot-color,var(--accent))}
         </div>
 
         <div class="sec">
-          <div class="sec-label"><span class="bar"></span>Monitor da Live <span class="extra">snapshot ao vivo</span></div>
+          <div class="sec-label"><span class="bar"></span>Preview da live <span class="extra">o que TikTok vai receber</span></div>
+          <div class="monitor-box" data-preview-live>
+            <div class="placeholder">Aplica um vídeo pra ver o preview</div>
+          </div>
+          <div style="font-size:10.5px;color:var(--muted);margin-top:4px">Toca em loop antes mesmo de iniciar a live — confirma se tá tudo certo.</div>
+        </div>
+
+        <div class="sec">
+          <div class="sec-label"><span class="bar"></span>Chrome ao vivo <span class="extra">snapshot 3s</span></div>
           <div class="monitor-box" data-monitor>
             <div class="placeholder">Aperta 📷 Snap acima pra ver o Chrome</div>
           </div>
@@ -1323,6 +1331,23 @@ async function refreshVideos() {
           preview.innerHTML = `<video src="${API}/videos/${appliedVideo.id}/file${sq(slot)}" muted autoplay loop playsinline></video><span class="live-badge">${slotLabel(slot)}</span>`;
         } else {
           preview.innerHTML = `<div class="placeholder">nenhum vídeo aplicado</div>`;
+        }
+      }
+      // v0.10: preview grande da live (rola em loop antes de iniciar)
+      const previewLive = panel.querySelector("[data-preview-live]");
+      if (previewLive) {
+        if (appliedVideo) {
+          const src = `${API}/videos/${appliedVideo.id}/file${sq(slot)}`;
+          // Só re-renderiza se mudou o vídeo (evita re-load a cada refresh)
+          if (previewLive.dataset.videoId !== appliedVideo.id) {
+            previewLive.dataset.videoId = appliedVideo.id;
+            previewLive.innerHTML = `<video src="${src}" muted autoplay loop playsinline style="width:100%;height:100%;object-fit:contain;background:#000"></video>`;
+          }
+        } else {
+          if (previewLive.dataset.videoId) {
+            previewLive.dataset.videoId = "";
+            previewLive.innerHTML = `<div class="placeholder">Aplica um vídeo pra ver o preview</div>`;
+          }
         }
       }
       const proxyInput = panel.querySelector("[data-p='proxy']");
