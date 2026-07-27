@@ -628,6 +628,10 @@ input[type="range"]{width:100%;accent-color:var(--slot-color,var(--accent))}
             <button class="btn ghost small" data-btn-refresh-tabs>⟳ Abas</button>
             <button class="btn ghost small" data-btn-screenshot>📷 Snap</button>
           </div>
+          <div class="row" style="margin-top:6px">
+            <button class="btn ghost small" data-btn-tiktok-login title="Abre Chrome sem CDP pra fazer login no TikTok via QR — usa 1x por conta, depois só 'Abrir Chrome'">🔑 Conectar TikTok (login QR)</button>
+          </div>
+          <div style="font-size:10.5px;color:var(--muted);margin-top:4px">1º uso: clica "Conectar TikTok", escaneia QR, fecha o Chrome. Sessão salva no perfil desta live.</div>
           <div class="tab-list" data-tab-list></div>
         </div>
 
@@ -1016,6 +1020,17 @@ function bindLivePanel(slot) {
     const label = slotLabel(slot);
     const r = await api(`/close-chrome${sq(slot)}`, {});
     r.ok ? log(`[Live ${label}] ✓ Chrome fechado`, "ok") : log(`[Live ${label}] ✗ ${r.error}`, "err");
+    await refreshAll();
+  });
+  q("[data-btn-tiktok-login]")?.addEventListener("click", async () => {
+    const label = slotLabel(slot);
+    log(`[Live ${label}] 🔑 abrindo Chrome sem CDP pra login TikTok`, "cmd");
+    const r = await api(`/tiktok/login${sq(slot)}`, {});
+    if (r.ok) {
+      log(`[Live ${label}] ✓ Chrome de login aberto — escaneia o QR e FECHA o Chrome quando terminar. A sessão fica salva.`, "ok");
+    } else {
+      log(`[Live ${label}] ✗ ${r.error}`, "err");
+    }
     await refreshAll();
   });
   q("[data-btn-refresh-tabs]")?.addEventListener("click", () => refreshTabs(slot));
