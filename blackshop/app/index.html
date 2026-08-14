@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Black Shop — Painel</title>
+<link rel="icon" type="image/svg+xml" href="../assets/blackshop_symbol.svg">
+<link rel="apple-touch-icon" href="../assets/blackshop_app_icon_1024.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
@@ -69,14 +71,7 @@
 <body>
 <div class="wrap">
   <header>
-    <svg class="logo" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-      <rect width="48" height="48" rx="12" fill="#14151A"/>
-      <path d="M24 9.5c-6.9 0-12.5 4.9-12.5 11 0 3.6 2 6.8 5 8.8v6.2l5.4-3.2c.7.1 1.4.2 2.1.2 6.9 0 12.5-4.9 12.5-11s-5.6-11-12.5-11z" fill="#fff"/>
-      <path d="M20.5 20.5v-1.8a3.5 3.5 0 017 0v1.8" stroke="#14151A" stroke-width="1.8" fill="none" stroke-linecap="round"/>
-      <rect x="18.2" y="19.6" width="11.6" height="8.6" rx="2" fill="#14151A"/>
-      <circle cx="22" cy="23" r="0.9" fill="#FF1F8E"/><circle cx="26" cy="23" r="0.9" fill="#FF1F8E"/>
-      <path d="M22 25.4c.6.6 1.4.9 2 .9s1.4-.3 2-.9" stroke="#FF1F8E" stroke-width="0.9" fill="none" stroke-linecap="round"/>
-    </svg>
+    <img class="logo" src="../assets/blackshop_symbol.svg" alt="Blackshop">
     <div>
       <h1>Black<span>Shop</span></h1>
       <small>respostas automáticas · Instagram &amp; Facebook</small>
@@ -149,7 +144,13 @@
               </select></div>
             <div><label>Tipo de match</label>
               <select id="r-match"><option value="contains">contém</option><option value="exact">exato</option><option value="starts_with">começa com</option></select></div>
-            <div><label>Prioridade</label><input id="r-priority" type="number" value="100"></div>
+            <div><label>Prioridade (menor responde primeiro se 2 regras baterem)</label>
+              <select id="r-priority">
+                <option value="1">1 (máxima)</option><option value="2">2</option><option value="3">3</option>
+                <option value="4">4</option><option value="5" selected>5</option><option value="6">6</option>
+                <option value="7">7</option><option value="8">8</option><option value="9">9</option>
+                <option value="10">10 (mínima)</option>
+              </select></div>
           </div>
           <label>Gatilho (palavra ou frase)</label>
           <input id="r-trigger" placeholder="ex: eu quero">
@@ -224,6 +225,9 @@
         </div>
         <label>Tom de voz / instruções da conta</label>
         <textarea id="ai-prompt" placeholder="Ex: Você é a assistente da Black Shop, loja de ... Responda curto, simpático, com emoji."></textarea>
+        <label>Sua chave da API da Anthropic <span class="muted" id="ai-key-status">(nenhuma cadastrada)</span></label>
+        <input id="ai-key" type="password" placeholder="sk-ant-... — crie a sua em console.anthropic.com">
+        <span class="muted">A IA usa a sua chave e o custo é seu (centavos por resposta). Deixe em branco pra manter a atual; escreva "remover" pra apagar.</span>
         <div class="spacer"></div>
         <button onclick="saveAi()">Salvar IA</button>
         <span class="muted"> · a IA nunca inventa preço, prazo ou promessa</span>
@@ -456,7 +460,7 @@ async function addRule() {
     reply_variations: replyLines.length > 1 ? replyLines : null,
     dm_text: $('r-dm-mode').value === 'text' ? ($('r-dm').value.trim() || null) : null,
     flow_id: $('r-dm-mode').value === 'text' ? null : $('r-dm-mode').value,
-    priority: Number($('r-priority').value) || 100,
+    priority: Number($('r-priority').value) || 5,
     media_id: surface === 'comment' && $('r-media-mode').value === 'one' ? MEDIA_SEL : null,
   };
   if (EDITING) {
@@ -477,7 +481,7 @@ function editRule(id) {
   $('r-surface').value = r.surface;
   syncActionOptions();
   $('r-match').value = r.match_type;
-  $('r-priority').value = r.priority;
+  $('r-priority').value = Math.min(Math.max(Number(r.priority) || 5, 1), 10); // regras antigas (ex: 100) viram 10
   $('r-trigger').value = r.trigger_text;
   if (r.surface !== 'dm') $('r-action').value = r.action;
   $('r-reply').value = ruleReplies(r).join('\n');
@@ -499,7 +503,7 @@ function editRule(id) {
 function cancelEdit() {
   EDITING = null;
   $('r-trigger').value = ''; $('r-reply').value = ''; $('r-dm').value = '';
-  $('r-priority').value = 100;
+  $('r-priority').value = 5;
   $('r-media-mode').value = 'any';
   $('r-dm-mode').value = 'text';
   dmModeChanged();
@@ -527,7 +531,7 @@ async function aiVariations() {
   if (!base) { toast('escreve pelo menos uma resposta primeiro', true); return; }
   toast('gerando variações...');
   try {
-    const data = await api('/ai/variations', { method: 'POST', body: JSON.stringify({ text: base }) });
+    const data = await api(`/accounts/${SELECTED.id}/ai-variations`, { method: 'POST', body: JSON.stringify({ text: base }) });
     const existing = $('r-reply').value.split('\n').map((s) => s.trim()).filter(Boolean);
     const merged = [...new Set([...existing, ...data.variations])];
     $('r-reply').value = merged.join('\n');
@@ -693,18 +697,22 @@ async function loadAi() {
   $('ai-dm').checked = !!ai.dm_enabled;
   $('ai-comment').checked = !!ai.comment_enabled;
   $('ai-prompt').value = ai.system_prompt || '';
+  $('ai-key').value = '';
+  $('ai-key-status').textContent = ai.has_key ? `(cadastrada: ${ai.key_preview})` : '(nenhuma cadastrada)';
 }
 
 async function saveAi() {
-  await api(`/accounts/${SELECTED.id}/ai`, {
-    method: 'PUT',
-    body: JSON.stringify({
-      dm_enabled: $('ai-dm').checked,
-      comment_enabled: $('ai-comment').checked,
-      system_prompt: $('ai-prompt').value.trim() || null,
-    }),
-  });
+  const keyInput = $('ai-key').value.trim();
+  const body = {
+    dm_enabled: $('ai-dm').checked,
+    comment_enabled: $('ai-comment').checked,
+    system_prompt: $('ai-prompt').value.trim() || null,
+  };
+  if (keyInput === 'remover') body.api_key = null;
+  else if (keyInput) body.api_key = keyInput;
+  await api(`/accounts/${SELECTED.id}/ai`, { method: 'PUT', body: JSON.stringify(body) });
   toast('IA atualizada');
+  loadAi();
 }
 
 // ---- eventos ----

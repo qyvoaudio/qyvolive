@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 420" role="img">
+<title>Blackshop — logotipo horizontal</title>
+<defs>
+  <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#FF3FAE"/>
+    <stop offset="48%" stop-color="#A63CFF"/>
+    <stop offset="100%" stop-color="#079BFF"/>
+  </linearGradient>
+  <linearGradient id="wordg" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#D53BEE"/>
+    <stop offset="100%" stop-color="#079BFF"/>
+  </linearGradient>
+</defs>
+<g transform="translate(30,-40) scale(.88)">
+  <path d="M154 88 H292 C366 88 414 126 414 190 C414 234 390 264 348 280
+           C394 295 422 330 422 376 C422 447 368 476 292 476 H154
+           C136 476 122 462 122 444 C122 426 136 412 154 412 H288
+           C330 412 354 398 354 366 C354 334 329 320 286 320 H204
+           C186 320 172 306 172 288 C172 270 186 256 204 256 H284
+           C324 256 346 242 346 211 C346 181 324 168 284 168 H154
+           C136 168 122 154 122 136 C122 102 136 88 154 88 Z" fill="url(#g)"/>
+  <circle cx="108" cy="288" r="34" fill="url(#g)"/>
+  <rect x="108" y="268" width="92" height="40" rx="20" fill="url(#g)"/>
+  <circle cx="108" cy="444" r="34" fill="url(#g)"/>
+  <rect x="108" y="424" width="78" height="40" rx="20" fill="url(#g)"/>
+</g>
+<text x="465" y="260" font-family="Arial, Helvetica, sans-serif" font-size="154" font-weight="700" letter-spacing="8">
+  <tspan fill="#161821">BLACK</tspan><tspan fill="url(#wordg)">SHOP</tspan>
+</text>
+</svg>
