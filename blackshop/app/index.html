@@ -140,7 +140,9 @@
           <div class="row">
             <div><label>Onde</label>
               <select id="r-surface" onchange="syncActionOptions()">
-                <option value="comment">Comentário</option><option value="dm">DM</option>
+                <option value="comment">Comentário</option>
+                <option value="dm">DM</option>
+                <option value="story">Resposta a story</option>
               </select></div>
             <div><label>Tipo de match</label>
               <select id="r-match"><option value="contains">contém</option><option value="exact">exato</option><option value="starts_with">começa com</option></select></div>
@@ -234,6 +236,19 @@
           </div>
         </div>
         <span class="muted">O Instagram permite resposta manual até 24h depois da última mensagem da pessoa.</span>
+      </div>
+
+      <div class="card">
+        <h2>Contatos capturados
+          <span style="float:right">
+            <button class="ghost" style="padding:5px 12px" onclick="exportContacts()">⬇️ exportar CSV</button>
+            <button class="ghost" style="padding:5px 12px" onclick="loadContacts()">atualizar</button>
+          </span>
+        </h2>
+        <table id="contacts-table">
+          <thead><tr><th>Contato</th><th>E-mail</th><th>Capturado em</th></tr></thead>
+          <tbody></tbody>
+        </table>
       </div>
 
       <div class="card">
@@ -386,7 +401,7 @@ async function selectAccount(id) {
   $('wa-link').value = SELECTED.wa_group_link || '';
   $('sel-name').textContent = SELECTED.username ? '@' + SELECTED.username : SELECTED.platform;
   $('account-panels').style.display = 'block';
-  await Promise.all([loadRules(), loadFlows(), loadAi(), loadEvents(), loadConversations()]);
+  await Promise.all([loadRules(), loadFlows(), loadAi(), loadEvents(), loadConversations(), loadContacts()]);
 }
 
 // ---- publicações (seletor) ----
@@ -419,14 +434,15 @@ function pickMedia(id) {
 
 // ---- regras ----
 function syncActionOptions() {
-  const dm = $('r-surface').value === 'dm';
-  $('r-action').innerHTML = dm
-    ? '<option value="dm_reply">Responder a DM</option>'
+  const surface = $('r-surface').value;
+  const dmLike = surface === 'dm' || surface === 'story';
+  $('r-action').innerHTML = dmLike
+    ? `<option value="dm_reply">${surface === 'story' ? 'Responder no direct' : 'Responder a DM'}</option>`
     : `<option value="both">Responder comentário + mandar DM</option>
        <option value="reply_comment">Só responder o comentário</option>
        <option value="private_reply">Só mandar DM (private reply)</option>`;
-  $('r-reply-wrap').style.display = dm ? 'none' : 'block';
-  $('r-media-wrap').style.display = dm ? 'none' : 'block';
+  $('r-reply-wrap').style.display = dmLike ? 'none' : 'block';
+  $('r-media-wrap').style.display = dmLike ? 'none' : 'block';
 }
 
 const ACTION_LABEL = {
@@ -447,7 +463,7 @@ async function loadRules() {
   RULES = rules;
   $('rules-table').querySelector('tbody').innerHTML = rules.length ? rules.map(r => `
     <tr style="${r.active ? '' : 'opacity:.45'}">
-      <td><span class="pill">${r.surface === 'dm' ? 'DM' : 'comentário'}</span></td>
+      <td><span class="pill">${r.surface === 'dm' ? 'DM' : r.surface === 'story' ? 'story' : 'comentário'}</span></td>
       <td><b>${esc(r.trigger_text)}</b> <span class="muted">(${r.match_type})</span>
           ${ruleReplies(r).length > 1 ? ` <span class="pill rule">${ruleReplies(r).length} variações</span>` : ''}
           ${r.media_id ? ' <span class="pill rule">📍 publicação específica</span>' : ''}
@@ -748,6 +764,30 @@ async function sendChat() {
   });
   $('chat-text').value = '';
   openThread(CHAT_CONTACT);
+}
+
+// ---- contatos ----
+let CONTACTS = [];
+
+async function loadContacts() {
+  CONTACTS = await api(`/accounts/${SELECTED.id}/contacts`);
+  $('contacts-table').querySelector('tbody').innerHTML = CONTACTS.length ? CONTACTS.map(c => `
+    <tr>
+      <td>${esc(c.username ? '@' + c.username : 'contato ' + c.contact_id.slice(-6))}</td>
+      <td>${c.email ? `<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>` : '<span class="muted">—</span>'}</td>
+      <td class="muted">${c.created_at}</td>
+    </tr>`).join('') : '<tr><td colspan="3" class="muted">Nenhum contato capturado ainda — os botões "pedir e-mail" das sequências alimentam essa lista.</td></tr>';
+}
+
+function exportContacts() {
+  if (!CONTACTS.length) { toast('nada pra exportar ainda', true); return; }
+  const rows = [['usuario', 'email', 'capturado_em'],
+    ...CONTACTS.map(c => [c.username || '', c.email || '', c.created_at])];
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = `contatos-blackshop-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
 }
 
 // ---- IA ----
