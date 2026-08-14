@@ -71,8 +71,14 @@
     <div class="card">
       <h2>Contas conectadas</h2>
       <div id="accounts"></div>
+      <div class="mt">
+        <a href="https://black-shop.caroldepaz.workers.dev/oauth/start" style="text-decoration:none">
+          <button>📸 Conectar Instagram</button>
+        </a>
+        <span class="muted"> · autorização oficial do Meta, 2 cliques</span>
+      </div>
       <details class="mt">
-        <summary class="muted" style="cursor:pointer">+ adicionar conta</summary>
+        <summary class="muted" style="cursor:pointer">+ adicionar conta manualmente (avançado)</summary>
         <div class="row">
           <div><label>Plataforma</label>
             <select id="acc-platform"><option value="instagram">Instagram</option><option value="facebook">Facebook</option></select></div>
@@ -326,6 +332,16 @@ function esc(s) {
 
 syncActionOptions();
 boot();
+
+// Feedback do fluxo "Conectar Instagram" (OAuth)
+const params = new URLSearchParams(location.search);
+if (params.get('connected')) {
+  toast('@' + params.get('connected') + ' conectada com sucesso!');
+  history.replaceState(null, '', location.pathname);
+} else if (params.get('error')) {
+  toast('Erro ao conectar: ' + params.get('error'), true);
+  history.replaceState(null, '', location.pathname);
+}
 </script>
 </body>
 </html>
