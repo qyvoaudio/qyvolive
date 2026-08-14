@@ -59,12 +59,25 @@
   <header><h1><b>Black</b> Shop</h1><small>respostas automáticas · Instagram &amp; Facebook</small></header>
 
   <div class="card" id="login-card">
-    <h2>Acesso</h2>
-    <label>Admin token</label>
+    <h2>Entrar</h2>
     <div class="row">
-      <input id="token" type="password" placeholder="cole o token de admin">
-      <button onclick="saveToken()" style="flex:0 0 auto">Entrar</button>
+      <div><label>E-mail</label><input id="l-email" type="email" placeholder="voce@email.com"></div>
+      <div><label>Senha</label><input id="l-pass" type="password" placeholder="mínimo 8 caracteres"></div>
     </div>
+    <div id="signup-extra" style="display:none">
+      <label>Seu nome (ou da loja)</label><input id="l-name" placeholder="ex: Black Shop da Carol">
+    </div>
+    <div class="spacer"></div>
+    <button id="l-submit" onclick="doAuth()">Entrar</button>
+    <button class="ghost" id="l-toggle" onclick="toggleSignup()">Criar conta nova</button>
+    <details class="mt">
+      <summary class="muted" style="cursor:pointer">acesso admin</summary>
+      <label>Admin token</label>
+      <div class="row">
+        <input id="token" type="password" placeholder="cole o token de admin">
+        <button onclick="saveToken()" style="flex:0 0 auto">Entrar</button>
+      </div>
+    </details>
   </div>
 
   <div id="app" style="display:none">
@@ -72,7 +85,7 @@
       <h2>Contas conectadas</h2>
       <div id="accounts"></div>
       <div class="mt">
-        <a href="https://black-shop.caroldepaz.workers.dev/oauth/start" style="text-decoration:none">
+        <a id="connect-link" href="#" style="text-decoration:none">
           <button>📸 Conectar Instagram</button>
         </a>
         <span class="muted"> · autorização oficial do Meta, 2 cliques</span>
@@ -121,8 +134,11 @@
             <option value="reply_comment">Só responder o comentário</option>
             <option value="private_reply">Só mandar DM (private reply)</option>
           </select>
-          <div id="r-reply-wrap"><label>Resposta pública (comentário)</label>
-            <textarea id="r-reply" placeholder="Te chamei no direct! 💬"></textarea></div>
+          <div id="r-reply-wrap">
+            <label>Respostas públicas — uma por linha, o robô sorteia uma a cada comentário (evita cair como spam)</label>
+            <textarea id="r-reply" placeholder="Te chamei no direct! 💬&#10;Olha o direct! Te mandei mensagem 😉&#10;Corre lá no direct que te respondi 💬"></textarea>
+            <button class="ghost" style="margin-top:6px;padding:5px 12px" onclick="aiVariations()">✨ 5 variações com IA</button>
+          </div>
           <div id="r-dm-wrap"><label>Texto da DM</label>
             <textarea id="r-dm" placeholder="Oi! Aqui está o link: ..."></textarea></div>
           <div class="spacer"></div>
@@ -197,6 +213,47 @@ function saveToken() {
   boot();
 }
 
+let SIGNUP_MODE = false;
+function toggleSignup() {
+  SIGNUP_MODE = !SIGNUP_MODE;
+  $('signup-extra').style.display = SIGNUP_MODE ? 'block' : 'none';
+  $('l-submit').textContent = SIGNUP_MODE ? 'Criar minha conta' : 'Entrar';
+  $('l-toggle').textContent = SIGNUP_MODE ? 'já tenho conta' : 'Criar conta nova';
+  document.querySelector('#login-card h2').textContent = SIGNUP_MODE ? 'Criar conta' : 'Entrar';
+}
+
+async function doAuth() {
+  const body = {
+    email: $('l-email').value.trim(),
+    password: $('l-pass').value,
+  };
+  if (SIGNUP_MODE) body.name = $('l-name').value.trim();
+  const res = await fetch(API_BASE + '/api/auth/' + (SIGNUP_MODE ? 'signup' : 'login'), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json();
+  if (!res.ok) { toast(data.error || 'erro ao entrar', true); return; }
+  TOKEN = data.session;
+  localStorage.setItem('black_token', TOKEN);
+  toast(SIGNUP_MODE ? 'conta criada, bem-vinda! 🖤' : 'bem-vinda de volta!');
+  boot();
+}
+
+async function aiVariations() {
+  const base = $('r-reply').value.split('\n').map((s) => s.trim()).filter(Boolean)[0];
+  if (!base) { toast('escreve pelo menos uma resposta primeiro', true); return; }
+  toast('gerando variações...');
+  try {
+    const data = await api('/ai/variations', { method: 'POST', body: JSON.stringify({ text: base }) });
+    const existing = $('r-reply').value.split('\n').map((s) => s.trim()).filter(Boolean);
+    const merged = [...new Set([...existing, ...data.variations])];
+    $('r-reply').value = merged.join('\n');
+    toast('variações adicionadas — edita à vontade antes de salvar');
+  } catch { /* api() já mostrou o erro */ }
+}
+
 async function boot() {
   if (!TOKEN) return;
   try {
@@ -205,6 +262,7 @@ async function boot() {
   if (!ACCOUNTS) return;
   $('login-card').style.display = 'none';
   $('app').style.display = 'block';
+  $('connect-link').href = API_BASE + '/oauth/start?state=' + encodeURIComponent(TOKEN);
   renderAccounts();
 }
 
@@ -267,7 +325,7 @@ async function loadRules() {
   $('rules-table').querySelector('tbody').innerHTML = rules.length ? rules.map(r => `
     <tr style="${r.active ? '' : 'opacity:.45'}">
       <td><span class="pill">${r.surface === 'dm' ? 'DM' : 'comentário'}</span></td>
-      <td><b>${esc(r.trigger_text)}</b> <span class="muted">(${r.match_type})</span><br>
+      <td><b>${esc(r.trigger_text)}</b> <span class="muted">(${r.match_type})</span>${ruleReplies(r).length > 1 ? ` <span class="pill rule">${ruleReplies(r).length} variações</span>` : ''}<br>
           <span class="muted">${esc(r.reply_text || '')}${r.reply_text && r.dm_text ? ' · ' : ''}${esc(r.dm_text || '')}</span></td>
       <td>${ACTION_LABEL[r.action] || r.action}</td>
       <td>${r.priority}</td>
@@ -281,12 +339,14 @@ async function loadRules() {
 
 async function addRule() {
   const surface = $('r-surface').value;
+  const replyLines = $('r-reply').value.split('\n').map((s) => s.trim()).filter(Boolean);
   const body = {
     surface,
     match_type: $('r-match').value,
     trigger_text: $('r-trigger').value.trim(),
     action: surface === 'dm' ? 'dm_reply' : $('r-action').value,
-    reply_text: $('r-reply').value.trim() || null,
+    reply_text: replyLines[0] ?? null,
+    reply_variations: replyLines.length > 1 ? replyLines : null,
     dm_text: $('r-dm').value.trim() || null,
     priority: Number($('r-priority').value) || 100,
   };
@@ -311,7 +371,7 @@ function editRule(id) {
   $('r-priority').value = r.priority;
   $('r-trigger').value = r.trigger_text;
   if (r.surface !== 'dm') $('r-action').value = r.action;
-  $('r-reply').value = r.reply_text || '';
+  $('r-reply').value = ruleReplies(r).join('\n');
   $('r-dm').value = r.dm_text || '';
   $('r-save').textContent = 'Salvar alterações';
   $('r-cancel').style.display = 'inline-block';
@@ -371,6 +431,15 @@ async function loadEvents() {
       <td>${esc((e.text || '').slice(0, 80))}</td>
       <td><span class="pill ${e.status === 'error' ? 'error' : e.responded_via}">${e.status === 'error' ? 'erro' : e.responded_via === 'rule' ? 'regra' : e.responded_via === 'ai' ? 'IA' : '—'}</span></td>
     </tr>`).join('') : '<tr><td colspan="5" class="muted">Nenhum evento ainda — assim que chegar comentário ou DM, aparece aqui.</td></tr>';
+}
+
+// Lista de respostas públicas da regra (variações ou a única)
+function ruleReplies(r) {
+  try {
+    const v = JSON.parse(r.reply_variations ?? 'null');
+    if (Array.isArray(v) && v.length) return v;
+  } catch {}
+  return r.reply_text ? [r.reply_text] : [];
 }
 
 function esc(s) {
