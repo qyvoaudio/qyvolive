@@ -218,6 +218,25 @@
       </div>
 
       <div class="card">
+        <h2>Conversas — live chat <button class="ghost" style="float:right;padding:5px 12px" onclick="loadConversations()">atualizar</button></h2>
+        <div style="display:flex;gap:14px;min-height:280px">
+          <div id="conv-list" style="flex:0 0 240px;border-right:1px solid var(--border);padding-right:10px;overflow-y:auto;max-height:420px">
+            <p class="muted">carregando...</p>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column">
+            <div id="thread" style="flex:1;overflow-y:auto;max-height:340px;padding:4px">
+              <p class="muted">escolhe uma conversa aí do lado 👈</p>
+            </div>
+            <div class="row mt" id="composer" style="display:none">
+              <input id="chat-text" placeholder="responder como @conta..." onkeydown="if(event.key==='Enter')sendChat()">
+              <button style="flex:0 0 auto" onclick="sendChat()">Enviar</button>
+            </div>
+          </div>
+        </div>
+        <span class="muted">O Instagram permite resposta manual até 24h depois da última mensagem da pessoa.</span>
+      </div>
+
+      <div class="card">
         <h2>IA (quando nenhuma regra bate)</h2>
         <div class="row">
           <div><label><input type="checkbox" id="ai-dm" style="width:auto"> responder DMs com IA</label></div>
@@ -367,7 +386,7 @@ async function selectAccount(id) {
   $('wa-link').value = SELECTED.wa_group_link || '';
   $('sel-name').textContent = SELECTED.username ? '@' + SELECTED.username : SELECTED.platform;
   $('account-panels').style.display = 'block';
-  await Promise.all([loadRules(), loadFlows(), loadAi(), loadEvents()]);
+  await Promise.all([loadRules(), loadFlows(), loadAi(), loadEvents(), loadConversations()]);
 }
 
 // ---- publicações (seletor) ----
@@ -689,6 +708,46 @@ function renderDmModeOptions() {
 
 function dmModeChanged() {
   $('r-dm-text-wrap').style.display = $('r-dm-mode').value === 'text' ? 'block' : 'none';
+}
+
+// ---- live chat ----
+let CONVERSATIONS = [];
+let CHAT_CONTACT = null;
+
+async function loadConversations() {
+  CONVERSATIONS = await api(`/accounts/${SELECTED.id}/conversations`);
+  $('conv-list').innerHTML = CONVERSATIONS.length ? CONVERSATIONS.map(c => `
+    <div onclick="openThread('${c.contact_id}')" style="padding:9px 10px;border-radius:10px;cursor:pointer;margin-bottom:4px;${CHAT_CONTACT === c.contact_id ? 'background:var(--panel2)' : ''}">
+      <b>${esc(c.username ? '@' + c.username : c.email || 'contato ' + c.contact_id.slice(-4))}</b><br>
+      <span class="muted">${esc((c.last_text || '').slice(0, 34))}</span>
+    </div>`).join('') : '<p class="muted">Nenhuma conversa ainda.</p>';
+}
+
+async function openThread(contactId) {
+  CHAT_CONTACT = contactId;
+  loadConversations();
+  const msgs = await api(`/accounts/${SELECTED.id}/messages?contact=${encodeURIComponent(contactId)}`);
+  $('thread').innerHTML = msgs.map(mm => `
+    <div style="display:flex;justify-content:${mm.direction === 'out' ? 'flex-end' : 'flex-start'};margin-bottom:6px">
+      <div style="max-width:75%;padding:8px 12px;border-radius:12px;font-size:14px;
+                  ${mm.direction === 'out' ? 'background:var(--text);color:#fff' : 'background:var(--panel2)'}">
+        ${esc(mm.text || '')}
+        <div style="font-size:10px;opacity:.6;margin-top:2px">${mm.created_at.slice(5, 16)}${mm.via ? ' · ' + (mm.via === 'manual' ? 'você' : mm.via === 'rule' ? 'regra' : mm.via === 'flow' ? 'sequência' : 'IA') : ''}</div>
+      </div>
+    </div>`).join('') || '<p class="muted">Sem mensagens.</p>';
+  $('composer').style.display = 'flex';
+  $('thread').scrollTop = $('thread').scrollHeight;
+}
+
+async function sendChat() {
+  const text = $('chat-text').value.trim();
+  if (!text || !CHAT_CONTACT) return;
+  await api(`/accounts/${SELECTED.id}/messages`, {
+    method: 'POST',
+    body: JSON.stringify({ contact_id: CHAT_CONTACT, text }),
+  });
+  $('chat-text').value = '';
+  openThread(CHAT_CONTACT);
 }
 
 // ---- IA ----
