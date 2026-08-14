@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Black Shop</title>
+<style>
+  :root {
+    --bg: #0d0f14; --panel: #161a22; --panel2: #1d232e; --border: #2a3242;
+    --text: #e8ecf3; --muted: #8b96a8; --accent: #7c5cff; --accent2: #9d86ff;
+    --ok: #3ddc84; --warn: #ffb454; --err: #ff5c74;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: var(--bg); color: var(--text); font: 15px/1.5 -apple-system, 'Segoe UI', Roboto, sans-serif; }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 24px 16px 80px; }
+  header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px; }
+  header h1 { font-size: 22px; letter-spacing: .5px; }
+  header h1 b { color: var(--accent2); }
+  header small { color: var(--muted); }
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 18px; }
+  .card h2 { font-size: 15px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 14px; }
+  label { display: block; font-size: 13px; color: var(--muted); margin: 10px 0 4px; }
+  input, select, textarea {
+    width: 100%; background: var(--panel2); color: var(--text); border: 1px solid var(--border);
+    border-radius: 8px; padding: 9px 11px; font: inherit;
+  }
+  textarea { min-height: 72px; resize: vertical; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
+  button {
+    background: var(--accent); color: #fff; border: 0; border-radius: 8px;
+    padding: 9px 16px; font: inherit; font-weight: 600; cursor: pointer;
+  }
+  button:hover { background: var(--accent2); }
+  button.ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+  button.ghost:hover { color: var(--text); border-color: var(--muted); }
+  button.danger { background: transparent; border: 1px solid var(--err); color: var(--err); padding: 5px 10px; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .row > * { flex: 1; min-width: 140px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; color: var(--muted); font-weight: 500; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+  td { padding: 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .pill { display: inline-block; padding: 1px 9px; border-radius: 99px; font-size: 12px; border: 1px solid var(--border); color: var(--muted); }
+  .pill.on { color: var(--ok); border-color: var(--ok); }
+  .pill.off { color: var(--muted); }
+  .pill.rule { color: var(--accent2); border-color: var(--accent2); }
+  .pill.ai { color: var(--warn); border-color: var(--warn); }
+  .pill.none { color: var(--muted); }
+  .pill.error { color: var(--err); border-color: var(--err); }
+  .muted { color: var(--muted); font-size: 13px; }
+  .spacer { height: 10px; }
+  #toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); background: var(--panel2);
+    border: 1px solid var(--border); border-radius: 10px; padding: 10px 18px; display: none; }
+  .right { text-align: right; }
+  .mt { margin-top: 12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><h1><b>Black</b> Shop</h1><small>respostas automáticas · Instagram &amp; Facebook</small></header>
+
+  <div class="card" id="login-card">
+    <h2>Acesso</h2>
+    <label>Admin token</label>
+    <div class="row">
+      <input id="token" type="password" placeholder="cole o token de admin">
+      <button onclick="saveToken()" style="flex:0 0 auto">Entrar</button>
+    </div>
+  </div>
+
+  <div id="app" style="display:none">
+    <div class="card">
+      <h2>Contas conectadas</h2>
+      <div id="accounts"></div>
+      <details class="mt">
+        <summary class="muted" style="cursor:pointer">+ adicionar conta</summary>
+        <div class="row">
+          <div><label>Plataforma</label>
+            <select id="acc-platform"><option value="instagram">Instagram</option><option value="facebook">Facebook</option></select></div>
+          <div><label>@ usuário</label><input id="acc-username" placeholder="ex: blackshop"></div>
+        </div>
+        <div class="row">
+          <div><label>IG User ID</label><input id="acc-ig-id" placeholder="id numérico do IG profissional"></div>
+          <div><label>Page ID</label><input id="acc-page-id" placeholder="id da Página do Facebook"></div>
+        </div>
+        <label>Page Access Token (longa duração)</label>
+        <input id="acc-token" type="password" placeholder="EAAG...">
+        <div class="spacer"></div>
+        <button onclick="addAccount()">Salvar conta</button>
+      </details>
+    </div>
+
+    <div id="account-panels" style="display:none">
+      <div class="card">
+        <h2>Regras — <span id="sel-name"></span></h2>
+        <table id="rules-table">
+          <thead><tr><th>Onde</th><th>Gatilho</th><th>Ação</th><th>Prior.</th><th></th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <details class="mt" id="rule-form">
+          <summary class="muted" style="cursor:pointer">+ nova regra</summary>
+          <div class="row">
+            <div><label>Onde</label>
+              <select id="r-surface" onchange="syncActionOptions()">
+                <option value="comment">Comentário</option><option value="dm">DM</option>
+              </select></div>
+            <div><label>Tipo de match</label>
+              <select id="r-match"><option value="contains">contém</option><option value="exact">exato</option><option value="starts_with">começa com</option></select></div>
+            <div><label>Prioridade</label><input id="r-priority" type="number" value="100"></div>
+          </div>
+          <label>Gatilho (palavra ou frase)</label>
+          <input id="r-trigger" placeholder="ex: eu quero">
+          <label>Ação</label>
+          <select id="r-action">
+            <option value="both">Responder comentário + mandar DM</option>
+            <option value="reply_comment">Só responder o comentário</option>
+            <option value="private_reply">Só mandar DM (private reply)</option>
+          </select>
+          <div id="r-reply-wrap"><label>Resposta pública (comentário)</label>
+            <textarea id="r-reply" placeholder="Te chamei no direct! 💬"></textarea></div>
+          <div id="r-dm-wrap"><label>Texto da DM</label>
+            <textarea id="r-dm" placeholder="Oi! Aqui está o link: ..."></textarea></div>
+          <div class="spacer"></div>
+          <button onclick="addRule()">Salvar regra</button>
+        </details>
+      </div>
+
+      <div class="card">
+        <h2>IA (quando nenhuma regra bate)</h2>
+        <div class="row">
+          <div><label><input type="checkbox" id="ai-dm" style="width:auto"> responder DMs com IA</label></div>
+          <div><label><input type="checkbox" id="ai-comment" style="width:auto"> responder comentários com IA</label></div>
+        </div>
+        <label>Tom de voz / instruções da conta</label>
+        <textarea id="ai-prompt" placeholder="Ex: Você é a assistente da Black Shop, loja de ... Responda curto, simpático, com emoji."></textarea>
+        <div class="spacer"></div>
+        <button onclick="saveAi()">Salvar IA</button>
+        <span class="muted"> · a IA nunca inventa preço, prazo ou promessa</span>
+      </div>
+
+      <div class="card">
+        <h2>Últimos eventos <button class="ghost" style="float:right;padding:4px 10px" onclick="loadEvents()">atualizar</button></h2>
+        <table id="events-table">
+          <thead><tr><th>Quando (UTC)</th><th>Tipo</th><th>De</th><th>Texto</th><th>Respondido</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script>
+const API_BASE = 'https://black-shop.caroldepaz.workers.dev';
+let TOKEN = localStorage.getItem('black_token') || '';
+let ACCOUNTS = [];
+let SELECTED = null;
+
+const $ = (id) => document.getElementById(id);
+
+function toast(msg, isErr) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.style.borderColor = isErr ? 'var(--err)' : 'var(--ok)';
+  t.style.display = 'block';
+  setTimeout(() => { t.style.display = 'none'; }, 3000);
+}
+
+async function api(path, opts = {}) {
+  const res = await fetch(API_BASE + '/api' + path, {
+    ...opts,
+    headers: { 'Authorization': 'Bearer ' + TOKEN, 'Content-Type': 'application/json', ...(opts.headers || {}) },
+  });
+  if (res.status === 401) { localStorage.removeItem('black_token'); location.reload(); return null; }
+  const data = await res.json();
+  if (!res.ok) { toast(data.error || 'erro', true); throw new Error(data.error); }
+  return data;
+}
+
+function saveToken() {
+  TOKEN = $('token').value.trim();
+  localStorage.setItem('black_token', TOKEN);
+  boot();
+}
+
+async function boot() {
+  if (!TOKEN) return;
+  try {
+    ACCOUNTS = await api('/accounts');
+  } catch { return; }
+  if (!ACCOUNTS) return;
+  $('login-card').style.display = 'none';
+  $('app').style.display = 'block';
+  renderAccounts();
+}
+
+function renderAccounts() {
+  const el = $('accounts');
+  if (!ACCOUNTS.length) {
+    el.innerHTML = '<p class="muted">Nenhuma conta ainda. Adiciona a primeira aí embaixo 👇</p>';
+    $('account-panels').style.display = 'none';
+    return;
+  }
+  el.innerHTML = '<table><tbody>' + ACCOUNTS.map(a => `
+    <tr>
+      <td><b>${a.username ? '@' + a.username : '(sem nome)'}</b> <span class="pill">${a.platform}</span></td>
+      <td class="muted">${a.ig_user_id ? 'IG ' + a.ig_user_id : ''} ${a.page_id ? '· Page ' + a.page_id : ''}</td>
+      <td><span class="pill ${a.status === 'active' ? 'on' : 'off'}">${a.status}</span></td>
+      <td class="right"><button class="ghost" onclick="selectAccount('${a.id}')">gerenciar</button></td>
+    </tr>`).join('') + '</tbody></table>';
+  if (!SELECTED && ACCOUNTS.length) selectAccount(ACCOUNTS[0].id);
+}
+
+async function addAccount() {
+  const body = {
+    platform: $('acc-platform').value,
+    username: $('acc-username').value.trim() || null,
+    ig_user_id: $('acc-ig-id').value.trim() || null,
+    page_id: $('acc-page-id').value.trim() || null,
+    page_token: $('acc-token').value.trim(),
+  };
+  await api('/accounts', { method: 'POST', body: JSON.stringify(body) });
+  toast('conta salva');
+  ACCOUNTS = await api('/accounts');
+  renderAccounts();
+}
+
+async function selectAccount(id) {
+  SELECTED = ACCOUNTS.find(a => a.id === id);
+  $('sel-name').textContent = SELECTED.username ? '@' + SELECTED.username : SELECTED.platform;
+  $('account-panels').style.display = 'block';
+  await Promise.all([loadRules(), loadAi(), loadEvents()]);
+}
+
+function syncActionOptions() {
+  const dm = $('r-surface').value === 'dm';
+  $('r-action').innerHTML = dm
+    ? '<option value="dm_reply">Responder a DM</option>'
+    : `<option value="both">Responder comentário + mandar DM</option>
+       <option value="reply_comment">Só responder o comentário</option>
+       <option value="private_reply">Só mandar DM (private reply)</option>`;
+  $('r-reply-wrap').style.display = dm ? 'none' : 'block';
+}
+
+const ACTION_LABEL = {
+  both: 'comentário + DM', reply_comment: 'responde comentário',
+  private_reply: 'manda DM', dm_reply: 'responde DM',
+};
+
+async function loadRules() {
+  const rules = await api(`/accounts/${SELECTED.id}/rules`);
+  $('rules-table').querySelector('tbody').innerHTML = rules.length ? rules.map(r => `
+    <tr style="${r.active ? '' : 'opacity:.45'}">
+      <td><span class="pill">${r.surface === 'dm' ? 'DM' : 'comentário'}</span></td>
+      <td><b>${esc(r.trigger_text)}</b> <span class="muted">(${r.match_type})</span><br>
+          <span class="muted">${esc(r.reply_text || '')}${r.reply_text && r.dm_text ? ' · ' : ''}${esc(r.dm_text || '')}</span></td>
+      <td>${ACTION_LABEL[r.action] || r.action}</td>
+      <td>${r.priority}</td>
+      <td><button class="ghost" style="padding:4px 10px" onclick="toggleRule('${r.id}', ${r.active ? 0 : 1})">${r.active ? 'pausar' : 'ativar'}</button></td>
+      <td><button class="danger" onclick="delRule('${r.id}')">excluir</button></td>
+    </tr>`).join('') : '<tr><td colspan="6" class="muted">Nenhuma regra ainda.</td></tr>';
+}
+
+async function addRule() {
+  const surface = $('r-surface').value;
+  const body = {
+    surface,
+    match_type: $('r-match').value,
+    trigger_text: $('r-trigger').value.trim(),
+    action: surface === 'dm' ? 'dm_reply' : $('r-action').value,
+    reply_text: $('r-reply').value.trim() || null,
+    dm_text: $('r-dm').value.trim() || null,
+    priority: Number($('r-priority').value) || 100,
+  };
+  await api(`/accounts/${SELECTED.id}/rules`, { method: 'POST', body: JSON.stringify(body) });
+  toast('regra criada');
+  $('r-trigger').value = ''; $('r-reply').value = ''; $('r-dm').value = '';
+  loadRules();
+}
+
+async function toggleRule(id, active) {
+  await api(`/rules/${id}`, { method: 'PUT', body: JSON.stringify({ active }) });
+  loadRules();
+}
+
+async function delRule(id) {
+  if (!confirm('Excluir essa regra?')) return;
+  await api(`/rules/${id}`, { method: 'DELETE' });
+  toast('regra excluída');
+  loadRules();
+}
+
+async function loadAi() {
+  const ai = await api(`/accounts/${SELECTED.id}/ai`);
+  $('ai-dm').checked = !!ai.dm_enabled;
+  $('ai-comment').checked = !!ai.comment_enabled;
+  $('ai-prompt').value = ai.system_prompt || '';
+}
+
+async function saveAi() {
+  await api(`/accounts/${SELECTED.id}/ai`, {
+    method: 'PUT',
+    body: JSON.stringify({
+      dm_enabled: $('ai-dm').checked,
+      comment_enabled: $('ai-comment').checked,
+      system_prompt: $('ai-prompt').value.trim() || null,
+    }),
+  });
+  toast('IA atualizada');
+}
+
+async function loadEvents() {
+  const evs = await api(`/accounts/${SELECTED.id}/events`);
+  $('events-table').querySelector('tbody').innerHTML = evs.length ? evs.map(e => `
+    <tr>
+      <td class="muted">${e.created_at}</td>
+      <td>${e.type}</td>
+      <td>${esc(e.from_username || e.from_id || '?')}</td>
+      <td>${esc((e.text || '').slice(0, 80))}</td>
+      <td><span class="pill ${e.status === 'error' ? 'error' : e.responded_via}">${e.status === 'error' ? 'erro' : e.responded_via === 'rule' ? 'regra' : e.responded_via === 'ai' ? 'IA' : '—'}</span></td>
+    </tr>`).join('') : '<tr><td colspan="5" class="muted">Nenhum evento ainda — assim que chegar comentário ou DM, aparece aqui.</td></tr>';
+}
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+syncActionOptions();
+boot();
+</script>
+</body>
+</html>
