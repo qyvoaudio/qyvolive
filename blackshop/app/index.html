@@ -225,9 +225,9 @@
         </div>
         <label>Tom de voz / instruções da conta</label>
         <textarea id="ai-prompt" placeholder="Ex: Você é a assistente da Black Shop, loja de ... Responda curto, simpático, com emoji."></textarea>
-        <label>Sua chave da API da Anthropic <span class="muted" id="ai-key-status">(nenhuma cadastrada)</span></label>
-        <input id="ai-key" type="password" placeholder="sk-ant-... — crie a sua em console.anthropic.com">
-        <span class="muted">A IA usa a sua chave e o custo é seu (centavos por resposta). Deixe em branco pra manter a atual; escreva "remover" pra apagar.</span>
+        <label>Sua chave de IA — Google Gemini (grátis) ou Anthropic Claude <span class="muted" id="ai-key-status">(nenhuma cadastrada)</span></label>
+        <input id="ai-key" type="password" placeholder="AIza... (Gemini, grátis em aistudio.google.com) ou sk-ant... (Claude)">
+        <span class="muted">Gemini tem plano gratuito: cria a chave em <b>aistudio.google.com</b> sem cartão. O sistema detecta qual IA é pela chave. Deixe em branco pra manter a atual; escreva "remover" pra apagar.</span>
         <div class="spacer"></div>
         <button onclick="saveAi()">Salvar IA</button>
         <span class="muted"> · a IA nunca inventa preço, prazo ou promessa</span>
