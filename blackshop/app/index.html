@@ -175,11 +175,37 @@
             <textarea id="r-reply" placeholder="Te chamei no direct! 💬&#10;Olha o direct! Te mandei mensagem 😉&#10;Corre lá no direct que te respondi 💬"></textarea>
             <button class="ghost" style="margin-top:6px;padding:6px 12px" onclick="aiVariations()">✨ 5 variações com IA</button>
           </div>
-          <div id="r-dm-wrap"><label>Texto da DM</label>
-            <textarea id="r-dm" placeholder="Oi! Aqui está o link: ..."></textarea></div>
+          <div id="r-dm-wrap">
+            <label>Resposta na DM</label>
+            <select id="r-dm-mode" onchange="dmModeChanged()">
+              <option value="text">Texto fixo</option>
+            </select>
+            <div id="r-dm-text-wrap">
+              <label>Texto da DM</label>
+              <textarea id="r-dm" placeholder="Oi! Aqui está o link: ..."></textarea>
+            </div>
+          </div>
           <div class="spacer"></div>
           <button id="r-save" onclick="addRule()">Salvar regra</button>
           <button id="r-cancel" class="ghost" style="display:none" onclick="cancelEdit()">cancelar edição</button>
+        </details>
+      </div>
+
+      <div class="card">
+        <h2>Sequências — DM com botões</h2>
+        <table id="flows-table">
+          <thead><tr><th>Nome</th><th>Passos</th><th></th><th></th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <details class="mt" id="flow-form">
+          <summary>+ nova sequência</summary>
+          <label>Nome da sequência</label>
+          <input id="f-name" placeholder="ex: Boas-vindas, Qual seu tamanho?, Promoção do reel">
+          <div id="f-steps"></div>
+          <button class="ghost mt" onclick="addStep()">+ adicionar passo</button>
+          <div class="spacer"></div>
+          <button id="f-save" onclick="saveFlow()">Salvar sequência</button>
+          <button id="f-cancel" class="ghost" style="display:none" onclick="cancelFlowEdit()">cancelar edição</button>
         </details>
       </div>
 
@@ -302,7 +328,10 @@ function renderAccounts() {
       <td><b>${a.username ? '@' + a.username : '(sem nome)'}</b> <span class="pill">${a.platform}</span></td>
       <td class="muted">${a.ig_user_id ? 'IG ' + a.ig_user_id : ''}</td>
       <td><span class="pill ${a.status === 'active' ? 'on' : ''}">${a.status}</span></td>
-      <td class="right"><button class="ghost" onclick="selectAccount('${a.id}')">gerenciar</button></td>
+      <td class="right" style="white-space:nowrap">
+        <button class="ghost" onclick="selectAccount('${a.id}')">gerenciar</button>
+        <button class="danger" onclick="disconnectAccount('${a.id}', '${a.username ?? ''}')">desconectar</button>
+      </td>
     </tr>`).join('') + '</tbody></table>';
   if (!SELECTED && ACCOUNTS.length) selectAccount(ACCOUNTS[0].id);
 }
@@ -326,7 +355,7 @@ async function selectAccount(id) {
   MEDIA = null; MEDIA_SEL = null;
   $('sel-name').textContent = SELECTED.username ? '@' + SELECTED.username : SELECTED.platform;
   $('account-panels').style.display = 'block';
-  await Promise.all([loadRules(), loadAi(), loadEvents()]);
+  await Promise.all([loadRules(), loadFlows(), loadAi(), loadEvents()]);
 }
 
 // ---- publicações (seletor) ----
@@ -390,7 +419,8 @@ async function loadRules() {
       <td><span class="pill">${r.surface === 'dm' ? 'DM' : 'comentário'}</span></td>
       <td><b>${esc(r.trigger_text)}</b> <span class="muted">(${r.match_type})</span>
           ${ruleReplies(r).length > 1 ? ` <span class="pill rule">${ruleReplies(r).length} variações</span>` : ''}
-          ${r.media_id ? ' <span class="pill rule">📍 publicação específica</span>' : ''}<br>
+          ${r.media_id ? ' <span class="pill rule">📍 publicação específica</span>' : ''}
+          ${r.flow_id ? ' <span class="pill rule">🔀 sequência</span>' : ''}<br>
           <span class="muted">${esc(r.reply_text || '')}${r.reply_text && r.dm_text ? ' · ' : ''}${esc(r.dm_text || '')}</span></td>
       <td>${ACTION_LABEL[r.action] || r.action}</td>
       <td>${r.priority}</td>
@@ -416,7 +446,8 @@ async function addRule() {
     action: surface === 'dm' ? 'dm_reply' : $('r-action').value,
     reply_text: replyLines[0] ?? null,
     reply_variations: replyLines.length > 1 ? replyLines : null,
-    dm_text: $('r-dm').value.trim() || null,
+    dm_text: $('r-dm-mode').value === 'text' ? ($('r-dm').value.trim() || null) : null,
+    flow_id: $('r-dm-mode').value === 'text' ? null : $('r-dm-mode').value,
     priority: Number($('r-priority').value) || 100,
     media_id: surface === 'comment' && $('r-media-mode').value === 'one' ? MEDIA_SEL : null,
   };
@@ -443,6 +474,8 @@ function editRule(id) {
   if (r.surface !== 'dm') $('r-action').value = r.action;
   $('r-reply').value = ruleReplies(r).join('\n');
   $('r-dm').value = r.dm_text || '';
+  $('r-dm-mode').value = r.flow_id && [...$('r-dm-mode').options].some((o) => o.value === r.flow_id) ? r.flow_id : 'text';
+  dmModeChanged();
   $('r-media-mode').value = r.media_id ? 'one' : 'any';
   MEDIA_SEL = r.media_id || null;
   mediaModeChanged();
@@ -460,6 +493,8 @@ function cancelEdit() {
   $('r-trigger').value = ''; $('r-reply').value = ''; $('r-dm').value = '';
   $('r-priority').value = 100;
   $('r-media-mode').value = 'any';
+  $('r-dm-mode').value = 'text';
+  dmModeChanged();
   MEDIA_SEL = null;
   mediaModeChanged();
   $('r-save').textContent = 'Salvar regra';
@@ -490,6 +525,140 @@ async function aiVariations() {
     $('r-reply').value = merged.join('\n');
     toast('variações adicionadas — edita à vontade antes de salvar');
   } catch { /* api() já mostrou o erro */ }
+}
+
+async function disconnectAccount(id, username) {
+  const nome = username ? '@' + username : 'essa conta';
+  if (!confirm(`Desconectar ${nome}? Isso apaga as regras, sequências e histórico dela no Black Shop. O robô para de responder na hora.`)) return;
+  await api(`/accounts/${id}`, { method: 'DELETE' });
+  toast(`${nome} desconectada`);
+  if (SELECTED?.id === id) { SELECTED = null; $('account-panels').style.display = 'none'; }
+  ACCOUNTS = await api('/accounts');
+  renderAccounts();
+}
+
+// ---- sequências (flows) ----
+let FLOWS = [];
+let FSTEPS = [];
+let FLOW_EDITING = null;
+
+async function loadFlows() {
+  FLOWS = await api(`/accounts/${SELECTED.id}/flows`);
+  $('flows-table').querySelector('tbody').innerHTML = FLOWS.length ? FLOWS.map(f => `
+    <tr style="${f.active ? '' : 'opacity:.45'}">
+      <td><b>${esc(f.name)}</b></td>
+      <td class="muted">${f.steps.length} passo${f.steps.length > 1 ? 's' : ''}</td>
+      <td><button class="ghost" style="padding:5px 10px" onclick="editFlow('${f.id}')">editar</button></td>
+      <td><button class="ghost" style="padding:5px 10px" onclick="toggleFlow('${f.id}', ${f.active ? 0 : 1})">${f.active ? 'pausar' : 'ativar'}</button></td>
+      <td><button class="danger" onclick="delFlow('${f.id}')">excluir</button></td>
+    </tr>`).join('') : '<tr><td colspan="5" class="muted">Nenhuma sequência ainda — cria a primeira: mensagem com botões, cada botão leva pra outro passo.</td></tr>';
+  renderDmModeOptions();
+}
+
+function stepLabel(key) { return key === 'start' ? 'Início' : key; }
+
+function renderSteps() {
+  $('f-steps').innerHTML = FSTEPS.map((s, i) => `
+    <div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin-top:12px;background:var(--panel2)">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <b>${stepLabel(s.step_key)}</b>
+        ${s.step_key !== 'start' ? `<button class="danger" onclick="removeStep(${i})">remover passo</button>` : '<span class="muted">primeira mensagem da sequência</span>'}
+      </div>
+      <label>Mensagem</label>
+      <textarea oninput="FSTEPS[${i}].message=this.value" placeholder="O que o robô manda nesse passo">${esc(s.message)}</textarea>
+      <label>Botões (até 3 — quem toca vai pro passo escolhido)</label>
+      ${s.buttons.map((b, j) => `
+        <div class="row" style="margin-bottom:6px">
+          <input value="${esc(b.title)}" maxlength="20" placeholder="texto do botão (máx 20)" oninput="FSTEPS[${i}].buttons[${j}].title=this.value">
+          <select onchange="FSTEPS[${i}].buttons[${j}].next=this.value">
+            ${FSTEPS.map(t => `<option value="${t.step_key}" ${b.next === t.step_key ? 'selected' : ''}>→ ${stepLabel(t.step_key)}</option>`).join('')}
+            <option value="end" ${!b.next || b.next === 'end' ? 'selected' : ''}>→ encerrar conversa</option>
+          </select>
+          <button class="danger" style="flex:0 0 auto" onclick="FSTEPS[${i}].buttons.splice(${j},1);renderSteps()">×</button>
+        </div>`).join('')}
+      ${s.buttons.length < 3 ? `<button class="ghost" style="padding:5px 12px" onclick="FSTEPS[${i}].buttons.push({title:'',next:'end'});renderSteps()">+ botão</button>` : ''}
+      <span class="muted">${s.buttons.length ? '' : 'sem botões = mensagem final, a sequência encerra aqui'}</span>
+    </div>`).join('');
+}
+
+function addStep() {
+  if (!FSTEPS.length) { FSTEPS.push({ step_key: 'start', message: '', buttons: [] }); renderSteps(); return; }
+  let n = 2;
+  while (FSTEPS.some((s) => s.step_key === 'passo' + n)) n++;
+  FSTEPS.push({ step_key: 'passo' + n, message: '', buttons: [] });
+  renderSteps();
+}
+
+function removeStep(i) {
+  const key = FSTEPS[i].step_key;
+  FSTEPS.splice(i, 1);
+  FSTEPS.forEach((s) => s.buttons.forEach((b) => { if (b.next === key) b.next = 'end'; }));
+  renderSteps();
+}
+
+async function saveFlow() {
+  const body = { name: $('f-name').value.trim(), steps: FSTEPS };
+  if (FLOW_EDITING) {
+    await api(`/flows/${FLOW_EDITING}`, { method: 'PUT', body: JSON.stringify(body) });
+    toast('sequência atualizada');
+  } else {
+    await api(`/accounts/${SELECTED.id}/flows`, { method: 'POST', body: JSON.stringify(body) });
+    toast('sequência criada');
+  }
+  cancelFlowEdit();
+  loadFlows();
+}
+
+function editFlow(id) {
+  const f = FLOWS.find((x) => x.id === id);
+  if (!f) return;
+  FLOW_EDITING = id;
+  $('f-name').value = f.name;
+  FSTEPS = f.steps.map((s) => ({ step_key: s.step_key, message: s.message, buttons: (s.buttons ?? []).map((b) => ({ ...b })) }));
+  // 'start' primeiro na tela
+  FSTEPS.sort((a, b) => (a.step_key === 'start' ? -1 : b.step_key === 'start' ? 1 : 0));
+  renderSteps();
+  $('f-save').textContent = 'Salvar alterações';
+  $('f-cancel').style.display = 'inline-block';
+  const form = $('flow-form');
+  form.open = true;
+  form.querySelector('summary').textContent = `✏️ editando: "${f.name}"`;
+}
+
+function cancelFlowEdit() {
+  FLOW_EDITING = null;
+  $('f-name').value = '';
+  FSTEPS = [{ step_key: 'start', message: '', buttons: [] }];
+  renderSteps();
+  $('f-save').textContent = 'Salvar sequência';
+  $('f-cancel').style.display = 'none';
+  $('flow-form').querySelector('summary').textContent = '+ nova sequência';
+}
+
+async function toggleFlow(id, active) {
+  await api(`/flows/${id}`, { method: 'PUT', body: JSON.stringify({ active }) });
+  loadFlows();
+}
+
+async function delFlow(id) {
+  if (!confirm('Excluir essa sequência? Regras que usam ela voltam a não responder DM.')) return;
+  await api(`/flows/${id}`, { method: 'DELETE' });
+  toast('sequência excluída');
+  loadFlows(); loadRules();
+}
+
+// select "Resposta na DM" da regra: texto fixo ou uma sequência
+function renderDmModeOptions() {
+  const sel = $('r-dm-mode');
+  const current = sel.value;
+  sel.innerHTML = '<option value="text">Texto fixo</option>' +
+    FLOWS.map((f) => `<option value="${f.id}">Sequência: ${esc(f.name)}</option>`).join('');
+  sel.value = [...sel.options].some((o) => o.value === current) ? current : 'text';
+  dmModeChanged();
+}
+
+function dmModeChanged() {
+  $('r-dm-text-wrap').style.display = $('r-dm-mode').value === 'text' ? 'block' : 'none';
 }
 
 // ---- IA ----
@@ -530,6 +699,7 @@ function esc(s) {
 }
 
 syncActionOptions();
+cancelFlowEdit();
 boot();
 
 // Feedback do fluxo "Conectar Instagram" (OAuth)
