@@ -197,6 +197,13 @@
           <thead><tr><th>Nome</th><th>Passos</th><th></th><th></th><th></th></tr></thead>
           <tbody></tbody>
         </table>
+        <div class="row" style="align-items:flex-end">
+          <div style="flex:3">
+            <label>Link do grupo do WhatsApp (usado pelos botões "grupo do WhatsApp")</label>
+            <input id="wa-link" placeholder="https://chat.whatsapp.com/...">
+          </div>
+          <button class="ghost" style="flex:0 0 auto" onclick="saveWaLink()">salvar link</button>
+        </div>
         <details class="mt" id="flow-form">
           <summary>+ nova sequência</summary>
           <label>Nome da sequência</label>
@@ -353,6 +360,7 @@ async function addAccount() {
 async function selectAccount(id) {
   SELECTED = ACCOUNTS.find(a => a.id === id);
   MEDIA = null; MEDIA_SEL = null;
+  $('wa-link').value = SELECTED.wa_group_link || '';
   $('sel-name').textContent = SELECTED.username ? '@' + SELECTED.username : SELECTED.platform;
   $('account-panels').style.display = 'block';
   await Promise.all([loadRules(), loadFlows(), loadAi(), loadEvents()]);
@@ -566,19 +574,37 @@ function renderSteps() {
       </div>
       <label>Mensagem</label>
       <textarea oninput="FSTEPS[${i}].message=this.value" placeholder="O que o robô manda nesse passo">${esc(s.message)}</textarea>
-      <label>Botões (até 3 — quem toca vai pro passo escolhido)</label>
+      <label>Botões (até 3 — quem toca dispara a ação escolhida)</label>
       ${s.buttons.map((b, j) => `
         <div class="row" style="margin-bottom:6px">
           <input value="${esc(b.title)}" maxlength="20" placeholder="texto do botão (máx 20)" oninput="FSTEPS[${i}].buttons[${j}].title=this.value">
-          <select onchange="FSTEPS[${i}].buttons[${j}].next=this.value">
-            ${FSTEPS.map(t => `<option value="${t.step_key}" ${b.next === t.step_key ? 'selected' : ''}>→ ${stepLabel(t.step_key)}</option>`).join('')}
-            <option value="end" ${!b.next || b.next === 'end' ? 'selected' : ''}>→ encerrar conversa</option>
+          <select onchange="setBtnAction(${i},${j},this.value)">
+            ${FSTEPS.map(t => `<option value="goto:${t.step_key}" ${(b.action ?? 'goto') === 'goto' && b.next === t.step_key ? 'selected' : ''}>→ ${stepLabel(t.step_key)}</option>`).join('')}
+            <option value="end" ${b.action === 'end' || ((b.action ?? 'goto') === 'goto' && (!b.next || b.next === 'end')) ? 'selected' : ''}>✔️ encerrar conversa</option>
+            <option value="email" ${b.action === 'email' ? 'selected' : ''}>📧 pedir e-mail</option>
+            <option value="follow" ${b.action === 'follow' ? 'selected' : ''}>➕ pedir pra seguir</option>
+            <option value="wa" ${b.action === 'wa' ? 'selected' : ''}>📱 grupo do WhatsApp</option>
+            <option value="link" ${b.action === 'link' ? 'selected' : ''}>🔗 mandar link</option>
           </select>
+          ${b.action === 'link' ? `<input value="${esc(b.link ?? '')}" placeholder="https://..." oninput="FSTEPS[${i}].buttons[${j}].link=this.value">` : ''}
           <button class="danger" style="flex:0 0 auto" onclick="FSTEPS[${i}].buttons.splice(${j},1);renderSteps()">×</button>
         </div>`).join('')}
       ${s.buttons.length < 3 ? `<button class="ghost" style="padding:5px 12px" onclick="FSTEPS[${i}].buttons.push({title:'',next:'end'});renderSteps()">+ botão</button>` : ''}
       <span class="muted">${s.buttons.length ? '' : 'sem botões = mensagem final, a sequência encerra aqui'}</span>
     </div>`).join('');
+}
+
+function setBtnAction(i, j, val) {
+  const b = FSTEPS[i].buttons[j];
+  if (val.startsWith('goto:')) { b.action = 'goto'; b.next = val.slice(5); }
+  else { b.action = val; b.next = null; }
+  renderSteps();
+}
+
+async function saveWaLink() {
+  await api(`/accounts/${SELECTED.id}`, { method: 'PATCH', body: JSON.stringify({ wa_group_link: $('wa-link').value.trim() || null }) });
+  SELECTED.wa_group_link = $('wa-link').value.trim() || null;
+  toast('link do grupo salvo');
 }
 
 function addStep() {
