@@ -3,63 +3,88 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Black Shop</title>
+<title>Black Shop — Painel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0d0f14; --panel: #161a22; --panel2: #1d232e; --border: #2a3242;
-    --text: #e8ecf3; --muted: #8b96a8; --accent: #7c5cff; --accent2: #9d86ff;
-    --ok: #3ddc84; --warn: #ffb454; --err: #ff5c74;
+    --bg: #F7F8FA; --panel: #FFFFFF; --panel2: #F2F4F7; --border: #E6E8EE;
+    --text: #14151A; --muted: #6A7080; --accent: #FF1F8E; --accent-soft: #FFF0F7;
+    --ok: #16A34A; --ok-soft: #EAF7EF; --warn: #B45309; --err: #DC2626; --err-soft: #FDECEC;
   }
   * { box-sizing: border-box; margin: 0; }
-  body { background: var(--bg); color: var(--text); font: 15px/1.5 -apple-system, 'Segoe UI', Roboto, sans-serif; }
-  .wrap { max-width: 960px; margin: 0 auto; padding: 24px 16px 80px; }
-  header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px; }
-  header h1 { font-size: 22px; letter-spacing: .5px; }
-  header h1 b { color: var(--accent2); }
-  header small { color: var(--muted); }
-  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 18px; }
-  .card h2 { font-size: 15px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 14px; }
-  label { display: block; font-size: 13px; color: var(--muted); margin: 10px 0 4px; }
+  body { background: var(--bg); color: var(--text); font: 15px/1.55 'DM Sans', -apple-system, sans-serif; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 20px 16px 80px; }
+  header { display: flex; align-items: center; gap: 12px; padding: 6px 0 22px; }
+  header .logo { width: 40px; height: 40px; flex-shrink: 0; }
+  header h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.01em; }
+  header h1 span { color: var(--accent); }
+  header small { color: var(--muted); font-size: 13px; }
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 22px; margin-bottom: 16px; box-shadow: 0 1px 2px rgba(20,21,26,0.04); }
+  .card h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 16px; font-weight: 700; }
+  label { display: block; font-size: 13px; color: var(--muted); margin: 10px 0 5px; font-weight: 500; }
   input, select, textarea {
-    width: 100%; background: var(--panel2); color: var(--text); border: 1px solid var(--border);
-    border-radius: 8px; padding: 9px 11px; font: inherit;
+    width: 100%; background: var(--panel); color: var(--text); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 12px; font: inherit;
   }
-  textarea { min-height: 72px; resize: vertical; }
-  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
+  textarea { min-height: 76px; resize: vertical; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--text); }
   button {
-    background: var(--accent); color: #fff; border: 0; border-radius: 8px;
-    padding: 9px 16px; font: inherit; font-weight: 600; cursor: pointer;
+    background: var(--text); color: #fff; border: 0; border-radius: 10px;
+    padding: 10px 18px; font: inherit; font-weight: 700; cursor: pointer;
   }
-  button:hover { background: var(--accent2); }
-  button.ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); }
-  button.ghost:hover { color: var(--text); border-color: var(--muted); }
-  button.danger { background: transparent; border: 1px solid var(--err); color: var(--err); padding: 5px 10px; }
+  button:hover { background: #000; }
+  button.ghost { background: transparent; border: 1px solid var(--border); color: var(--text); font-weight: 500; }
+  button.ghost:hover { border-color: var(--text); background: var(--panel2); }
+  button.danger { background: transparent; border: 1px solid var(--err); color: var(--err); padding: 6px 12px; font-weight: 500; }
+  button.danger:hover { background: var(--err-soft); }
   .row { display: flex; gap: 12px; flex-wrap: wrap; }
-  .row > * { flex: 1; min-width: 140px; }
+  .row > * { flex: 1; min-width: 150px; }
   table { width: 100%; border-collapse: collapse; font-size: 14px; }
-  th { text-align: left; color: var(--muted); font-weight: 500; padding: 6px 8px; border-bottom: 1px solid var(--border); }
-  td { padding: 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
-  .pill { display: inline-block; padding: 1px 9px; border-radius: 99px; font-size: 12px; border: 1px solid var(--border); color: var(--muted); }
-  .pill.on { color: var(--ok); border-color: var(--ok); }
-  .pill.off { color: var(--muted); }
-  .pill.rule { color: var(--accent2); border-color: var(--accent2); }
-  .pill.ai { color: var(--warn); border-color: var(--warn); }
-  .pill.none { color: var(--muted); }
-  .pill.error { color: var(--err); border-color: var(--err); }
+  th { text-align: left; color: var(--muted); font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+  td { padding: 12px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  .pill { display: inline-block; padding: 2px 10px; border-radius: 99px; font-size: 12px; background: var(--panel2); color: var(--muted); font-weight: 500; }
+  .pill.on { background: var(--ok-soft); color: var(--ok); }
+  .pill.rule { background: var(--accent-soft); color: var(--accent); }
+  .pill.ai { background: #FEF6E7; color: var(--warn); }
+  .pill.error { background: var(--err-soft); color: var(--err); }
   .muted { color: var(--muted); font-size: 13px; }
   .spacer { height: 10px; }
-  #toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); background: var(--panel2);
-    border: 1px solid var(--border); border-radius: 10px; padding: 10px 18px; display: none; }
+  details summary { cursor: pointer; color: var(--muted); font-size: 14px; }
+  #toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); background: var(--text); color: #fff;
+    border-radius: 10px; padding: 11px 20px; display: none; font-size: 14px; box-shadow: 0 8px 24px rgba(20,21,26,0.25); z-index: 50; }
   .right { text-align: right; }
   .mt { margin-top: 12px; }
+  .media-grid { display: flex; gap: 8px; overflow-x: auto; padding: 10px 2px; }
+  .media-grid img {
+    width: 76px; height: 76px; object-fit: cover; border-radius: 10px; cursor: pointer;
+    border: 3px solid transparent; flex-shrink: 0;
+  }
+  .media-grid img.sel { border-color: var(--accent); }
+  .media-grid .mtype { position: absolute; }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header><h1><b>Black</b> Shop</h1><small>respostas automáticas · Instagram &amp; Facebook</small></header>
+  <header>
+    <svg class="logo" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+      <rect width="48" height="48" rx="12" fill="#14151A"/>
+      <path d="M24 9.5c-6.9 0-12.5 4.9-12.5 11 0 3.6 2 6.8 5 8.8v6.2l5.4-3.2c.7.1 1.4.2 2.1.2 6.9 0 12.5-4.9 12.5-11s-5.6-11-12.5-11z" fill="#fff"/>
+      <path d="M20.5 20.5v-1.8a3.5 3.5 0 017 0v1.8" stroke="#14151A" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <rect x="18.2" y="19.6" width="11.6" height="8.6" rx="2" fill="#14151A"/>
+      <circle cx="22" cy="23" r="0.9" fill="#FF1F8E"/><circle cx="26" cy="23" r="0.9" fill="#FF1F8E"/>
+      <path d="M22 25.4c.6.6 1.4.9 2 .9s1.4-.3 2-.9" stroke="#FF1F8E" stroke-width="0.9" fill="none" stroke-linecap="round"/>
+    </svg>
+    <div>
+      <h1>Black<span>Shop</span></h1>
+      <small>respostas automáticas · Instagram &amp; Facebook</small>
+    </div>
+  </header>
 
   <div class="card" id="login-card">
-    <h2>Entrar</h2>
+    <h2 id="login-title">Entrar</h2>
     <div class="row">
       <div><label>E-mail</label><input id="l-email" type="email" placeholder="voce@email.com"></div>
       <div><label>Senha</label><input id="l-pass" type="password" placeholder="mínimo 8 caracteres"></div>
@@ -71,7 +96,7 @@
     <button id="l-submit" onclick="doAuth()">Entrar</button>
     <button class="ghost" id="l-toggle" onclick="toggleSignup()">Criar conta nova</button>
     <details class="mt">
-      <summary class="muted" style="cursor:pointer">acesso admin</summary>
+      <summary>acesso admin</summary>
       <label>Admin token</label>
       <div class="row">
         <input id="token" type="password" placeholder="cole o token de admin">
@@ -91,7 +116,7 @@
         <span class="muted"> · autorização oficial do Meta, 2 cliques</span>
       </div>
       <details class="mt">
-        <summary class="muted" style="cursor:pointer">+ adicionar conta manualmente (avançado)</summary>
+        <summary>+ adicionar conta manualmente (avançado)</summary>
         <div class="row">
           <div><label>Plataforma</label>
             <select id="acc-platform"><option value="instagram">Instagram</option><option value="facebook">Facebook</option></select></div>
@@ -116,7 +141,7 @@
           <tbody></tbody>
         </table>
         <details class="mt" id="rule-form">
-          <summary class="muted" style="cursor:pointer">+ nova regra</summary>
+          <summary>+ nova regra</summary>
           <div class="row">
             <div><label>Onde</label>
               <select id="r-surface" onchange="syncActionOptions()">
@@ -128,6 +153,17 @@
           </div>
           <label>Gatilho (palavra ou frase)</label>
           <input id="r-trigger" placeholder="ex: eu quero">
+          <div id="r-media-wrap">
+            <label>Vale para</label>
+            <select id="r-media-mode" onchange="mediaModeChanged()">
+              <option value="any">Qualquer publicação ou reel</option>
+              <option value="one">Uma publicação específica</option>
+            </select>
+            <div id="media-picker" style="display:none">
+              <div class="media-grid" id="media-grid"></div>
+              <span class="muted" id="media-hint">clica na publicação pra escolher</span>
+            </div>
+          </div>
           <label>Ação</label>
           <select id="r-action">
             <option value="both">Responder comentário + mandar DM</option>
@@ -137,7 +173,7 @@
           <div id="r-reply-wrap">
             <label>Respostas públicas — uma por linha, o robô sorteia uma a cada comentário (evita cair como spam)</label>
             <textarea id="r-reply" placeholder="Te chamei no direct! 💬&#10;Olha o direct! Te mandei mensagem 😉&#10;Corre lá no direct que te respondi 💬"></textarea>
-            <button class="ghost" style="margin-top:6px;padding:5px 12px" onclick="aiVariations()">✨ 5 variações com IA</button>
+            <button class="ghost" style="margin-top:6px;padding:6px 12px" onclick="aiVariations()">✨ 5 variações com IA</button>
           </div>
           <div id="r-dm-wrap"><label>Texto da DM</label>
             <textarea id="r-dm" placeholder="Oi! Aqui está o link: ..."></textarea></div>
@@ -161,7 +197,7 @@
       </div>
 
       <div class="card">
-        <h2>Últimos eventos <button class="ghost" style="float:right;padding:4px 10px" onclick="loadEvents()">atualizar</button></h2>
+        <h2>Últimos eventos <button class="ghost" style="float:right;padding:5px 12px" onclick="loadEvents()">atualizar</button></h2>
         <table id="events-table">
           <thead><tr><th>Quando (UTC)</th><th>Tipo</th><th>De</th><th>Texto</th><th>Respondido</th></tr></thead>
           <tbody></tbody>
@@ -178,16 +214,18 @@ let TOKEN = localStorage.getItem('black_token') || '';
 let ACCOUNTS = [];
 let SELECTED = null;
 let RULES = [];
-let EDITING = null; // id da regra em edição no formulário
+let EDITING = null;      // id da regra em edição no formulário
+let MEDIA = null;        // cache das publicações da conta selecionada
+let MEDIA_SEL = null;    // media_id escolhido no seletor
 
 const $ = (id) => document.getElementById(id);
 
 function toast(msg, isErr) {
   const t = $('toast');
   t.textContent = msg;
-  t.style.borderColor = isErr ? 'var(--err)' : 'var(--ok)';
+  t.style.background = isErr ? 'var(--err)' : 'var(--text)';
   t.style.display = 'block';
-  setTimeout(() => { t.style.display = 'none'; }, 3000);
+  setTimeout(() => { t.style.display = 'none'; }, 3200);
 }
 
 async function api(path, opts = {}) {
@@ -197,7 +235,7 @@ async function api(path, opts = {}) {
   });
   if (res.status === 401) {
     localStorage.removeItem('black_token');
-    toast('Token inválido — confere se copiou o token de admin certo', true);
+    toast('Sessão expirada — entra de novo', true);
     $('login-card').style.display = 'block';
     $('app').style.display = 'none';
     throw new Error('unauthorized');
@@ -207,26 +245,18 @@ async function api(path, opts = {}) {
   return data;
 }
 
-function saveToken() {
-  TOKEN = $('token').value.trim();
-  localStorage.setItem('black_token', TOKEN);
-  boot();
-}
-
+// ---- login ----
 let SIGNUP_MODE = false;
 function toggleSignup() {
   SIGNUP_MODE = !SIGNUP_MODE;
   $('signup-extra').style.display = SIGNUP_MODE ? 'block' : 'none';
   $('l-submit').textContent = SIGNUP_MODE ? 'Criar minha conta' : 'Entrar';
   $('l-toggle').textContent = SIGNUP_MODE ? 'já tenho conta' : 'Criar conta nova';
-  document.querySelector('#login-card h2').textContent = SIGNUP_MODE ? 'Criar conta' : 'Entrar';
+  $('login-title').textContent = SIGNUP_MODE ? 'Criar conta' : 'Entrar';
 }
 
 async function doAuth() {
-  const body = {
-    email: $('l-email').value.trim(),
-    password: $('l-pass').value,
-  };
+  const body = { email: $('l-email').value.trim(), password: $('l-pass').value };
   if (SIGNUP_MODE) body.name = $('l-name').value.trim();
   const res = await fetch(API_BASE + '/api/auth/' + (SIGNUP_MODE ? 'signup' : 'login'), {
     method: 'POST',
@@ -241,17 +271,10 @@ async function doAuth() {
   boot();
 }
 
-async function aiVariations() {
-  const base = $('r-reply').value.split('\n').map((s) => s.trim()).filter(Boolean)[0];
-  if (!base) { toast('escreve pelo menos uma resposta primeiro', true); return; }
-  toast('gerando variações...');
-  try {
-    const data = await api('/ai/variations', { method: 'POST', body: JSON.stringify({ text: base }) });
-    const existing = $('r-reply').value.split('\n').map((s) => s.trim()).filter(Boolean);
-    const merged = [...new Set([...existing, ...data.variations])];
-    $('r-reply').value = merged.join('\n');
-    toast('variações adicionadas — edita à vontade antes de salvar');
-  } catch { /* api() já mostrou o erro */ }
+function saveToken() {
+  TOKEN = $('token').value.trim();
+  localStorage.setItem('black_token', TOKEN);
+  boot();
 }
 
 async function boot() {
@@ -266,18 +289,19 @@ async function boot() {
   renderAccounts();
 }
 
+// ---- contas ----
 function renderAccounts() {
   const el = $('accounts');
   if (!ACCOUNTS.length) {
-    el.innerHTML = '<p class="muted">Nenhuma conta ainda. Adiciona a primeira aí embaixo 👇</p>';
+    el.innerHTML = '<p class="muted">Nenhuma conta ainda — conecta seu Instagram no botão aí embaixo 👇</p>';
     $('account-panels').style.display = 'none';
     return;
   }
   el.innerHTML = '<table><tbody>' + ACCOUNTS.map(a => `
     <tr>
       <td><b>${a.username ? '@' + a.username : '(sem nome)'}</b> <span class="pill">${a.platform}</span></td>
-      <td class="muted">${a.ig_user_id ? 'IG ' + a.ig_user_id : ''} ${a.page_id ? '· Page ' + a.page_id : ''}</td>
-      <td><span class="pill ${a.status === 'active' ? 'on' : 'off'}">${a.status}</span></td>
+      <td class="muted">${a.ig_user_id ? 'IG ' + a.ig_user_id : ''}</td>
+      <td><span class="pill ${a.status === 'active' ? 'on' : ''}">${a.status}</span></td>
       <td class="right"><button class="ghost" onclick="selectAccount('${a.id}')">gerenciar</button></td>
     </tr>`).join('') + '</tbody></table>';
   if (!SELECTED && ACCOUNTS.length) selectAccount(ACCOUNTS[0].id);
@@ -299,11 +323,41 @@ async function addAccount() {
 
 async function selectAccount(id) {
   SELECTED = ACCOUNTS.find(a => a.id === id);
+  MEDIA = null; MEDIA_SEL = null;
   $('sel-name').textContent = SELECTED.username ? '@' + SELECTED.username : SELECTED.platform;
   $('account-panels').style.display = 'block';
   await Promise.all([loadRules(), loadAi(), loadEvents()]);
 }
 
+// ---- publicações (seletor) ----
+function mediaModeChanged() {
+  const one = $('r-media-mode').value === 'one';
+  $('media-picker').style.display = one ? 'block' : 'none';
+  if (one && !MEDIA) loadMedia();
+  if (!one) MEDIA_SEL = null;
+}
+
+async function loadMedia() {
+  $('media-hint').textContent = 'carregando publicações...';
+  try {
+    MEDIA = await api(`/accounts/${SELECTED.id}/media`);
+  } catch { $('media-hint').textContent = 'não consegui carregar as publicações'; return; }
+  renderMediaGrid();
+}
+
+function renderMediaGrid() {
+  $('media-grid').innerHTML = MEDIA.map(mi => `
+    <img src="${mi.thumb ?? ''}" title="${esc(mi.caption)}" loading="lazy"
+         class="${MEDIA_SEL === mi.id ? 'sel' : ''}" onclick="pickMedia('${mi.id}')">`).join('');
+  $('media-hint').textContent = MEDIA_SEL ? 'publicação escolhida ✓' : 'clica na publicação pra escolher';
+}
+
+function pickMedia(id) {
+  MEDIA_SEL = MEDIA_SEL === id ? null : id;
+  renderMediaGrid();
+}
+
+// ---- regras ----
 function syncActionOptions() {
   const dm = $('r-surface').value === 'dm';
   $('r-action').innerHTML = dm
@@ -312,6 +366,7 @@ function syncActionOptions() {
        <option value="reply_comment">Só responder o comentário</option>
        <option value="private_reply">Só mandar DM (private reply)</option>`;
   $('r-reply-wrap').style.display = dm ? 'none' : 'block';
+  $('r-media-wrap').style.display = dm ? 'none' : 'block';
 }
 
 const ACTION_LABEL = {
@@ -319,19 +374,29 @@ const ACTION_LABEL = {
   private_reply: 'manda DM', dm_reply: 'responde DM',
 };
 
+function ruleReplies(r) {
+  try {
+    const v = JSON.parse(r.reply_variations ?? 'null');
+    if (Array.isArray(v) && v.length) return v;
+  } catch {}
+  return r.reply_text ? [r.reply_text] : [];
+}
+
 async function loadRules() {
   const rules = await api(`/accounts/${SELECTED.id}/rules`);
   RULES = rules;
   $('rules-table').querySelector('tbody').innerHTML = rules.length ? rules.map(r => `
     <tr style="${r.active ? '' : 'opacity:.45'}">
       <td><span class="pill">${r.surface === 'dm' ? 'DM' : 'comentário'}</span></td>
-      <td><b>${esc(r.trigger_text)}</b> <span class="muted">(${r.match_type})</span>${ruleReplies(r).length > 1 ? ` <span class="pill rule">${ruleReplies(r).length} variações</span>` : ''}<br>
+      <td><b>${esc(r.trigger_text)}</b> <span class="muted">(${r.match_type})</span>
+          ${ruleReplies(r).length > 1 ? ` <span class="pill rule">${ruleReplies(r).length} variações</span>` : ''}
+          ${r.media_id ? ' <span class="pill rule">📍 publicação específica</span>' : ''}<br>
           <span class="muted">${esc(r.reply_text || '')}${r.reply_text && r.dm_text ? ' · ' : ''}${esc(r.dm_text || '')}</span></td>
       <td>${ACTION_LABEL[r.action] || r.action}</td>
       <td>${r.priority}</td>
       <td style="white-space:nowrap">
-        <button class="ghost" style="padding:4px 10px" onclick="editRule('${r.id}')">editar</button>
-        <button class="ghost" style="padding:4px 10px" onclick="toggleRule('${r.id}', ${r.active ? 0 : 1})">${r.active ? 'pausar' : 'ativar'}</button>
+        <button class="ghost" style="padding:5px 10px" onclick="editRule('${r.id}')">editar</button>
+        <button class="ghost" style="padding:5px 10px" onclick="toggleRule('${r.id}', ${r.active ? 0 : 1})">${r.active ? 'pausar' : 'ativar'}</button>
       </td>
       <td><button class="danger" onclick="delRule('${r.id}')">excluir</button></td>
     </tr>`).join('') : '<tr><td colspan="6" class="muted">Nenhuma regra ainda.</td></tr>';
@@ -340,6 +405,10 @@ async function loadRules() {
 async function addRule() {
   const surface = $('r-surface').value;
   const replyLines = $('r-reply').value.split('\n').map((s) => s.trim()).filter(Boolean);
+  if (surface === 'comment' && $('r-media-mode').value === 'one' && !MEDIA_SEL) {
+    toast('escolhe a publicação (ou muda pra "qualquer publicação")', true);
+    return;
+  }
   const body = {
     surface,
     match_type: $('r-match').value,
@@ -349,6 +418,7 @@ async function addRule() {
     reply_variations: replyLines.length > 1 ? replyLines : null,
     dm_text: $('r-dm').value.trim() || null,
     priority: Number($('r-priority').value) || 100,
+    media_id: surface === 'comment' && $('r-media-mode').value === 'one' ? MEDIA_SEL : null,
   };
   if (EDITING) {
     await api(`/rules/${EDITING}`, { method: 'PUT', body: JSON.stringify(body) });
@@ -373,6 +443,10 @@ function editRule(id) {
   if (r.surface !== 'dm') $('r-action').value = r.action;
   $('r-reply').value = ruleReplies(r).join('\n');
   $('r-dm').value = r.dm_text || '';
+  $('r-media-mode').value = r.media_id ? 'one' : 'any';
+  MEDIA_SEL = r.media_id || null;
+  mediaModeChanged();
+  if (MEDIA) renderMediaGrid();
   $('r-save').textContent = 'Salvar alterações';
   $('r-cancel').style.display = 'inline-block';
   const form = $('rule-form');
@@ -385,6 +459,9 @@ function cancelEdit() {
   EDITING = null;
   $('r-trigger').value = ''; $('r-reply').value = ''; $('r-dm').value = '';
   $('r-priority').value = 100;
+  $('r-media-mode').value = 'any';
+  MEDIA_SEL = null;
+  mediaModeChanged();
   $('r-save').textContent = 'Salvar regra';
   $('r-cancel').style.display = 'none';
   $('rule-form').querySelector('summary').textContent = '+ nova regra';
@@ -402,6 +479,20 @@ async function delRule(id) {
   loadRules();
 }
 
+async function aiVariations() {
+  const base = $('r-reply').value.split('\n').map((s) => s.trim()).filter(Boolean)[0];
+  if (!base) { toast('escreve pelo menos uma resposta primeiro', true); return; }
+  toast('gerando variações...');
+  try {
+    const data = await api('/ai/variations', { method: 'POST', body: JSON.stringify({ text: base }) });
+    const existing = $('r-reply').value.split('\n').map((s) => s.trim()).filter(Boolean);
+    const merged = [...new Set([...existing, ...data.variations])];
+    $('r-reply').value = merged.join('\n');
+    toast('variações adicionadas — edita à vontade antes de salvar');
+  } catch { /* api() já mostrou o erro */ }
+}
+
+// ---- IA ----
 async function loadAi() {
   const ai = await api(`/accounts/${SELECTED.id}/ai`);
   $('ai-dm').checked = !!ai.dm_enabled;
@@ -421,6 +512,7 @@ async function saveAi() {
   toast('IA atualizada');
 }
 
+// ---- eventos ----
 async function loadEvents() {
   const evs = await api(`/accounts/${SELECTED.id}/events`);
   $('events-table').querySelector('tbody').innerHTML = evs.length ? evs.map(e => `
@@ -429,17 +521,8 @@ async function loadEvents() {
       <td>${e.type}</td>
       <td>${esc(e.from_username || e.from_id || '?')}</td>
       <td>${esc((e.text || '').slice(0, 80))}</td>
-      <td><span class="pill ${e.status === 'error' ? 'error' : e.responded_via}">${e.status === 'error' ? 'erro' : e.responded_via === 'rule' ? 'regra' : e.responded_via === 'ai' ? 'IA' : '—'}</span></td>
+      <td><span class="pill ${e.status === 'error' ? 'error' : e.responded_via === 'rule' ? 'rule' : e.responded_via === 'ai' ? 'ai' : ''}">${e.status === 'error' ? 'erro' : e.responded_via === 'rule' ? 'regra' : e.responded_via === 'ai' ? 'IA' : '—'}</span></td>
     </tr>`).join('') : '<tr><td colspan="5" class="muted">Nenhum evento ainda — assim que chegar comentário ou DM, aparece aqui.</td></tr>';
-}
-
-// Lista de respostas públicas da regra (variações ou a única)
-function ruleReplies(r) {
-  try {
-    const v = JSON.parse(r.reply_variations ?? 'null');
-    if (Array.isArray(v) && v.length) return v;
-  } catch {}
-  return r.reply_text ? [r.reply_text] : [];
 }
 
 function esc(s) {
