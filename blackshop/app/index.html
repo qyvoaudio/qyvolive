@@ -126,7 +126,8 @@
           <div id="r-dm-wrap"><label>Texto da DM</label>
             <textarea id="r-dm" placeholder="Oi! Aqui está o link: ..."></textarea></div>
           <div class="spacer"></div>
-          <button onclick="addRule()">Salvar regra</button>
+          <button id="r-save" onclick="addRule()">Salvar regra</button>
+          <button id="r-cancel" class="ghost" style="display:none" onclick="cancelEdit()">cancelar edição</button>
         </details>
       </div>
 
@@ -160,6 +161,8 @@ const API_BASE = 'https://black-shop.caroldepaz.workers.dev';
 let TOKEN = localStorage.getItem('black_token') || '';
 let ACCOUNTS = [];
 let SELECTED = null;
+let RULES = [];
+let EDITING = null; // id da regra em edição no formulário
 
 const $ = (id) => document.getElementById(id);
 
@@ -260,6 +263,7 @@ const ACTION_LABEL = {
 
 async function loadRules() {
   const rules = await api(`/accounts/${SELECTED.id}/rules`);
+  RULES = rules;
   $('rules-table').querySelector('tbody').innerHTML = rules.length ? rules.map(r => `
     <tr style="${r.active ? '' : 'opacity:.45'}">
       <td><span class="pill">${r.surface === 'dm' ? 'DM' : 'comentário'}</span></td>
@@ -267,7 +271,10 @@ async function loadRules() {
           <span class="muted">${esc(r.reply_text || '')}${r.reply_text && r.dm_text ? ' · ' : ''}${esc(r.dm_text || '')}</span></td>
       <td>${ACTION_LABEL[r.action] || r.action}</td>
       <td>${r.priority}</td>
-      <td><button class="ghost" style="padding:4px 10px" onclick="toggleRule('${r.id}', ${r.active ? 0 : 1})">${r.active ? 'pausar' : 'ativar'}</button></td>
+      <td style="white-space:nowrap">
+        <button class="ghost" style="padding:4px 10px" onclick="editRule('${r.id}')">editar</button>
+        <button class="ghost" style="padding:4px 10px" onclick="toggleRule('${r.id}', ${r.active ? 0 : 1})">${r.active ? 'pausar' : 'ativar'}</button>
+      </td>
       <td><button class="danger" onclick="delRule('${r.id}')">excluir</button></td>
     </tr>`).join('') : '<tr><td colspan="6" class="muted">Nenhuma regra ainda.</td></tr>';
 }
@@ -283,10 +290,44 @@ async function addRule() {
     dm_text: $('r-dm').value.trim() || null,
     priority: Number($('r-priority').value) || 100,
   };
-  await api(`/accounts/${SELECTED.id}/rules`, { method: 'POST', body: JSON.stringify(body) });
-  toast('regra criada');
-  $('r-trigger').value = ''; $('r-reply').value = ''; $('r-dm').value = '';
+  if (EDITING) {
+    await api(`/rules/${EDITING}`, { method: 'PUT', body: JSON.stringify(body) });
+    toast('regra atualizada');
+  } else {
+    await api(`/accounts/${SELECTED.id}/rules`, { method: 'POST', body: JSON.stringify(body) });
+    toast('regra criada');
+  }
+  cancelEdit();
   loadRules();
+}
+
+function editRule(id) {
+  const r = RULES.find((x) => x.id === id);
+  if (!r) return;
+  EDITING = id;
+  $('r-surface').value = r.surface;
+  syncActionOptions();
+  $('r-match').value = r.match_type;
+  $('r-priority').value = r.priority;
+  $('r-trigger').value = r.trigger_text;
+  if (r.surface !== 'dm') $('r-action').value = r.action;
+  $('r-reply').value = r.reply_text || '';
+  $('r-dm').value = r.dm_text || '';
+  $('r-save').textContent = 'Salvar alterações';
+  $('r-cancel').style.display = 'inline-block';
+  const form = $('rule-form');
+  form.open = true;
+  form.querySelector('summary').textContent = `✏️ editando: "${r.trigger_text}"`;
+  form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function cancelEdit() {
+  EDITING = null;
+  $('r-trigger').value = ''; $('r-reply').value = ''; $('r-dm').value = '';
+  $('r-priority').value = 100;
+  $('r-save').textContent = 'Salvar regra';
+  $('r-cancel').style.display = 'none';
+  $('rule-form').querySelector('summary').textContent = '+ nova regra';
 }
 
 async function toggleRule(id, active) {
