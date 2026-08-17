@@ -209,6 +209,14 @@
         </div>
         <details class="mt" id="flow-form">
           <summary>+ nova sequência</summary>
+          <label>Começar de um modelo pronto (opcional — tudo editável depois)</label>
+          <select id="f-template" onchange="applyTemplate()">
+            <option value="">— montar do zero —</option>
+            <option value="lead">📧 Captura de e-mail (lead)</option>
+            <option value="link">🔗 Entrega de link (comenta e recebe)</option>
+            <option value="grupo">📱 Convite pro grupo do WhatsApp</option>
+            <option value="atendimento">💬 Triagem de atendimento</option>
+          </select>
           <label>Nome da sequência</label>
           <input id="f-name" placeholder="ex: Boas-vindas, Qual seu tamanho?, Promoção do reel">
           <div id="f-steps"></div>
@@ -602,6 +610,59 @@ async function loadFlows() {
   renderDmModeOptions();
 }
 
+// Modelos prontos — o cliente troca os [textos entre colchetes] pelos dele
+const FLOW_TEMPLATES = {
+  lead: {
+    name: 'Captura de e-mail',
+    steps: [
+      { step_key: 'start', message: 'Oi! Que bom te ver por aqui 🖤 Quer receber [o que você vai entregar: desconto, novidades, material]?', buttons: [
+        { title: 'Quero sim!', action: 'email' },
+        { title: 'Agora não', action: 'goto', next: 'tchau' },
+      ] },
+      { step_key: 'tchau', message: 'Tranquilo! Qualquer coisa é só chamar aqui 👋', buttons: [] },
+    ],
+  },
+  link: {
+    name: 'Entrega de link',
+    steps: [
+      { step_key: 'start', message: 'Chegou! 🎉 Toca no botão que te mando o link:', buttons: [
+        { title: 'Me manda o link', action: 'link', link: 'https://[seu-link-aqui]' },
+      ] },
+    ],
+  },
+  grupo: {
+    name: 'Convite pro grupo',
+    steps: [
+      { step_key: 'start', message: 'Tenho um grupo no WhatsApp com [o que rola no grupo: ofertas, avisos, conteúdo]. Quer entrar?', buttons: [
+        { title: 'Quero entrar!', action: 'wa' },
+        { title: 'Agora não', action: 'goto', next: 'tchau' },
+      ] },
+      { step_key: 'tchau', message: 'Fechou! Se mudar de ideia, é só mandar mensagem 👋', buttons: [] },
+    ],
+  },
+  atendimento: {
+    name: 'Triagem de atendimento',
+    steps: [
+      { step_key: 'start', message: 'Oi! Como posso te ajudar? 🖤', buttons: [
+        { title: 'Ver produtos', action: 'link', link: 'https://[link-da-loja]' },
+        { title: 'Falar com alguém', action: 'goto', next: 'humano' },
+        { title: 'Outra dúvida', action: 'goto', next: 'duvida' },
+      ] },
+      { step_key: 'humano', message: 'Já te respondo pessoalmente, só um instante! 🙋‍♀️', buttons: [] },
+      { step_key: 'duvida', message: 'Manda sua dúvida aqui que eu respondo já já!', buttons: [] },
+    ],
+  },
+};
+
+function applyTemplate() {
+  const t = FLOW_TEMPLATES[$('f-template').value];
+  if (!t) return;
+  $('f-name').value = t.name;
+  FSTEPS = t.steps.map((s) => ({ step_key: s.step_key, message: s.message, buttons: s.buttons.map((b) => ({ ...b })) }));
+  renderSteps();
+  toast('modelo carregado — troca os [textos entre colchetes] pelos seus');
+}
+
 function stepLabel(key) { return key === 'start' ? 'Início' : key; }
 
 function renderSteps() {
@@ -693,6 +754,7 @@ function editFlow(id) {
 function cancelFlowEdit() {
   FLOW_EDITING = null;
   $('f-name').value = '';
+  $('f-template').value = '';
   FSTEPS = [{ step_key: 'start', message: '', buttons: [] }];
   renderSteps();
   $('f-save').textContent = 'Salvar sequência';
