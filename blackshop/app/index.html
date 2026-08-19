@@ -187,6 +187,11 @@
               <label>Texto da DM</label>
               <textarea id="r-dm" placeholder="Oi! Aqui está o link: ..."></textarea>
             </div>
+            <div id="r-cards-wrap" style="display:none">
+              <div id="cards-editor"></div>
+              <button class="ghost" style="padding:5px 12px" onclick="RCARDS.push({image:'',title:'',subtitle:'',button_title:'',url:''});renderCards()">+ cartão</button>
+              <span class="muted">até 10 cartões — com 2 ou mais vira carrossel deslizante na DM</span>
+            </div>
           </div>
           <div class="spacer"></div>
           <button id="r-save" onclick="addRule()">Salvar regra</button>
@@ -502,7 +507,8 @@ async function addRule() {
     reply_text: replyLines[0] ?? null,
     reply_variations: replyLines.length > 1 ? replyLines : null,
     dm_text: $('r-dm-mode').value === 'text' ? ($('r-dm').value.trim() || null) : null,
-    flow_id: $('r-dm-mode').value === 'text' ? null : $('r-dm-mode').value,
+    cards: $('r-dm-mode').value === 'cards' ? RCARDS.filter((c) => c.title.trim() && c.url.trim()) : null,
+    flow_id: ['text', 'cards'].includes($('r-dm-mode').value) ? null : $('r-dm-mode').value,
     priority: Number($('r-priority').value) || 5,
     media_id: surface === 'comment' && $('r-media-mode').value === 'one' ? MEDIA_SEL : null,
   };
@@ -529,7 +535,12 @@ function editRule(id) {
   if (r.surface !== 'dm') $('r-action').value = r.action;
   $('r-reply').value = ruleReplies(r).join('\n');
   $('r-dm').value = r.dm_text || '';
-  $('r-dm-mode').value = r.flow_id && [...$('r-dm-mode').options].some((o) => o.value === r.flow_id) ? r.flow_id : 'text';
+  let rCardsParsed = [];
+  try { rCardsParsed = JSON.parse(r.cards ?? '[]') || []; } catch {}
+  $('r-dm-mode').value = rCardsParsed.length ? 'cards'
+    : r.flow_id && [...$('r-dm-mode').options].some((o) => o.value === r.flow_id) ? r.flow_id : 'text';
+  RCARDS = rCardsParsed.map((c) => ({ ...c }));
+  if (RCARDS.length) renderCards();
   dmModeChanged();
   $('r-media-mode').value = r.media_id ? 'one' : 'any';
   MEDIA_SEL = r.media_id || null;
@@ -549,6 +560,7 @@ function cancelEdit() {
   $('r-priority').value = 5;
   $('r-media-mode').value = 'any';
   $('r-dm-mode').value = 'text';
+  RCARDS = [];
   dmModeChanged();
   MEDIA_SEL = null;
   mediaModeChanged();
@@ -774,18 +786,42 @@ async function delFlow(id) {
   loadFlows(); loadRules();
 }
 
-// select "Resposta na DM" da regra: texto fixo ou uma sequência
+// select "Resposta na DM" da regra: texto fixo, cartões ou uma sequência
+let RCARDS = [];
+
 function renderDmModeOptions() {
   const sel = $('r-dm-mode');
   const current = sel.value;
   sel.innerHTML = '<option value="text">Texto fixo</option>' +
+    '<option value="cards">🃏 Cartões com imagem e botão de link</option>' +
     FLOWS.map((f) => `<option value="${f.id}">Sequência: ${esc(f.name)}</option>`).join('');
   sel.value = [...sel.options].some((o) => o.value === current) ? current : 'text';
   dmModeChanged();
 }
 
 function dmModeChanged() {
-  $('r-dm-text-wrap').style.display = $('r-dm-mode').value === 'text' ? 'block' : 'none';
+  const mode = $('r-dm-mode').value;
+  $('r-dm-text-wrap').style.display = mode === 'text' ? 'block' : 'none';
+  $('r-cards-wrap').style.display = mode === 'cards' ? 'block' : 'none';
+  if (mode === 'cards' && !RCARDS.length) { RCARDS = [{ image: '', title: '', subtitle: '', button_title: '', url: '' }]; renderCards(); }
+}
+
+function renderCards() {
+  $('cards-editor').innerHTML = RCARDS.map((c, i) => `
+    <div style="border:1px solid var(--border);border-radius:12px;padding:12px;margin:10px 0;background:var(--panel2)">
+      <div style="display:flex;justify-content:space-between"><b>Cartão ${i + 1}</b>
+        ${RCARDS.length > 1 ? `<button class="danger" onclick="RCARDS.splice(${i},1);renderCards()">remover</button>` : ''}</div>
+      <div class="row">
+        <div><label>Título*</label><input value="${esc(c.title)}" maxlength="80" placeholder="ex: Mesa Champanheira 3 em 1" oninput="RCARDS[${i}].title=this.value"></div>
+        <div><label>Subtítulo</label><input value="${esc(c.subtitle || '')}" maxlength="80" placeholder="detalhe curto (opcional)" oninput="RCARDS[${i}].subtitle=this.value"></div>
+      </div>
+      <label>Link da imagem (o endereço da foto do produto)</label>
+      <input value="${esc(c.image || '')}" placeholder="https://... (botão direito na foto → copiar endereço da imagem)" oninput="RCARDS[${i}].image=this.value">
+      <div class="row">
+        <div><label>Texto do botão</label><input value="${esc(c.button_title || '')}" maxlength="20" placeholder="ex: TODAS OPÇÕES AQUI" oninput="RCARDS[${i}].button_title=this.value"></div>
+        <div><label>Link do botão*</label><input value="${esc(c.url || '')}" placeholder="https://seu-link" oninput="RCARDS[${i}].url=this.value"></div>
+      </div>
+    </div>`).join('');
 }
 
 // ---- live chat ----
