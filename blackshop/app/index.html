@@ -501,6 +501,18 @@ async function loadRules() {
 
 async function addRule() {
   const surface = $('r-surface').value;
+  if (!$('r-trigger').value.trim()) {
+    toast('falta o GATILHO — a palavra que a pessoa comenta ou manda pra disparar (ex: "eu quero")', true);
+    $('r-trigger').focus();
+    return;
+  }
+  if ($('r-dm-mode').value === 'cards') {
+    const invalid = RCARDS.find((c) => !c.title.trim() || !/^https?:\/\//.test(c.url.trim()));
+    if (invalid || !RCARDS.length) {
+      toast('cada cartão precisa de título e link começando com https://', true);
+      return;
+    }
+  }
   const replyLines = $('r-reply').value.split('\n').map((s) => s.trim()).filter(Boolean);
   if (surface === 'comment' && $('r-media-mode').value === 'one' && !MEDIA_SELS.length) {
     toast('escolhe pelo menos uma publicação (ou muda pra "qualquer publicação")', true);
