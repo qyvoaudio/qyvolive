@@ -160,7 +160,7 @@
             <label>Vale para</label>
             <select id="r-media-mode" onchange="mediaModeChanged()">
               <option value="any">Qualquer publicação ou reel</option>
-              <option value="one">Uma publicação específica</option>
+              <option value="one">Publicações específicas (uma ou várias)</option>
             </select>
             <div id="media-picker" style="display:none">
               <div class="media-grid" id="media-grid"></div>
@@ -300,7 +300,7 @@ let SELECTED = null;
 let RULES = [];
 let EDITING = null;      // id da regra em edição no formulário
 let MEDIA = null;        // cache das publicações da conta selecionada
-let MEDIA_SEL = null;    // media_id escolhido no seletor
+let MEDIA_SELS = [];     // media_ids escolhidos no seletor (uma ou várias)
 
 const $ = (id) => document.getElementById(id);
 
@@ -410,7 +410,7 @@ async function addAccount() {
 
 async function selectAccount(id) {
   SELECTED = ACCOUNTS.find(a => a.id === id);
-  MEDIA = null; MEDIA_SEL = null;
+  MEDIA = null; MEDIA_SELS = [];
   $('wa-link').value = SELECTED.wa_group_link || '';
   $('sel-name').textContent = SELECTED.username ? '@' + SELECTED.username : SELECTED.platform;
   $('account-panels').style.display = 'block';
@@ -422,7 +422,7 @@ function mediaModeChanged() {
   const one = $('r-media-mode').value === 'one';
   $('media-picker').style.display = one ? 'block' : 'none';
   if (one && !MEDIA) loadMedia();
-  if (!one) MEDIA_SEL = null;
+  if (!one) MEDIA_SELS = [];
 }
 
 async function loadMedia() {
@@ -436,13 +436,20 @@ async function loadMedia() {
 function renderMediaGrid() {
   $('media-grid').innerHTML = MEDIA.map(mi => `
     <img src="${mi.thumb ?? ''}" title="${esc(mi.caption)}" loading="lazy"
-         class="${MEDIA_SEL === mi.id ? 'sel' : ''}" onclick="pickMedia('${mi.id}')">`).join('');
-  $('media-hint').textContent = MEDIA_SEL ? 'publicação escolhida ✓' : 'clica na publicação pra escolher';
+         class="${MEDIA_SELS.includes(mi.id) ? 'sel' : ''}" onclick="pickMedia('${mi.id}')">`).join('');
+  $('media-hint').textContent = MEDIA_SELS.length ? `${MEDIA_SELS.length} publicação(ões) escolhida(s) ✓ — toca pra adicionar ou remover` : 'toca nas publicações pra escolher (pode mais de uma)';
 }
 
 function pickMedia(id) {
-  MEDIA_SEL = MEDIA_SEL === id ? null : id;
+  MEDIA_SELS = MEDIA_SELS.includes(id) ? MEDIA_SELS.filter((x) => x !== id) : [...MEDIA_SELS, id];
   renderMediaGrid();
+}
+
+// media_id da regra: null, id único ou JSON de vários
+function ruleMediaIds(r) {
+  if (!r.media_id) return [];
+  try { const a = JSON.parse(r.media_id); if (Array.isArray(a)) return a; } catch {}
+  return [r.media_id];
 }
 
 // ---- regras ----
@@ -479,7 +486,7 @@ async function loadRules() {
       <td><span class="pill">${r.surface === 'dm' ? 'DM' : r.surface === 'story' ? 'story' : 'comentário'}</span></td>
       <td><b>${esc(r.trigger_text)}</b> <span class="muted">(${r.match_type})</span>
           ${ruleReplies(r).length > 1 ? ` <span class="pill rule">${ruleReplies(r).length} variações</span>` : ''}
-          ${r.media_id ? ' <span class="pill rule">📍 publicação específica</span>' : ''}
+          ${ruleMediaIds(r).length ? ` <span class="pill rule">📍 ${ruleMediaIds(r).length} publicaç${ruleMediaIds(r).length > 1 ? 'ões' : 'ão'}</span>` : ''}
           ${r.flow_id ? ' <span class="pill rule">🔀 sequência</span>' : ''}<br>
           <span class="muted">${esc(r.reply_text || '')}${r.reply_text && r.dm_text ? ' · ' : ''}${esc(r.dm_text || '')}</span></td>
       <td>${ACTION_LABEL[r.action] || r.action}</td>
@@ -495,8 +502,8 @@ async function loadRules() {
 async function addRule() {
   const surface = $('r-surface').value;
   const replyLines = $('r-reply').value.split('\n').map((s) => s.trim()).filter(Boolean);
-  if (surface === 'comment' && $('r-media-mode').value === 'one' && !MEDIA_SEL) {
-    toast('escolhe a publicação (ou muda pra "qualquer publicação")', true);
+  if (surface === 'comment' && $('r-media-mode').value === 'one' && !MEDIA_SELS.length) {
+    toast('escolhe pelo menos uma publicação (ou muda pra "qualquer publicação")', true);
     return;
   }
   const body = {
@@ -510,7 +517,7 @@ async function addRule() {
     cards: $('r-dm-mode').value === 'cards' ? RCARDS.filter((c) => c.title.trim() && c.url.trim()) : null,
     flow_id: ['text', 'cards'].includes($('r-dm-mode').value) ? null : $('r-dm-mode').value,
     priority: Number($('r-priority').value) || 5,
-    media_id: surface === 'comment' && $('r-media-mode').value === 'one' ? MEDIA_SEL : null,
+    media_id: surface === 'comment' && $('r-media-mode').value === 'one' && MEDIA_SELS.length ? MEDIA_SELS : null,
   };
   if (EDITING) {
     await api(`/rules/${EDITING}`, { method: 'PUT', body: JSON.stringify(body) });
@@ -543,7 +550,7 @@ function editRule(id) {
   if (RCARDS.length) renderCards();
   dmModeChanged();
   $('r-media-mode').value = r.media_id ? 'one' : 'any';
-  MEDIA_SEL = r.media_id || null;
+  MEDIA_SELS = ruleMediaIds(r);
   mediaModeChanged();
   if (MEDIA) renderMediaGrid();
   $('r-save').textContent = 'Salvar alterações';
@@ -562,7 +569,7 @@ function cancelEdit() {
   $('r-dm-mode').value = 'text';
   RCARDS = [];
   dmModeChanged();
-  MEDIA_SEL = null;
+  MEDIA_SELS = [];
   mediaModeChanged();
   $('r-save').textContent = 'Salvar regra';
   $('r-cancel').style.display = 'none';
