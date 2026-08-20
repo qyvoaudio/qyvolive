@@ -137,6 +137,10 @@
         </table>
         <details class="mt" id="rule-form">
           <summary>+ nova regra</summary>
+          <label>Produto (opcional — agrupa as regras e facilita achar depois)</label>
+          <select id="r-product" onchange="productChanged()">
+            <option value="">— sem produto —</option>
+          </select>
           <div class="row">
             <div><label>Onde</label>
               <select id="r-surface" onchange="syncActionOptions()">
@@ -164,7 +168,8 @@
             </select>
             <div id="media-picker" style="display:none">
               <div class="media-grid" id="media-grid"></div>
-              <span class="muted" id="media-hint">clica na publicação pra escolher</span>
+              <span class="muted" id="media-hint">toca nas publicações pra escolher</span>
+              <button class="ghost" id="media-more" style="display:none;padding:5px 12px;margin-left:8px" onclick="loadMedia(true)">⬇️ ver posts mais antigos</button>
             </div>
           </div>
           <label>Ação</label>
@@ -300,6 +305,8 @@ let SELECTED = null;
 let RULES = [];
 let EDITING = null;      // id da regra em edição no formulário
 let MEDIA = null;        // cache das publicações da conta selecionada
+let MEDIA_NEXT = null;   // cursor pra carregar posts mais antigos
+let PRODUCTS = [];       // produtos da conta (agrupam regras)
 let MEDIA_SELS = [];     // media_ids escolhidos no seletor (uma ou várias)
 
 const $ = (id) => document.getElementById(id);
@@ -414,6 +421,7 @@ async function selectAccount(id) {
   $('wa-link').value = SELECTED.wa_group_link || '';
   $('sel-name').textContent = SELECTED.username ? '@' + SELECTED.username : SELECTED.platform;
   $('account-panels').style.display = 'block';
+  await loadProducts();
   await Promise.all([loadRules(), loadFlows(), loadAi(), loadEvents(), loadConversations(), loadContacts()]);
 }
 
@@ -425,10 +433,13 @@ function mediaModeChanged() {
   if (!one) MEDIA_SELS = [];
 }
 
-async function loadMedia() {
+async function loadMedia(older = false) {
   $('media-hint').textContent = 'carregando publicações...';
   try {
-    MEDIA = await api(`/accounts/${SELECTED.id}/media`);
+    const q = older && MEDIA_NEXT ? `?after=${encodeURIComponent(MEDIA_NEXT)}` : '';
+    const data = await api(`/accounts/${SELECTED.id}/media${q}`);
+    MEDIA = older ? [...(MEDIA ?? []), ...data.items] : data.items;
+    MEDIA_NEXT = data.next;
   } catch { $('media-hint').textContent = 'não consegui carregar as publicações'; return; }
   renderMediaGrid();
 }
@@ -438,6 +449,7 @@ function renderMediaGrid() {
     <img src="${mi.thumb ?? ''}" title="${esc(mi.caption)}" loading="lazy"
          class="${MEDIA_SELS.includes(mi.id) ? 'sel' : ''}" onclick="pickMedia('${mi.id}')">`).join('');
   $('media-hint').textContent = MEDIA_SELS.length ? `${MEDIA_SELS.length} publicação(ões) escolhida(s) ✓ — toca pra adicionar ou remover` : 'toca nas publicações pra escolher (pode mais de uma)';
+  $('media-more').style.display = MEDIA_NEXT ? 'inline-block' : 'none';
 }
 
 function pickMedia(id) {
@@ -450,6 +462,33 @@ function ruleMediaIds(r) {
   if (!r.media_id) return [];
   try { const a = JSON.parse(r.media_id); if (Array.isArray(a)) return a; } catch {}
   return [r.media_id];
+}
+
+// ---- produtos ----
+async function loadProducts() {
+  PRODUCTS = await api(`/accounts/${SELECTED.id}/products`);
+  renderProductOptions();
+}
+
+function renderProductOptions() {
+  const sel = $('r-product');
+  const current = sel.value;
+  sel.innerHTML = '<option value="">— sem produto —</option>' +
+    PRODUCTS.map((p) => `<option value="${p.id}">📦 ${esc(p.name)}</option>`).join('') +
+    '<option value="__new">➕ criar produto novo…</option>';
+  sel.value = [...sel.options].some((o) => o.value === current) ? current : '';
+}
+
+async function productChanged() {
+  if ($('r-product').value !== '__new') return;
+  const name = prompt('Nome do produto:');
+  if (!name?.trim()) { $('r-product').value = ''; return; }
+  const p = await api(`/accounts/${SELECTED.id}/products`, { method: 'POST', body: JSON.stringify({ name: name.trim() }) });
+  PRODUCTS.push(p);
+  PRODUCTS.sort((a, b) => a.name.localeCompare(b.name));
+  renderProductOptions();
+  $('r-product').value = p.id;
+  toast(`produto "${p.name}" criado`);
 }
 
 // ---- regras ----
@@ -481,12 +520,13 @@ function ruleReplies(r) {
 async function loadRules() {
   const rules = await api(`/accounts/${SELECTED.id}/rules`);
   RULES = rules;
-  $('rules-table').querySelector('tbody').innerHTML = rules.length ? rules.map(r => `
+  const rowHtml = (r) => `
     <tr style="${r.active ? '' : 'opacity:.45'}">
       <td><span class="pill">${r.surface === 'dm' ? 'DM' : r.surface === 'story' ? 'story' : 'comentário'}</span></td>
       <td><b>${esc(r.trigger_text)}</b> <span class="muted">(${r.match_type})</span>
           ${ruleReplies(r).length > 1 ? ` <span class="pill rule">${ruleReplies(r).length} variações</span>` : ''}
           ${ruleMediaIds(r).length ? ` <span class="pill rule">📍 ${ruleMediaIds(r).length} publicaç${ruleMediaIds(r).length > 1 ? 'ões' : 'ão'}</span>` : ''}
+          ${r.cards ? ' <span class="pill rule">🃏 cartões</span>' : ''}
           ${r.flow_id ? ' <span class="pill rule">🔀 sequência</span>' : ''}<br>
           <span class="muted">${esc(r.reply_text || '')}${r.reply_text && r.dm_text ? ' · ' : ''}${esc(r.dm_text || '')}</span></td>
       <td>${ACTION_LABEL[r.action] || r.action}</td>
@@ -496,7 +536,20 @@ async function loadRules() {
         <button class="ghost" style="padding:5px 10px" onclick="toggleRule('${r.id}', ${r.active ? 0 : 1})">${r.active ? 'pausar' : 'ativar'}</button>
       </td>
       <td><button class="danger" onclick="delRule('${r.id}')">excluir</button></td>
-    </tr>`).join('') : '<tr><td colspan="6" class="muted">Nenhuma regra ainda.</td></tr>';
+    </tr>`;
+
+  let html = '';
+  for (const p of PRODUCTS) {
+    const rs = rules.filter((r) => r.product_id === p.id);
+    if (!rs.length) continue;
+    html += `<tr><td colspan="6" style="background:var(--panel2);font-weight:700;border-radius:8px">📦 ${esc(p.name)}</td></tr>` + rs.map(rowHtml).join('');
+  }
+  const solo = rules.filter((r) => !r.product_id || !PRODUCTS.some((p) => p.id === r.product_id));
+  if (solo.length) {
+    if (html) html += '<tr><td colspan="6" style="background:var(--panel2);font-weight:700">sem produto</td></tr>';
+    html += solo.map(rowHtml).join('');
+  }
+  $('rules-table').querySelector('tbody').innerHTML = html || '<tr><td colspan="6" class="muted">Nenhuma regra ainda.</td></tr>';
 }
 
 async function addRule() {
@@ -530,6 +583,7 @@ async function addRule() {
     flow_id: ['text', 'cards'].includes($('r-dm-mode').value) ? null : $('r-dm-mode').value,
     priority: Number($('r-priority').value) || 5,
     media_id: surface === 'comment' && $('r-media-mode').value === 'one' && MEDIA_SELS.length ? MEDIA_SELS : null,
+    product_id: $('r-product').value && $('r-product').value !== '__new' ? $('r-product').value : null,
   };
   if (EDITING) {
     await api(`/rules/${EDITING}`, { method: 'PUT', body: JSON.stringify(body) });
@@ -546,6 +600,7 @@ function editRule(id) {
   const r = RULES.find((x) => x.id === id);
   if (!r) return;
   EDITING = id;
+  $('r-product').value = r.product_id && PRODUCTS.some((p) => p.id === r.product_id) ? r.product_id : '';
   $('r-surface').value = r.surface;
   syncActionOptions();
   $('r-match').value = r.match_type;
@@ -575,6 +630,7 @@ function editRule(id) {
 
 function cancelEdit() {
   EDITING = null;
+  $('r-product').value = '';
   $('r-trigger').value = ''; $('r-reply').value = ''; $('r-dm').value = '';
   $('r-priority').value = 5;
   $('r-media-mode').value = 'any';
