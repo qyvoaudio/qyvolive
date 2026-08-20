@@ -576,6 +576,7 @@ async function loadRules() {
       <td style="white-space:nowrap">
         ${r.surface === 'comment' ? `<button class="ghost" style="padding:5px 10px" title="responder comentários antigos que batem nessa regra" onclick="retroRule('${r.id}')">🕰️</button>` : ''}
         <button class="ghost" style="padding:5px 10px" onclick="editRule('${r.id}')">editar</button>
+        <button class="ghost" style="padding:5px 10px" title="criar uma nova regra a partir dessa" onclick="cloneRule('${r.id}')">📋 clonar</button>
         <button class="ghost" style="padding:5px 10px" onclick="toggleRule('${r.id}', ${r.active ? 0 : 1})">${r.active ? 'pausar' : 'ativar'}</button>
       </td>
       <td><button class="danger" onclick="delRule('${r.id}')">excluir</button></td>
@@ -695,6 +696,16 @@ function cancelEdit() {
   $('r-save').textContent = 'Salvar regra';
   $('r-cancel').style.display = 'none';
   $('rule-form').querySelector('summary').textContent = '+ nova regra';
+}
+
+function cloneRule(id) {
+  editRule(id);                       // preenche o formulário com tudo da regra original
+  EDITING = null;                     // ...mas salva como REGRA NOVA
+  RCARDS = RCARDS.map(({ track_code, ...c }) => c); // cartões clonados ganham contadores próprios
+  $('r-save').textContent = 'Salvar regra nova (cópia)';
+  $('r-cancel').style.display = 'inline-block';
+  $('rule-form').querySelector('summary').textContent = '📋 clonando regra — ajusta o que quiser e salva';
+  toast('regra copiada pro formulário — muda os detalhes e salva');
 }
 
 async function retroRule(id) {
