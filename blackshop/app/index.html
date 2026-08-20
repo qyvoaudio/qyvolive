@@ -214,8 +214,9 @@
               <div><label>Unidade</label><select id="f-up-unit"><option value="min">minutos</option><option value="h">horas</option></select></div>
             </div>
             <label>Texto do acompanhamento</label>
-            <textarea id="f-up-text" placeholder="Ex: Oi! Vi que você não abriu o link ainda — ficou alguma dúvida? 💬"></textarea>
-            <span class="muted">Vale pra regras de DM e story. Máximo 23 horas (janela do Instagram). O acompanhamento é enviado mesmo que a pessoa responda antes.</span>
+            <textarea id="f-up-text" placeholder="Ex: Oi! Ficou alguma dúvida? Olha nosso grupo: {whatsapp} 💬"></textarea>
+            <button class="ghost" style="padding:5px 12px" onclick="$('f-up-text').value = ($('f-up-text').value + ' {whatsapp}').trim()">📱 inserir link do grupo do WhatsApp</button>
+            <span class="muted">Cole qualquer link https://... que ele chega clicável na DM. O código <b>{whatsapp}</b> vira o link do grupo cadastrado lá no card Sequências. Vale pra regras de DM e story · máximo 23 horas · é enviado mesmo que a pessoa responda antes.</span>
           </details>
           <div class="spacer"></div>
           <button id="r-save" onclick="addRule()">Salvar regra</button>
