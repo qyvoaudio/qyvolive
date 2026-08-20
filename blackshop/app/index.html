@@ -574,6 +574,7 @@ async function loadRules() {
       <td>${ACTION_LABEL[r.action] || r.action}</td>
       <td>${r.priority}</td>
       <td style="white-space:nowrap">
+        ${r.surface === 'comment' ? `<button class="ghost" style="padding:5px 10px" title="responder comentários antigos que batem nessa regra" onclick="retroRule('${r.id}')">🕰️</button>` : ''}
         <button class="ghost" style="padding:5px 10px" onclick="editRule('${r.id}')">editar</button>
         <button class="ghost" style="padding:5px 10px" onclick="toggleRule('${r.id}', ${r.active ? 0 : 1})">${r.active ? 'pausar' : 'ativar'}</button>
       </td>
@@ -694,6 +695,16 @@ function cancelEdit() {
   $('r-save').textContent = 'Salvar regra';
   $('r-cancel').style.display = 'none';
   $('rule-form').querySelector('summary').textContent = '+ nova regra';
+}
+
+async function retroRule(id) {
+  if (!confirm('Vasculhar os comentários antigos dos posts dessa regra e responder os que baterem?\n\nResposta pública sai pra qualquer comentário; DM só pra comentários de até 7 dias (limite do Instagram). Máximo de 20 respostas por rodada.')) return;
+  toast('vasculhando comentários antigos... isso pode levar um minuto ⏳');
+  try {
+    const s = await api(`/rules/${id}/retroactive`, { method: 'POST' });
+    toast(`pronto! ${s.comentarios_lidos} lidos · ${s.respondidos} respondidos · ${s.dms_enviadas} DMs${s.dm_fora_da_janela_7d ? ` · ${s.dm_fora_da_janela_7d} fora da janela de DM` : ''}`);
+    loadEvents(); loadReport();
+  } catch { /* api() já mostrou o erro */ }
 }
 
 async function toggleRule(id, active) {
