@@ -59,10 +59,11 @@
     border-radius: 10px; padding: 11px 20px; display: none; font-size: 14px; box-shadow: 0 8px 24px rgba(20,21,26,0.25); z-index: 50; }
   .right { text-align: right; }
   .mt { margin-top: 12px; }
-  .media-grid { display: flex; gap: 8px; overflow-x: auto; padding: 10px 2px; }
+  .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--thumb, 84px), 1fr));
+    gap: 8px; padding: 10px 2px; max-height: calc((var(--thumb, 84px) + 8px) * 4); overflow-y: auto; }
   .media-grid img {
-    width: 76px; height: 76px; object-fit: cover; border-radius: 10px; cursor: pointer;
-    border: 3px solid transparent; flex-shrink: 0;
+    width: 100%; height: var(--thumb, 84px); object-fit: cover; border-radius: 10px; cursor: pointer;
+    border: 3px solid transparent;
   }
   .media-grid img.sel { border-color: var(--accent); }
   .media-grid .mtype { position: absolute; }
@@ -167,7 +168,15 @@
               <option value="one">Publicações específicas (uma ou várias)</option>
             </select>
             <div id="media-picker" style="display:none">
-              <div class="media-grid" id="media-grid"></div>
+              <div class="row" style="align-items:center;margin-top:6px">
+                <span class="muted" style="flex:0 0 auto">Tamanho das miniaturas:</span>
+                <select id="media-size" style="flex:0 0 140px" onchange="document.getElementById('media-grid').style.setProperty('--thumb', this.value + 'px')">
+                  <option value="64">Pequeno</option>
+                  <option value="90" selected>Médio</option>
+                  <option value="150">Grande</option>
+                </select>
+              </div>
+              <div class="media-grid" id="media-grid" style="--thumb:90px"></div>
               <span class="muted" id="media-hint">toca nas publicações pra escolher</span>
               <button class="ghost" id="media-more" style="display:none;padding:5px 12px;margin-left:8px" onclick="loadMedia(true)">⬇️ ver posts mais antigos</button>
             </div>
@@ -198,6 +207,16 @@
               <span class="muted">até 10 cartões — com 2 ou mais vira carrossel deslizante na DM</span>
             </div>
           </div>
+          <details class="mt">
+            <summary>⏰ mensagem de acompanhamento (opcional)</summary>
+            <div class="row">
+              <div><label>Enviar após</label><input id="f-up-num" type="number" min="1" placeholder="ex: 30"></div>
+              <div><label>Unidade</label><select id="f-up-unit"><option value="min">minutos</option><option value="h">horas</option></select></div>
+            </div>
+            <label>Texto do acompanhamento</label>
+            <textarea id="f-up-text" placeholder="Ex: Oi! Vi que você não abriu o link ainda — ficou alguma dúvida? 💬"></textarea>
+            <span class="muted">Vale pra regras de DM e story. Máximo 23 horas (janela do Instagram). Se a pessoa responder antes, o robô cancela sozinho o acompanhamento.</span>
+          </details>
           <div class="spacer"></div>
           <button id="r-save" onclick="addRule()">Salvar regra</button>
           <button id="r-cancel" class="ghost" style="display:none" onclick="cancelEdit()">cancelar edição</button>
@@ -283,6 +302,18 @@
         <div class="spacer"></div>
         <button onclick="saveAi()">Salvar IA</button>
         <span class="muted"> · a IA nunca inventa preço, prazo ou promessa</span>
+      </div>
+
+      <div class="card">
+        <h2>Relatório
+          <select id="rep-days" style="float:right;width:130px;padding:5px" onchange="loadReport()">
+            <option value="7">7 dias</option>
+            <option value="30">30 dias</option>
+            <option value="90">90 dias</option>
+          </select>
+        </h2>
+        <div id="report" class="row"></div>
+        <div id="report-top" class="mt"></div>
       </div>
 
       <div class="card">
@@ -422,7 +453,7 @@ async function selectAccount(id) {
   $('sel-name').textContent = SELECTED.username ? '@' + SELECTED.username : SELECTED.platform;
   $('account-panels').style.display = 'block';
   await loadProducts();
-  await Promise.all([loadRules(), loadFlows(), loadAi(), loadEvents(), loadConversations(), loadContacts()]);
+  await Promise.all([loadRules(), loadFlows(), loadAi(), loadEvents(), loadConversations(), loadContacts(), loadReport()]);
 }
 
 // ---- publicações (seletor) ----
@@ -584,6 +615,9 @@ async function addRule() {
     priority: Number($('r-priority').value) || 5,
     media_id: surface === 'comment' && $('r-media-mode').value === 'one' && MEDIA_SELS.length ? MEDIA_SELS : null,
     product_id: $('r-product').value && $('r-product').value !== '__new' ? $('r-product').value : null,
+    followup_minutes: Number($('f-up-num').value) > 0 && $('f-up-text').value.trim()
+      ? Number($('f-up-num').value) * ($('f-up-unit').value === 'h' ? 60 : 1) : null,
+    followup_text: $('f-up-text').value.trim() || null,
   };
   if (EDITING) {
     await api(`/rules/${EDITING}`, { method: 'PUT', body: JSON.stringify(body) });
@@ -618,6 +652,12 @@ function editRule(id) {
   dmModeChanged();
   $('r-media-mode').value = r.media_id ? 'one' : 'any';
   MEDIA_SELS = ruleMediaIds(r);
+  if (r.followup_minutes) {
+    const h = r.followup_minutes % 60 === 0;
+    $('f-up-num').value = h ? r.followup_minutes / 60 : r.followup_minutes;
+    $('f-up-unit').value = h ? 'h' : 'min';
+  } else { $('f-up-num').value = ''; }
+  $('f-up-text').value = r.followup_text || '';
   mediaModeChanged();
   if (MEDIA) renderMediaGrid();
   $('r-save').textContent = 'Salvar alterações';
@@ -631,6 +671,7 @@ function editRule(id) {
 function cancelEdit() {
   EDITING = null;
   $('r-product').value = '';
+  $('f-up-num').value = ''; $('f-up-text').value = '';
   $('r-trigger').value = ''; $('r-reply').value = ''; $('r-dm').value = '';
   $('r-priority').value = 5;
   $('r-media-mode').value = 'any';
@@ -937,6 +978,27 @@ async function sendChat() {
   });
   $('chat-text').value = '';
   openThread(CHAT_CONTACT);
+}
+
+// ---- relatório ----
+async function loadReport() {
+  const d = await api(`/accounts/${SELECTED.id}/report?days=${$('rep-days').value}`);
+  const tile = (n, label) => `
+    <div style="background:var(--panel2);border-radius:12px;padding:14px 16px;text-align:center;min-width:120px">
+      <div style="font-size:26px;font-weight:700">${n}</div>
+      <div class="muted">${label}</div>
+    </div>`;
+  $('report').innerHTML =
+    tile(d.comments_received, 'comentários recebidos') +
+    tile(d.comments_replied, 'comentários respondidos') +
+    tile(d.dms_sent_total, 'DMs enviadas') +
+    tile(d.link_clicks_total, 'cliques nos links') +
+    tile(d.emails_captured, 'e-mails capturados') +
+    tile(d.people_in_dm, 'pessoas no direct') +
+    tile(d.followups_sent, 'acompanhamentos');
+  $('report-top').innerHTML = d.top_rules.length
+    ? '<b>Regras que mais dispararam:</b> ' + d.top_rules.map((r) => `<span class="pill rule">${esc(r.trigger_text.slice(0, 30))} · ${r.c}×</span>`).join(' ')
+    : '<span class="muted">Nenhuma regra disparou no período ainda.</span>';
 }
 
 // ---- contatos ----
