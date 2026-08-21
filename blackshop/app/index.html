@@ -242,11 +242,6 @@
           <label>Começar de um modelo pronto (opcional — tudo editável depois)</label>
           <select id="f-template" onchange="applyTemplate()">
             <option value="">— montar do zero —</option>
-            <option value="lead">📧 Captura de e-mail (lead)</option>
-            <option value="link">🔗 Entrega de link (comenta e recebe)</option>
-            <option value="grupo">📱 Convite pro grupo do WhatsApp</option>
-            <option value="atendimento">💬 Triagem de atendimento</option>
-            <option value="destrava">🔓 Destrava link (botão → cartão)</option>
           </select>
           <label>Nome da sequência</label>
           <input id="f-name" placeholder="ex: Boas-vindas, Qual seu tamanho?, Promoção do reel">
@@ -1267,6 +1262,10 @@ if (langParam === 'pt') localStorage.removeItem('bs_lang');
 if (localStorage.getItem('bs_lang') === 'en') {
   setInterval(translatePage, 700); // idempotente: re-traduz o que o JS re-renderizar
 }
+
+// modelos de sequência: uma fonte só (FLOW_TEMPLATES) pra todos os seletores
+$('f-template').innerHTML = '<option value="">— montar do zero —</option>' +
+  Object.entries(FLOW_TEMPLATES).map(([k, t]) => `<option value="${k}">✨ ${esc(t.name)}</option>`).join('');
 
 syncActionOptions();
 cancelFlowEdit();
