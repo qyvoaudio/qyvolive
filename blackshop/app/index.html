@@ -790,6 +790,18 @@ async function loadFlows() {
 
 // Modelos prontos — o cliente troca os [textos entre colchetes] pelos dele
 const FLOW_TEMPLATES = {
+  destrava_fu: {
+    name: 'Destrava link + follow-up',
+    steps: [
+      { step_key: 'start', message: 'Achei o que você pediu! 🎁 Toca no botão que eu te mando o link:', buttons: [
+        { title: 'QUERO O LINK 🔥', action: 'goto', next: 'entrega' },
+      ], cards: null },
+      { step_key: 'entrega', message: '', buttons: [], cards: [
+        { image: '', title: '[nome do produto]', subtitle: '[detalhe curto]', button_title: 'COMPRAR AGORA', url: 'https://[seu-link-aqui]' },
+      ] },
+    ],
+    followup: { minutes: 60, text: '[Oi! Conseguiu ver o link? Qualquer dúvida me chama aqui 💛]' },
+  },
   destrava: {
     name: 'Destrava link',
     steps: [
@@ -1014,6 +1026,17 @@ function renderDmModeOptions() {
 
 function dmModeChanged() {
   const mode = $('r-dm-mode').value;
+  if (mode.startsWith('__tpl:')) {
+    const t = FLOW_TEMPLATES[mode.slice(6)];
+    if (t?.followup) {
+      $('f-up-num').value = t.followup.minutes >= 60 ? t.followup.minutes / 60 : t.followup.minutes;
+      $('f-up-unit').value = t.followup.minutes >= 60 ? 'h' : 'min';
+      if (!$('f-up-text').value.trim()) $('f-up-text').value = t.followup.text;
+      const det = $('f-up-num').closest('details');
+      if (det) det.open = true;
+      toast('acompanhamento pré-configurado — ajusta o tempo e o [texto] como quiser');
+    }
+  }
   $('r-dm-text-wrap').style.display = mode === 'text' ? 'block' : 'none';
   $('r-cards-wrap').style.display = mode === 'cards' ? 'block' : 'none';
   // modelos (__tpl:...) se comportam como sequência: nada extra pra preencher aqui
