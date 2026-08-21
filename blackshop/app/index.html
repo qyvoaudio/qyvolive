@@ -320,6 +320,7 @@
           </span>
         </h2>
         <div id="report" class="row"></div>
+        <div id="report-product" class="mt"></div>
         <div id="report-top" class="mt"></div>
       </div>
 
@@ -547,6 +548,14 @@ const ACTION_LABEL = {
   private_reply: 'manda DM', dm_reply: 'responde DM',
 };
 
+// foto do produto = imagem do 1º cartão da regra
+function ruleCardImage(r) {
+  try {
+    const cards = JSON.parse(r.cards ?? 'null');
+    return cards?.[0]?.image || null;
+  } catch { return null; }
+}
+
 function ruleReplies(r) {
   try {
     const v = JSON.parse(r.reply_variations ?? 'null');
@@ -561,7 +570,7 @@ async function loadRules() {
   const rowHtml = (r) => `
     <tr style="${r.active ? '' : 'opacity:.45'}">
       <td><span class="pill">${r.surface === 'dm' ? 'DM' : r.surface === 'story' ? 'story' : 'comentário'}</span></td>
-      <td><b>${esc(r.trigger_text)}</b> <span class="muted">(${r.match_type})</span>
+      <td>${ruleCardImage(r) ? `<img src="${ruleCardImage(r)}" style="width:40px;height:40px;object-fit:cover;border-radius:8px;float:left;margin-right:10px" loading="lazy">` : ''}<b>${esc(r.trigger_text)}</b> <span class="muted">(${r.match_type})</span>
           ${ruleReplies(r).length > 1 ? ` <span class="pill rule">${ruleReplies(r).length} variações</span>` : ''}
           ${ruleMediaIds(r).length ? ` <span class="pill rule">📍 ${ruleMediaIds(r).length} publicaç${ruleMediaIds(r).length > 1 ? 'ões' : 'ão'}</span>` : ''}
           ${r.cards ? ' <span class="pill rule">🃏 cartões</span>' : ''}
@@ -582,7 +591,8 @@ async function loadRules() {
   for (const p of PRODUCTS) {
     const rs = rules.filter((r) => r.product_id === p.id);
     if (!rs.length) continue;
-    html += `<tr><td colspan="6" style="background:var(--panel2);font-weight:700;border-radius:8px">📦 ${esc(p.name)}</td></tr>` + rs.map(rowHtml).join('');
+    const pImg = rs.map(ruleCardImage).find(Boolean);
+    html += `<tr><td colspan="6" style="background:var(--panel2);font-weight:700;border-radius:8px">${pImg ? `<img src="${pImg}" style="width:26px;height:26px;object-fit:cover;border-radius:6px;vertical-align:middle;margin-right:8px">` : '📦 '}${esc(p.name)}</td></tr>` + rs.map(rowHtml).join('');
   }
   const solo = rules.filter((r) => !r.product_id || !PRODUCTS.some((p) => p.id === r.product_id));
   if (solo.length) {
@@ -1112,6 +1122,11 @@ async function loadReport() {
     tile(d.emails_captured, 'e-mails capturados') +
     tile(d.people_in_dm, 'pessoas no direct') +
     tile(d.followups_sent, 'acompanhamentos');
+  $('report-product').innerHTML = (d.by_product ?? []).length
+    ? '<table><thead><tr><th>Produto</th><th>Disparos</th><th>Cliques</th></tr></thead><tbody>' +
+      d.by_product.map((pr) => `<tr><td>${esc(pr.name)}</td><td>${pr.fires}</td><td>${pr.clicks}</td></tr>`).join('') +
+      '</tbody></table>'
+    : '';
   $('report-top').innerHTML = d.top_rules.length
     ? '<b>Regras que mais dispararam:</b> ' + d.top_rules.map((r) => `<span class="pill rule">${esc(r.trigger_text.slice(0, 30))} · ${r.c}×</span>`).join(' ')
     : '<span class="muted">Nenhuma regra disparou no período ainda.</span>';
