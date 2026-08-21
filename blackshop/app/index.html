@@ -766,7 +766,7 @@ async function loadFlows() {
       <td><b>${esc(f.name)}</b></td>
       <td class="muted">${f.steps.length} passo${f.steps.length > 1 ? 's' : ''}</td>
       <td><button class="ghost" style="padding:5px 10px" onclick="editFlow('${f.id}')">editar</button>
-          <button class="ghost" style="padding:5px 10px" onclick="cloneFlow('${f.id}')">📋</button></td>
+          <button class="ghost" style="padding:5px 10px" onclick="cloneFlow('${f.id}')">📋 clonar</button></td>
       <td><button class="ghost" style="padding:5px 10px" onclick="toggleFlow('${f.id}', ${f.active ? 0 : 1})">${f.active ? 'pausar' : 'ativar'}</button></td>
       <td><button class="danger" onclick="delFlow('${f.id}')">excluir</button></td>
     </tr>`).join('') : '<tr><td colspan="5" class="muted">Nenhuma sequência ainda — cria a primeira: mensagem com botões, cada botão leva pra outro passo.</td></tr>';
