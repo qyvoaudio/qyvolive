@@ -1172,7 +1172,11 @@ function translatePage() {
   });
 }
 
-if (new URLSearchParams(location.search).get('lang') === 'en') {
+// ?lang=en liga e fica ligado (sobrevive à volta do OAuth); ?lang=pt desliga
+const langParam = new URLSearchParams(location.search).get('lang');
+if (langParam === 'en') localStorage.setItem('bs_lang', 'en');
+if (langParam === 'pt') localStorage.removeItem('bs_lang');
+if (localStorage.getItem('bs_lang') === 'en') {
   setInterval(translatePage, 700); // idempotente: re-traduz o que o JS re-renderizar
 }
 
