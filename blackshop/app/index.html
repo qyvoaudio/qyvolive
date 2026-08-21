@@ -1122,6 +1122,60 @@ function esc(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
+// Modo inglês pro screencast do App Review (?lang=en) — o Meta pede interface em inglês na gravação
+const EN = {
+  'Entrar': 'Sign in', 'Criar conta nova': 'Create account', 'já tenho conta': 'I have an account',
+  'E-mail': 'Email', 'Senha': 'Password', 'mínimo 8 caracteres': 'minimum 8 characters',
+  'Criar minha conta': 'Create my account', 'acesso admin': 'admin access',
+  'respostas automáticas · Instagram & Facebook': 'automatic replies · Instagram & Facebook',
+  'Contas conectadas': 'Connected accounts', '📸 Conectar Instagram': '📸 Connect Instagram',
+  '· autorização oficial do Meta, 2 cliques': "· Meta's official authorization, 2 clicks",
+  'gerenciar': 'manage', 'desconectar': 'disconnect',
+  '+ nova regra': '+ new rule', 'editar': 'edit', 'pausar': 'pause', 'ativar': 'enable',
+  'excluir': 'delete', '📋 clonar': '📋 clone', 'Onde': 'Where', 'Ação': 'Action', 'Prior.': 'Priority',
+  'Comentário': 'Comment', 'DM': 'DM', 'Resposta a story': 'Story reply',
+  'comentário': 'comment', 'story': 'story',
+  'Produto (opcional — agrupa as regras e facilita achar depois)': 'Product (optional — groups your rules)',
+  '— sem produto —': '— no product —', 'Tipo de match': 'Match type',
+  'contém': 'contains', 'exato': 'exact', 'começa com': 'starts with',
+  'Prioridade (menor responde primeiro se 2 regras baterem)': 'Priority (lower replies first)',
+  'Gatilho — pode várias palavras separadas por vírgula (qualquer uma dispara)': 'Trigger — multiple keywords separated by comma (any of them fires)',
+  'Vale para': 'Applies to', 'Qualquer publicação ou reel': 'Any post or reel',
+  'Publicações específicas (uma ou várias)': 'Specific posts (one or more)',
+  'Responder comentário + mandar DM': 'Reply to comment + send DM',
+  'Só responder o comentário': 'Only reply to the comment',
+  'Só mandar DM (private reply)': 'Only send DM (private reply)',
+  'Responder a DM': 'Reply to the DM',
+  'Respostas públicas — uma por linha, o robô sorteia uma a cada comentário (evita cair como spam)': 'Public replies — one per line, a random one is used for each comment (avoids spam detection)',
+  'Resposta na DM': 'DM response', 'Texto fixo': 'Fixed text', 'Texto da DM': 'DM text',
+  'Salvar regra': 'Save rule', 'Salvar alterações': 'Save changes', 'cancelar edição': 'cancel editing',
+  'Regras —': 'Rules —', 'Últimos eventos': 'Recent events', 'atualizar': 'refresh',
+  'Quando (UTC)': 'When (UTC)', 'Tipo': 'Type', 'De': 'From', 'Texto': 'Text', 'Respondido': 'Replied',
+  'regra': 'rule', 'Relatório': 'Report', 'dias': 'days',
+  'comentários recebidos': 'comments received', 'comentários respondidos': 'comments replied',
+  'DMs enviadas': 'DMs sent', 'cliques nos links': 'link clicks', 'e-mails capturados': 'emails captured',
+  'pessoas no direct': 'people in DMs', 'acompanhamentos': 'follow-ups',
+};
+
+function translatePage() {
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  while (walker.nextNode()) {
+    const t = walker.currentNode.nodeValue.trim();
+    if (EN[t]) walker.currentNode.nodeValue = walker.currentNode.nodeValue.replace(t, EN[t]);
+  }
+  document.querySelectorAll('input[placeholder], textarea[placeholder]').forEach((el) => {
+    if (EN[el.placeholder]) el.placeholder = EN[el.placeholder];
+  });
+  document.querySelectorAll('option').forEach((el) => {
+    const t = el.textContent.trim();
+    if (EN[t]) el.textContent = EN[t];
+  });
+}
+
+if (new URLSearchParams(location.search).get('lang') === 'en') {
+  setInterval(translatePage, 700); // idempotente: re-traduz o que o JS re-renderizar
+}
+
 syncActionOptions();
 cancelFlowEdit();
 boot();
