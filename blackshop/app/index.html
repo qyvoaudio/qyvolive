@@ -150,7 +150,7 @@
                 <option value="story">Resposta a story</option>
               </select></div>
             <div><label>Tipo de match</label>
-              <select id="r-match"><option value="contains">contém</option><option value="exact">exato</option><option value="starts_with">começa com</option></select></div>
+              <select id="r-match" onchange="document.getElementById('r-trigger').placeholder = this.value === 'all' ? 'não precisa: qualquer comentário dispara' : 'ex: quero, link, onde comprar'"><option value="contains">contém</option><option value="exact">exato</option><option value="starts_with">começa com</option><option value="all">qualquer comentário (responde todos)</option></select></div>
             <div><label>Prioridade (menor responde primeiro se 2 regras baterem)</label>
               <select id="r-priority">
                 <option value="1">1 (máxima)</option><option value="2">2</option><option value="3">3</option>
@@ -582,7 +582,7 @@ function renderRules() {
   const rowHtml = (r) => `
     <tr style="${r.active ? '' : 'opacity:.45'}">
       <td><span class="pill">${r.surface === 'dm' ? 'DM' : r.surface === 'story' ? 'story' : 'comentário'}</span></td>
-      <td>${ruleCardImage(r) ? `<img src="${ruleCardImage(r)}" style="width:40px;height:40px;object-fit:cover;border-radius:8px;float:left;margin-right:10px" loading="lazy">` : ''}<b>${esc(r.trigger_text)}</b> <span class="muted">(${r.match_type})</span>
+      <td>${ruleCardImage(r) ? `<img src="${ruleCardImage(r)}" style="width:40px;height:40px;object-fit:cover;border-radius:8px;float:left;margin-right:10px" loading="lazy">` : ''}<b>${r.match_type === 'all' ? '🌐 todos os comentários' : esc(r.trigger_text)}</b> <span class="muted">(${r.match_type === 'all' ? 'pega-tudo' : r.match_type})</span>
           ${ruleReplies(r).length > 1 ? ` <span class="pill rule">${ruleReplies(r).length} variações</span>` : ''}
           ${ruleMediaIds(r).length ? ` <span class="pill rule">📍 ${ruleMediaIds(r).length} publicaç${ruleMediaIds(r).length > 1 ? 'ões' : 'ão'}</span>` : ''}
           ${r.cards ? ' <span class="pill rule">🃏 cartões</span>' : ''}
@@ -624,7 +624,7 @@ function renderRules() {
 
 async function addRule() {
   const surface = $('r-surface').value;
-  if (!$('r-trigger').value.trim()) {
+  if (!$('r-trigger').value.trim() && $('r-match').value !== 'all') {
     toast('falta o GATILHO — a palavra que a pessoa comenta ou manda pra disparar (ex: "eu quero")', true);
     $('r-trigger').focus();
     return;
