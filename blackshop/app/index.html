@@ -564,9 +564,21 @@ function ruleReplies(r) {
   return r.reply_text ? [r.reply_text] : [];
 }
 
+// grupos de produto recolhidos (fica salvo no navegador)
+const COLLAPSED = new Set(JSON.parse(localStorage.getItem('bs_collapsed') || '[]'));
+function toggleGroup(key) {
+  COLLAPSED.has(key) ? COLLAPSED.delete(key) : COLLAPSED.add(key);
+  localStorage.setItem('bs_collapsed', JSON.stringify([...COLLAPSED]));
+  renderRules();
+}
+
 async function loadRules() {
-  const rules = await api(`/accounts/${SELECTED.id}/rules`);
-  RULES = rules;
+  RULES = await api(`/accounts/${SELECTED.id}/rules`);
+  renderRules();
+}
+
+function renderRules() {
+  const rules = RULES;
   const rowHtml = (r) => `
     <tr style="${r.active ? '' : 'opacity:.45'}">
       <td><span class="pill">${r.surface === 'dm' ? 'DM' : r.surface === 'story' ? 'story' : 'comentário'}</span></td>
@@ -587,17 +599,25 @@ async function loadRules() {
       <td><button class="danger" onclick="delRule('${r.id}')">excluir</button></td>
     </tr>`;
 
+  const groupHeader = (key, label, img, count) => {
+    const open = !COLLAPSED.has(key);
+    return `<tr style="cursor:pointer" onclick="toggleGroup('${key}')" title="${open ? 'recolher' : 'expandir'}">
+      <td colspan="6" style="background:var(--panel2);font-weight:700;border-radius:8px">
+        <span class="muted" style="display:inline-block;width:16px">${open ? '▾' : '▸'}</span>${img ? `<img src="${img}" style="width:26px;height:26px;object-fit:cover;border-radius:6px;vertical-align:middle;margin-right:8px">` : '📦 '}${esc(label)}
+        <span class="muted" style="font-weight:400">· ${count} regra${count > 1 ? 's' : ''}</span>
+      </td></tr>`;
+  };
   let html = '';
   for (const p of PRODUCTS) {
     const rs = rules.filter((r) => r.product_id === p.id);
     if (!rs.length) continue;
-    const pImg = rs.map(ruleCardImage).find(Boolean);
-    html += `<tr><td colspan="6" style="background:var(--panel2);font-weight:700;border-radius:8px">${pImg ? `<img src="${pImg}" style="width:26px;height:26px;object-fit:cover;border-radius:6px;vertical-align:middle;margin-right:8px">` : '📦 '}${esc(p.name)}</td></tr>` + rs.map(rowHtml).join('');
+    html += groupHeader(p.id, p.name, rs.map(ruleCardImage).find(Boolean), rs.length);
+    if (!COLLAPSED.has(p.id)) html += rs.map(rowHtml).join('');
   }
   const solo = rules.filter((r) => !r.product_id || !PRODUCTS.some((p) => p.id === r.product_id));
   if (solo.length) {
-    if (html) html += '<tr><td colspan="6" style="background:var(--panel2);font-weight:700">sem produto</td></tr>';
-    html += solo.map(rowHtml).join('');
+    if (html) html += groupHeader('solo', 'sem produto', null, solo.length);
+    html += (html && COLLAPSED.has('solo')) ? '' : solo.map(rowHtml).join('');
   }
   $('rules-table').querySelector('tbody').innerHTML = html || '<tr><td colspan="6" class="muted">Nenhuma regra ainda.</td></tr>';
 }
