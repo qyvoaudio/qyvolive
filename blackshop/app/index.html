@@ -616,8 +616,8 @@ function renderRules() {
   }
   const solo = rules.filter((r) => !r.product_id || !PRODUCTS.some((p) => p.id === r.product_id));
   if (solo.length) {
-    if (html) html += groupHeader('solo', 'sem produto', null, solo.length);
-    html += (html && COLLAPSED.has('solo')) ? '' : solo.map(rowHtml).join('');
+    html += groupHeader('solo', 'sem produto', solo.map(ruleCardImage).find(Boolean), solo.length);
+    if (!COLLAPSED.has('solo')) html += solo.map(rowHtml).join('');
   }
   $('rules-table').querySelector('tbody').innerHTML = html || '<tr><td colspan="6" class="muted">Nenhuma regra ainda.</td></tr>';
 }
