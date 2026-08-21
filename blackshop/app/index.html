@@ -616,6 +616,21 @@ async function addRule() {
     toast('escolhe pelo menos uma publicação (ou muda pra "qualquer publicação")', true);
     return;
   }
+  let dmMode = $('r-dm-mode').value;
+  if (dmMode.startsWith('__tpl:')) {
+    // cria a sequência a partir do modelo, já batizada com o gatilho da regra
+    const t = FLOW_TEMPLATES[dmMode.slice(6)];
+    const created = await api(`/accounts/${SELECTED.id}/flows`, {
+      method: 'POST',
+      body: JSON.stringify({
+        name: `${t.name} — ${$('r-trigger').value.trim().split(',')[0] || 'nova'}`,
+        steps: t.steps.map((st) => ({ ...st, buttons: st.buttons.map((b) => ({ ...b })), cards: st.cards ? st.cards.map((c) => ({ ...c })) : null })),
+      }),
+    });
+    dmMode = created.id;
+    await loadFlows();
+    toast(`sequência "${t.name}" criada — depois edita os [textos] dela no card Sequências`);
+  }
   const body = {
     surface,
     match_type: $('r-match').value,
@@ -623,9 +638,9 @@ async function addRule() {
     action: surface === 'dm' ? 'dm_reply' : $('r-action').value,
     reply_text: replyLines[0] ?? null,
     reply_variations: replyLines.length > 1 ? replyLines : null,
-    dm_text: $('r-dm-mode').value === 'text' ? ($('r-dm').value.trim() || null) : null,
-    cards: $('r-dm-mode').value === 'cards' ? RCARDS.filter((c) => c.title.trim() && c.url.trim()) : null,
-    flow_id: ['text', 'cards'].includes($('r-dm-mode').value) ? null : $('r-dm-mode').value,
+    dm_text: dmMode === 'text' ? ($('r-dm').value.trim() || null) : null,
+    cards: dmMode === 'cards' ? RCARDS.filter((c) => c.title.trim() && c.url.trim()) : null,
+    flow_id: ['text', 'cards'].includes(dmMode) ? null : dmMode,
     priority: Number($('r-priority').value) || 5,
     media_id: surface === 'comment' && $('r-media-mode').value === 'one' && MEDIA_SELS.length ? MEDIA_SELS : null,
     product_id: $('r-product').value && $('r-product').value !== '__new' ? $('r-product').value : null,
@@ -989,7 +1004,10 @@ function renderDmModeOptions() {
   const current = sel.value;
   sel.innerHTML = '<option value="text">Texto fixo</option>' +
     '<option value="cards">🃏 Cartões com imagem e botão de link</option>' +
-    FLOWS.map((f) => `<option value="${f.id}">Sequência: ${esc(f.name)}</option>`).join('');
+    FLOWS.map((f) => `<option value="${f.id}">Sequência: ${esc(f.name)}</option>`).join('') +
+    '<optgroup label="✨ criar sequência nova de um modelo">' +
+    Object.entries(FLOW_TEMPLATES).map(([k, t]) => `<option value="__tpl:${k}">✨ ${esc(t.name)}</option>`).join('') +
+    '</optgroup>';
   sel.value = [...sel.options].some((o) => o.value === current) ? current : 'text';
   dmModeChanged();
 }
@@ -998,6 +1016,7 @@ function dmModeChanged() {
   const mode = $('r-dm-mode').value;
   $('r-dm-text-wrap').style.display = mode === 'text' ? 'block' : 'none';
   $('r-cards-wrap').style.display = mode === 'cards' ? 'block' : 'none';
+  // modelos (__tpl:...) se comportam como sequência: nada extra pra preencher aqui
   if (mode === 'cards' && !RCARDS.length) { RCARDS = [{ image: '', title: '', subtitle: '', button_title: '', url: '' }]; renderCards(); }
 }
 
