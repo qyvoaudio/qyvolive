@@ -246,6 +246,7 @@
             <option value="link">🔗 Entrega de link (comenta e recebe)</option>
             <option value="grupo">📱 Convite pro grupo do WhatsApp</option>
             <option value="atendimento">💬 Triagem de atendimento</option>
+            <option value="destrava">🔓 Destrava link (botão → cartão)</option>
           </select>
           <label>Nome da sequência</label>
           <input id="f-name" placeholder="ex: Boas-vindas, Qual seu tamanho?, Promoção do reel">
@@ -764,7 +765,8 @@ async function loadFlows() {
     <tr style="${f.active ? '' : 'opacity:.45'}">
       <td><b>${esc(f.name)}</b></td>
       <td class="muted">${f.steps.length} passo${f.steps.length > 1 ? 's' : ''}</td>
-      <td><button class="ghost" style="padding:5px 10px" onclick="editFlow('${f.id}')">editar</button></td>
+      <td><button class="ghost" style="padding:5px 10px" onclick="editFlow('${f.id}')">editar</button>
+          <button class="ghost" style="padding:5px 10px" onclick="cloneFlow('${f.id}')">📋</button></td>
       <td><button class="ghost" style="padding:5px 10px" onclick="toggleFlow('${f.id}', ${f.active ? 0 : 1})">${f.active ? 'pausar' : 'ativar'}</button></td>
       <td><button class="danger" onclick="delFlow('${f.id}')">excluir</button></td>
     </tr>`).join('') : '<tr><td colspan="5" class="muted">Nenhuma sequência ainda — cria a primeira: mensagem com botões, cada botão leva pra outro passo.</td></tr>';
@@ -773,6 +775,17 @@ async function loadFlows() {
 
 // Modelos prontos — o cliente troca os [textos entre colchetes] pelos dele
 const FLOW_TEMPLATES = {
+  destrava: {
+    name: 'Destrava link',
+    steps: [
+      { step_key: 'start', message: 'Achei o que você pediu! 🎁 Toca no botão que eu te mando o link:', buttons: [
+        { title: 'QUERO O LINK 🔥', action: 'goto', next: 'entrega' },
+      ], cards: null },
+      { step_key: 'entrega', message: '', buttons: [], cards: [
+        { image: '', title: '[nome do produto]', subtitle: '[detalhe curto]', button_title: 'COMPRAR AGORA', url: 'https://[seu-link-aqui]' },
+      ] },
+    ],
+  },
   lead: {
     name: 'Captura de e-mail',
     steps: [
@@ -819,7 +832,7 @@ function applyTemplate() {
   const t = FLOW_TEMPLATES[$('f-template').value];
   if (!t) return;
   $('f-name').value = t.name;
-  FSTEPS = t.steps.map((s) => ({ step_key: s.step_key, message: s.message, buttons: s.buttons.map((b) => ({ ...b })) }));
+  FSTEPS = t.steps.map((s) => ({ step_key: s.step_key, message: s.message, buttons: s.buttons.map((b) => ({ ...b })), cards: s.cards ? s.cards.map((c) => ({ ...c })) : null }));
   renderSteps();
   toast('modelo carregado — troca os [textos entre colchetes] pelos seus');
 }
@@ -833,8 +846,22 @@ function renderSteps() {
         <b>${stepLabel(s.step_key)}</b>
         ${s.step_key !== 'start' ? `<button class="danger" onclick="removeStep(${i})">remover passo</button>` : '<span class="muted">primeira mensagem da sequência</span>'}
       </div>
-      <label>Mensagem</label>
-      <textarea oninput="FSTEPS[${i}].message=this.value" placeholder="O que o robô manda nesse passo">${esc(s.message)}</textarea>
+      <label>Tipo do passo</label>
+      <select onchange="setStepType(${i}, this.value)">
+        <option value="msg" ${!(s.cards && s.cards.length) ? 'selected' : ''}>💬 Mensagem de texto</option>
+        <option value="cards" ${(s.cards && s.cards.length) ? 'selected' : ''}>🃏 Cartões com link</option>
+      </select>
+      ${(s.cards && s.cards.length) ? s.cards.map((c, k) => `
+        <div style="border:1px dashed var(--border);border-radius:10px;padding:10px;margin:8px 0">
+          <div class="row">
+            <input value="${esc(c.title || '')}" maxlength="80" placeholder="Título do cartão*" oninput="FSTEPS[${i}].cards[${k}].title=this.value">
+            <input value="${esc(c.button_title || '')}" maxlength="20" placeholder="Texto do botão" oninput="FSTEPS[${i}].cards[${k}].button_title=this.value">
+          </div>
+          <input value="${esc(c.image || '')}" placeholder="link da imagem (botão direito na foto → copiar endereço)" oninput="FSTEPS[${i}].cards[${k}].image=this.value" style="margin-top:6px">
+          <input value="${esc(c.url || '')}" placeholder="link do botão* https://..." oninput="FSTEPS[${i}].cards[${k}].url=this.value" style="margin-top:6px">
+        </div>`).join('') + `<button class="ghost" style="padding:4px 10px" onclick="FSTEPS[${i}].cards.push({image:'',title:'',subtitle:'',button_title:'',url:''});renderSteps()">+ cartão</button>`
+      : `<label>Mensagem</label>
+      <textarea oninput="FSTEPS[${i}].message=this.value" placeholder="O que o robô manda nesse passo">${esc(s.message)}</textarea>`}
       <label>Botões (até 3 — quem toca dispara a ação escolhida)</label>
       ${s.buttons.map((b, j) => `
         <div class="row" style="margin-bottom:6px">
@@ -868,11 +895,30 @@ async function saveWaLink() {
   toast('link do grupo salvo');
 }
 
+function setStepType(i, v) {
+  if (v === 'cards') {
+    if (!FSTEPS[i].cards || !FSTEPS[i].cards.length) FSTEPS[i].cards = [{ image: '', title: '', subtitle: '', button_title: '', url: '' }];
+  } else {
+    FSTEPS[i].cards = null;
+  }
+  renderSteps();
+}
+
+function cloneFlow(id) {
+  editFlow(id);
+  FLOW_EDITING = null;
+  FSTEPS.forEach((st) => (st.cards ?? []).forEach((c) => delete c.track_code)); // cópia ganha contadores próprios
+  $('f-name').value += ' (cópia)';
+  $('f-save').textContent = 'Salvar sequência nova (cópia)';
+  $('flow-form').querySelector('summary').textContent = '📋 clonando sequência — ajusta e salva';
+  toast('sequência copiada — muda o que quiser e salva');
+}
+
 function addStep() {
-  if (!FSTEPS.length) { FSTEPS.push({ step_key: 'start', message: '', buttons: [] }); renderSteps(); return; }
+  if (!FSTEPS.length) { FSTEPS.push({ step_key: 'start', message: '', buttons: [], cards: null }); renderSteps(); return; }
   let n = 2;
   while (FSTEPS.some((s) => s.step_key === 'passo' + n)) n++;
-  FSTEPS.push({ step_key: 'passo' + n, message: '', buttons: [] });
+  FSTEPS.push({ step_key: 'passo' + n, message: '', buttons: [], cards: null });
   renderSteps();
 }
 
@@ -901,7 +947,7 @@ function editFlow(id) {
   if (!f) return;
   FLOW_EDITING = id;
   $('f-name').value = f.name;
-  FSTEPS = f.steps.map((s) => ({ step_key: s.step_key, message: s.message, buttons: (s.buttons ?? []).map((b) => ({ ...b })) }));
+  FSTEPS = f.steps.map((s) => ({ step_key: s.step_key, message: s.message, buttons: (s.buttons ?? []).map((b) => ({ ...b })), cards: s.cards ? s.cards.map((c) => ({ ...c })) : null }));
   // 'start' primeiro na tela
   FSTEPS.sort((a, b) => (a.step_key === 'start' ? -1 : b.step_key === 'start' ? 1 : 0));
   renderSteps();
@@ -916,7 +962,7 @@ function cancelFlowEdit() {
   FLOW_EDITING = null;
   $('f-name').value = '';
   $('f-template').value = '';
-  FSTEPS = [{ step_key: 'start', message: '', buttons: [] }];
+  FSTEPS = [{ step_key: 'start', message: '', buttons: [], cards: null }];
   renderSteps();
   $('f-save').textContent = 'Salvar sequência';
   $('f-cancel').style.display = 'none';
