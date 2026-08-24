@@ -206,6 +206,10 @@
               <button class="ghost" style="padding:5px 12px" onclick="RCARDS.push({image:'',title:'',subtitle:'',button_title:'',url:''});renderCards()">+ cartão</button>
               <span class="muted">até 10 cartões — com 2 ou mais vira carrossel deslizante na DM</span>
             </div>
+            <div id="r-tpl-wrap" style="display:none">
+              <span class="muted">✨ edita o modelo aqui mesmo — troca os [textos entre colchetes] pelos seus. Ao salvar a regra, a sequência é criada do jeitinho que você deixar:</span>
+              <div id="r-tpl-steps"></div>
+            </div>
           </div>
           <details class="mt">
             <summary>⏰ mensagem de acompanhamento (opcional)</summary>
@@ -645,16 +649,18 @@ async function addRule() {
   if (dmMode.startsWith('__tpl:')) {
     // cria a sequência a partir do modelo, já batizada com o gatilho da regra
     const t = FLOW_TEMPLATES[dmMode.slice(6)];
+    const pendente = JSON.stringify(FSTEPS).match(/\[[^\]"]{3,40}\]/); // [placeholder] esquecido?
+    if (pendente && !confirm(`ainda tem um texto de exemplo pra trocar: ${pendente[0]}\nSalvar mesmo assim?`)) return;
     const created = await api(`/accounts/${SELECTED.id}/flows`, {
       method: 'POST',
       body: JSON.stringify({
         name: `${t.name} — ${$('r-trigger').value.trim().split(',')[0] || 'nova'}`,
-        steps: t.steps.map((st) => ({ ...st, buttons: st.buttons.map((b) => ({ ...b })), cards: st.cards ? st.cards.map((c) => ({ ...c })) : null })),
+        steps: FSTEPS.map((st) => ({ ...st, buttons: st.buttons.map((b) => ({ ...b })), cards: st.cards ? st.cards.map((c) => ({ ...c })) : null })),
       }),
     });
     dmMode = created.id;
     await loadFlows();
-    toast(`sequência "${t.name}" criada — depois edita os [textos] dela no card Sequências`);
+    toast(`sequência "${t.name}" criada com os seus textos ✨`);
   }
   const body = {
     surface,
@@ -884,6 +890,7 @@ function applyTemplate() {
   const t = FLOW_TEMPLATES[$('f-template').value];
   if (!t) return;
   $('f-name').value = t.name;
+  STEPS_TARGET = 'f-steps';
   FSTEPS = t.steps.map((s) => ({ step_key: s.step_key, message: s.message, buttons: s.buttons.map((b) => ({ ...b })), cards: s.cards ? s.cards.map((c) => ({ ...c })) : null }));
   renderSteps();
   toast('modelo carregado — troca os [textos entre colchetes] pelos seus');
@@ -891,8 +898,9 @@ function applyTemplate() {
 
 function stepLabel(key) { return key === 'start' ? 'Início' : key; }
 
+let STEPS_TARGET = 'f-steps'; // onde o editor de passos desenha (card Sequências ou form da regra)
 function renderSteps() {
-  $('f-steps').innerHTML = FSTEPS.map((s, i) => `
+  $(STEPS_TARGET).innerHTML = FSTEPS.map((s, i) => `
     <div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin-top:12px;background:var(--panel2)">
       <div style="display:flex;justify-content:space-between;align-items:center">
         <b>${stepLabel(s.step_key)}</b>
@@ -1064,7 +1072,14 @@ function dmModeChanged() {
   }
   $('r-dm-text-wrap').style.display = mode === 'text' ? 'block' : 'none';
   $('r-cards-wrap').style.display = mode === 'cards' ? 'block' : 'none';
-  // modelos (__tpl:...) se comportam como sequência: nada extra pra preencher aqui
+  $('r-tpl-wrap').style.display = mode.startsWith('__tpl:') ? 'block' : 'none';
+  if (mode.startsWith('__tpl:')) {
+    // abre o modelo pra edição aqui mesmo; o que ficar aqui vira a sequência no salvar
+    const t = FLOW_TEMPLATES[mode.slice(6)];
+    STEPS_TARGET = 'r-tpl-steps';
+    FSTEPS = t.steps.map((st) => ({ step_key: st.step_key, message: st.message, buttons: st.buttons.map((b) => ({ ...b })), cards: st.cards ? st.cards.map((c) => ({ ...c })) : null }));
+    renderSteps();
+  }
   if (mode === 'cards' && !RCARDS.length) { RCARDS = [{ image: '', title: '', subtitle: '', button_title: '', url: '' }]; renderCards(); }
 }
 
