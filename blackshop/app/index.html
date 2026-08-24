@@ -658,12 +658,20 @@ async function addRule() {
       method: 'POST',
       body: JSON.stringify({
         name: `${t.name} — ${$('r-trigger').value.trim().split(',')[0] || 'nova'}`,
+        embedded: true, // vive dentro da regra, não aparece na lista de Sequências
         steps: FSTEPS.map((st) => ({ ...st, buttons: st.buttons.map((b) => ({ ...b })), cards: st.cards ? st.cards.map((c) => ({ ...c })) : null })),
       }),
     });
     dmMode = created.id;
     await loadFlows();
-    toast(`sequência "${t.name}" criada com os seus textos ✨`);
+    toast(`sequência criada dentro da regra ✨`);
+  } else if (dmMode === '__inline' && RULE_FLOW) {
+    await api(`/flows/${RULE_FLOW.id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ steps: FSTEPS.map((st) => ({ ...st, buttons: st.buttons.map((b) => ({ ...b })), cards: st.cards ? st.cards.map((c) => ({ ...c })) : null })) }),
+    });
+    dmMode = RULE_FLOW.id;
+    await loadFlows();
   }
   const body = {
     surface,
@@ -709,8 +717,9 @@ function editRule(id) {
   $('r-dm').value = r.dm_text || '';
   let rCardsParsed = [];
   try { rCardsParsed = JSON.parse(r.cards ?? '[]') || []; } catch {}
-  $('r-dm-mode').value = rCardsParsed.length ? 'cards'
-    : r.flow_id && [...$('r-dm-mode').options].some((o) => o.value === r.flow_id) ? r.flow_id : 'text';
+  RULE_FLOW = r.flow_id ? FLOWS.find((f) => f.id === r.flow_id) || null : null;
+  syncActionOptions(); // recria o select já com a opção da sequência embutida
+  $('r-dm-mode').value = rCardsParsed.length ? 'cards' : RULE_FLOW ? '__inline' : 'text';
   RCARDS = rCardsParsed.map((c) => ({ ...c }));
   $('r-cards-text').value = rCardsParsed.length ? (r.dm_text || '') : '';
   if (RCARDS.length) renderCards();
@@ -735,6 +744,8 @@ function editRule(id) {
 
 function cancelEdit() {
   EDITING = null;
+  RULE_FLOW = null;
+  syncActionOptions();
   $('r-product').value = '';
   $('f-up-num').value = ''; $('f-up-text').value = '';
   $('r-trigger').value = ''; $('r-reply').value = ''; $('r-dm').value = '';
@@ -812,7 +823,8 @@ let FLOW_EDITING = null;
 
 async function loadFlows() {
   FLOWS = await api(`/accounts/${SELECTED.id}/flows`);
-  $('flows-table').querySelector('tbody').innerHTML = FLOWS.length ? FLOWS.map(f => `
+  const listadas = FLOWS.filter((f) => !f.embedded); // embutidas vivem dentro da regra
+  $('flows-table').querySelector('tbody').innerHTML = listadas.length ? listadas.map(f => `
     <tr style="${f.active ? '' : 'opacity:.45'}">
       <td><b>${esc(f.name)}</b></td>
       <td class="muted">${f.steps.length} passo${f.steps.length > 1 ? 's' : ''}</td>
@@ -1055,16 +1067,23 @@ function renderDmModeOptions() {
   const current = sel.value;
   sel.innerHTML = '<option value="text">Texto fixo</option>' +
     '<option value="cards">🃏 Cartões com imagem e botão de link</option>' +
-    FLOWS.map((f) => `<option value="${f.id}">Sequência: ${esc(f.name)}</option>`).join('') +
-    '<optgroup label="✨ criar sequência nova de um modelo">' +
+    (RULE_FLOW ? `<option value="__inline">🔀 Sequência desta regra (edita abaixo)</option>` : '') +
+    '<optgroup label="✨ sequência de botões (escolhe um modelo)">' +
     Object.entries(FLOW_TEMPLATES).map(([k, t]) => `<option value="__tpl:${k}">✨ ${esc(t.name)}</option>`).join('') +
     '</optgroup>';
   sel.value = [...sel.options].some((o) => o.value === current) ? current : 'text';
   dmModeChanged();
 }
 
+let RULE_FLOW = null; // sequência embutida da regra que está sendo editada
+
 function dmModeChanged() {
   const mode = $('r-dm-mode').value;
+  if (mode === '__inline' && RULE_FLOW) {
+    STEPS_TARGET = 'r-tpl-steps';
+    FSTEPS = RULE_FLOW.steps.map((st) => ({ step_key: st.step_key, message: st.message || '', buttons: (st.buttons || []).map((b) => ({ ...b })), cards: st.cards ? st.cards.map((c) => ({ ...c })) : null }));
+    renderSteps();
+  }
   if (mode.startsWith('__tpl:')) {
     const t = FLOW_TEMPLATES[mode.slice(6)];
     if (t?.followup) {
@@ -1078,7 +1097,7 @@ function dmModeChanged() {
   }
   $('r-dm-text-wrap').style.display = mode === 'text' ? 'block' : 'none';
   $('r-cards-wrap').style.display = mode === 'cards' ? 'block' : 'none';
-  $('r-tpl-wrap').style.display = mode.startsWith('__tpl:') ? 'block' : 'none';
+  $('r-tpl-wrap').style.display = (mode.startsWith('__tpl:') || mode === '__inline') ? 'block' : 'none';
   if (mode.startsWith('__tpl:')) {
     // abre o modelo pra edição aqui mesmo; o que ficar aqui vira a sequência no salvar
     const t = FLOW_TEMPLATES[mode.slice(6)];
