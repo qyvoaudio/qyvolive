@@ -202,6 +202,9 @@
               <textarea id="r-dm" placeholder="Oi! Aqui está o link: ..."></textarea>
             </div>
             <div id="r-cards-wrap" style="display:none">
+              <label>Texto junto com os cartões (opcional)</label>
+              <textarea id="r-cards-text" placeholder="mensagem que chega antes do carrossel"></textarea>
+              <span class="muted">⚠️ só funciona em regra de DM/story ou dentro de sequência (depois do toque). Em regra de comentário o Instagram permite UMA mensagem só — usa o subtítulo do cartão ou uma sequência destrava.</span>
               <div id="cards-editor"></div>
               <button class="ghost" style="padding:5px 12px" onclick="RCARDS.push({image:'',title:'',subtitle:'',button_title:'',url:''});renderCards()">+ cartão</button>
               <span class="muted">até 10 cartões — com 2 ou mais vira carrossel deslizante na DM</span>
@@ -669,7 +672,8 @@ async function addRule() {
     action: surface === 'dm' ? 'dm_reply' : $('r-action').value,
     reply_text: replyLines[0] ?? null,
     reply_variations: replyLines.length > 1 ? replyLines : null,
-    dm_text: dmMode === 'text' ? ($('r-dm').value.trim() || null) : null,
+    dm_text: dmMode === 'text' ? ($('r-dm').value.trim() || null)
+      : dmMode === 'cards' ? ($('r-cards-text').value.trim() || null) : null,
     cards: dmMode === 'cards' ? RCARDS.filter((c) => c.title.trim() && c.url.trim()) : null,
     flow_id: ['text', 'cards'].includes(dmMode) ? null : dmMode,
     priority: Number($('r-priority').value) || 5,
@@ -708,6 +712,7 @@ function editRule(id) {
   $('r-dm-mode').value = rCardsParsed.length ? 'cards'
     : r.flow_id && [...$('r-dm-mode').options].some((o) => o.value === r.flow_id) ? r.flow_id : 'text';
   RCARDS = rCardsParsed.map((c) => ({ ...c }));
+  $('r-cards-text').value = rCardsParsed.length ? (r.dm_text || '') : '';
   if (RCARDS.length) renderCards();
   dmModeChanged();
   $('r-media-mode').value = r.media_id ? 'one' : 'any';
@@ -911,7 +916,8 @@ function renderSteps() {
         <option value="msg" ${!(s.cards && s.cards.length) ? 'selected' : ''}>💬 Mensagem de texto</option>
         <option value="cards" ${(s.cards && s.cards.length) ? 'selected' : ''}>🃏 Cartões com link</option>
       </select>
-      ${(s.cards && s.cards.length) ? s.cards.map((c, k) => `
+      ${(s.cards && s.cards.length) ? `<label>Mensagem junto (opcional — chega antes dos cartões)</label>
+      <textarea oninput="FSTEPS[${i}].message=this.value" placeholder="ex: olha o que separei pra você 👇">${esc(s.message || '')}</textarea>` + s.cards.map((c, k) => `
         <div style="border:1px dashed var(--border);border-radius:10px;padding:10px;margin:8px 0">
           <div class="row">
             <input value="${esc(c.title || '')}" maxlength="80" placeholder="Título do cartão*" oninput="FSTEPS[${i}].cards[${k}].title=this.value">
