@@ -555,12 +555,20 @@ const ACTION_LABEL = {
   private_reply: 'manda DM', dm_reply: 'responde DM',
 };
 
-// foto do produto = imagem do 1º cartão da regra
-function ruleCardImage(r) {
+// cartões da regra: direto nela OU dentro da sequência embutida dela
+function ruleCards(r) {
   try {
-    const cards = JSON.parse(r.cards ?? 'null');
-    return cards?.[0]?.image || null;
-  } catch { return null; }
+    const direto = JSON.parse(r.cards ?? 'null');
+    if (Array.isArray(direto) && direto.length) return direto;
+  } catch {}
+  const f = r.flow_id ? FLOWS.find((x) => x.id === r.flow_id) : null;
+  const passo = f?.steps?.find((st) => Array.isArray(st.cards) && st.cards.length);
+  return passo ? passo.cards : [];
+}
+
+// foto do produto = imagem do 1º cartão (da regra ou da sequência)
+function ruleCardImage(r) {
+  return ruleCards(r)[0]?.image || null;
 }
 
 function ruleReplies(r) {
@@ -592,8 +600,8 @@ function renderRules() {
       <td>${ruleCardImage(r) ? `<img src="${ruleCardImage(r)}" style="width:40px;height:40px;object-fit:cover;border-radius:8px;float:left;margin-right:10px" loading="lazy">` : ''}<b>${r.match_type === 'all' ? '🌐 todos os comentários' : esc(r.trigger_text)}</b> <span class="muted">(${r.match_type === 'all' ? 'pega-tudo' : r.match_type})</span>
           ${ruleReplies(r).length > 1 ? ` <span class="pill rule">${ruleReplies(r).length} variações</span>` : ''}
           ${ruleMediaIds(r).length ? ` <span class="pill rule">📍 ${ruleMediaIds(r).length} publicaç${ruleMediaIds(r).length > 1 ? 'ões' : 'ão'}</span>` : ''}
-          ${r.cards ? ' <span class="pill rule">🃏 cartões</span>' : ''}
-          ${r.flow_id ? ' <span class="pill rule">🔀 sequência</span>' : ''}<br>
+          ${ruleCards(r).length ? ' <span class="pill rule">🃏 cartão com link</span>' : ''}
+          ${r.flow_id ? ' <span class="pill rule">🔀 botão destrava</span>' : ''}<br>
           <span class="muted">${esc(r.reply_text || '')}${r.reply_text && r.dm_text ? ' · ' : ''}${esc(r.dm_text || '')}</span></td>
       <td>${ACTION_LABEL[r.action] || r.action}</td>
       <td>${r.priority}</td>
@@ -827,6 +835,7 @@ let FLOW_EDITING = null;
 
 async function loadFlows() {
   FLOWS = await api(`/accounts/${SELECTED.id}/flows`);
+  if (typeof RULES !== 'undefined' && RULES?.length) renderRules(); // fotos vêm das sequências
   const listadas = FLOWS.filter((f) => !f.embedded); // embutidas vivem dentro da regra
   $('flows-table').querySelector('tbody').innerHTML = listadas.length ? listadas.map(f => `
     <tr style="${f.active ? '' : 'opacity:.45'}">
