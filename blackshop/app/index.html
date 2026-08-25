@@ -579,6 +579,14 @@ function ruleReplies(r) {
   return r.reply_text ? [r.reply_text] : [];
 }
 
+async function delProduct(id, nome) {
+  if (!confirm(`Excluir o produto "${nome}"? As regras dele NÃO são apagadas — só ficam no grupo "sem produto".`)) return;
+  await api(`/products/${id}`, { method: 'DELETE' });
+  toast('produto excluído');
+  await loadProducts();
+  loadRules();
+}
+
 // grupos de produto recolhidos (fica salvo no navegador)
 const COLLAPSED = new Set(JSON.parse(localStorage.getItem('bs_collapsed') || '[]'));
 function toggleGroup(key) {
@@ -602,7 +610,12 @@ function renderRules() {
           ${ruleMediaIds(r).length ? ` <span class="pill rule">📍 ${ruleMediaIds(r).length} publicaç${ruleMediaIds(r).length > 1 ? 'ões' : 'ão'}</span>` : ''}
           ${ruleCards(r).length ? ' <span class="pill rule">🃏 cartão com link</span>' : ''}
           ${r.flow_id ? ' <span class="pill rule">🔀 botão destrava</span>' : ''}<br>
-          <span class="muted">${esc(r.reply_text || '')}${r.reply_text && r.dm_text ? ' · ' : ''}${esc(r.dm_text || '')}</span></td>
+          <span class="muted">${esc(r.reply_text || '')}${r.reply_text && r.dm_text ? ' · ' : ''}${esc(r.dm_text || '')}${(() => {
+            const f = r.flow_id ? FLOWS.find((x) => x.id === r.flow_id) : null;
+            const ini = f?.steps?.find((st) => st.step_key === 'start');
+            const card = ruleCards(r)[0];
+            return f ? ` · 🔀 "${esc((ini?.message || '').slice(0, 45))}…"${card ? ` → 🃏 ${esc(card.title)}` : ''}` : '';
+          })()}</span></td>
       <td>${ACTION_LABEL[r.action] || r.action}</td>
       <td>${r.priority}</td>
       <td style="white-space:nowrap">
@@ -616,8 +629,9 @@ function renderRules() {
 
   const groupHeader = (key, label, img, count) => {
     const open = !COLLAPSED.has(key);
+    const del = key !== 'solo' ? `<button class="ghost" style="float:right;padding:2px 9px" title="excluir produto (as regras dele não são apagadas, só ficam sem produto)" onclick="event.stopPropagation();delProduct('${key}', '${esc(label).replace(/'/g, '')}')">🗑</button>` : '';
     return `<tr style="cursor:pointer" onclick="toggleGroup('${key}')" title="${open ? 'recolher' : 'expandir'}">
-      <td colspan="6" style="background:var(--panel2);font-weight:700;border-radius:8px">
+      <td colspan="6" style="background:var(--panel2);font-weight:700;border-radius:8px">${del}
         <span class="muted" style="display:inline-block;width:16px">${open ? '▾' : '▸'}</span>${img ? `<img src="${img}" style="width:26px;height:26px;object-fit:cover;border-radius:6px;vertical-align:middle;margin-right:8px">` : '📦 '}${esc(label)}
         <span class="muted" style="font-weight:400">· ${count} regra${count > 1 ? 's' : ''}</span>
       </td></tr>`;
