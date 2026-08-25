@@ -244,6 +244,13 @@
           </div>
           <button class="ghost" style="flex:0 0 auto" onclick="saveWaLink()">salvar link</button>
         </div>
+        <h2 class="mt">🛒 Shopee — API de afiliada</h2>
+        <span class="muted">Com a credencial salva, o botão "🛒 preencher pela Shopee" dos cartões monta tudo sozinho: cola o link do produto → título, foto e o SEU link de afiliada rastreado. A credencial fica em affiliate.shopee.com.br/open_api (página "Meu API").</span>
+        <div class="row" style="align-items:flex-end">
+          <div><label>AppID</label><input id="shopee-appid" placeholder="ex: 18359270775"></div>
+          <div style="flex:2"><label>Senha da API</label><input id="shopee-secret" placeholder="a Senha da página Meu API"></div>
+          <button class="ghost" style="flex:0 0 auto" onclick="saveShopeeCreds()">salvar</button>
+        </div>
         <details class="mt" id="flow-form" style="display:none">
           <summary>+ nova sequência</summary>
           <label>Começar de um modelo pronto (opcional — tudo editável depois)</label>
@@ -465,6 +472,8 @@ async function selectAccount(id) {
   SELECTED = ACCOUNTS.find(a => a.id === id);
   MEDIA = null; MEDIA_SELS = [];
   $('wa-link').value = SELECTED.wa_group_link || '';
+  $('shopee-appid').value = SELECTED.shopee_app_id || '';
+  $('shopee-secret').value = SELECTED.shopee_secret || '';
   $('sel-name').textContent = SELECTED.username ? '@' + SELECTED.username : SELECTED.platform;
   $('account-panels').style.display = 'block';
   await loadProducts();
@@ -970,6 +979,7 @@ function renderSteps() {
       ${(s.cards && s.cards.length) ? `<label>Mensagem junto (opcional — chega antes dos cartões)</label>
       <textarea oninput="FSTEPS[${i}].message=this.value" placeholder="ex: olha o que separei pra você 👇">${esc(s.message || '')}</textarea>` + s.cards.map((c, k) => `
         <div style="border:1px dashed var(--border);border-radius:10px;padding:10px;margin:8px 0">
+          <button class="ghost" style="padding:3px 10px" onclick="shopeeFill('step', ${i}, ${k})">🛒 preencher pela Shopee</button>
           <div class="row">
             <input value="${esc(c.title || '')}" maxlength="80" placeholder="Título do cartão*" oninput="FSTEPS[${i}].cards[${k}].title=this.value">
             <input value="${esc(c.button_title || '')}" maxlength="20" placeholder="Texto do botão" oninput="FSTEPS[${i}].cards[${k}].button_title=this.value">
@@ -1004,6 +1014,31 @@ function setBtnAction(i, j, val) {
   if (val.startsWith('goto:')) { b.action = 'goto'; b.next = val.slice(5); }
   else { b.action = val; b.next = null; }
   renderSteps();
+}
+
+async function saveShopeeCreds() {
+  await api(`/accounts/${SELECTED.id}`, { method: 'PATCH', body: JSON.stringify({
+    shopee_app_id: $('shopee-appid').value.trim() || null,
+    shopee_secret: $('shopee-secret').value.trim() || null,
+  }) });
+  SELECTED.shopee_app_id = $('shopee-appid').value.trim() || null;
+  SELECTED.shopee_secret = $('shopee-secret').value.trim() || null;
+  toast('credencial da Shopee salva 🛒');
+}
+
+// Cola o link do produto → a Shopee devolve título, foto e o link de afiliada rastreado da conta
+async function shopeeFill(kind, i, k) {
+  const url = prompt('Cola o link do produto na Shopee (pode ser o link curto s.shopee):');
+  if (!url?.trim()) return;
+  toast('buscando na Shopee… 🛒');
+  const d = await api(`/accounts/${SELECTED.id}/shopee/resolve`, { method: 'POST', body: JSON.stringify({ url: url.trim() }) });
+  const alvo = kind === 'rule' ? RCARDS[i] : FSTEPS[i].cards[k];
+  if (d.title && !alvo.title?.trim()) alvo.title = d.title.slice(0, 80);
+  if (d.image) alvo.image = d.image;
+  alvo.url = d.url;
+  delete alvo.track_code; // link novo → contador de cliques novo
+  if (kind === 'rule') renderCards(); else renderSteps();
+  toast(`preenchido com teu link de afiliada ✨${d.price_min ? ` (R$ ${d.price_min}${d.price_max && d.price_max !== d.price_min ? ' a R$ ' + d.price_max : ''})` : ''}`);
 }
 
 async function saveWaLink() {
@@ -1150,7 +1185,7 @@ function dmModeChanged() {
 function renderCards() {
   $('cards-editor').innerHTML = RCARDS.map((c, i) => `
     <div style="border:1px solid var(--border);border-radius:12px;padding:12px;margin:10px 0;background:var(--panel2)">
-      <div style="display:flex;justify-content:space-between"><b>Cartão ${i + 1}</b>
+      <div style="display:flex;justify-content:space-between"><b>Cartão ${i + 1} <button class="ghost" style="padding:3px 10px" onclick="shopeeFill('rule', ${i})">🛒 preencher pela Shopee</button></b>
         ${RCARDS.length > 1 ? `<button class="danger" onclick="RCARDS.splice(${i},1);renderCards()">remover</button>` : ''}</div>
       <div class="row">
         <div><label>Título*</label><input value="${esc(c.title)}" maxlength="80" placeholder="ex: Mesa Champanheira 3 em 1" oninput="RCARDS[${i}].title=this.value"></div>
