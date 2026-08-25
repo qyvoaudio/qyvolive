@@ -673,6 +673,10 @@ async function addRule() {
     dmMode = RULE_FLOW.id;
     await loadFlows();
   }
+  if (!['text', 'cards'].includes(dmMode) && !/^[0-9a-f-]{30,}$/.test(dmMode)) {
+    toast('a sequência da regra não carregou direito — recarrega a página e edita de novo (nada foi perdido)', true);
+    return;
+  }
   const body = {
     surface,
     match_type: $('r-match').value,
