@@ -673,7 +673,16 @@ async function addRule() {
     dmMode = created.id;
     await loadFlows();
     toast(`sequência criada dentro da regra ✨`);
-  } else if (dmMode === '__inline' && RULE_FLOW) {
+  } else if (dmMode === '__inline') {
+    if (!RULE_FLOW) { // recupera: recarrega as sequências e acha a da regra
+      const cur = RULES.find((x) => x.id === EDITING);
+      await loadFlows();
+      RULE_FLOW = cur?.flow_id ? FLOWS.find((f) => f.id === cur.flow_id) || null : null;
+    }
+    if (!RULE_FLOW) {
+      toast('não achei a sequência dessa regra — me chama que eu olho no banco', true);
+      return;
+    }
     await api(`/flows/${RULE_FLOW.id}`, {
       method: 'PUT',
       body: JSON.stringify({ steps: FSTEPS.map((st) => ({ ...st, buttons: st.buttons.map((b) => ({ ...b })), cards: st.cards ? st.cards.map((c) => ({ ...c })) : null })) }),
@@ -714,9 +723,12 @@ async function addRule() {
   loadRules();
 }
 
-function editRule(id) {
+async function editRule(id) {
   const r = RULES.find((x) => x.id === id);
   if (!r) return;
+  if (r.flow_id && !FLOWS.some((f) => f.id === r.flow_id)) {
+    await loadFlows(); // sequência ainda não tinha carregado — busca antes de abrir
+  }
   EDITING = id;
   $('r-product').value = r.product_id && PRODUCTS.some((p) => p.id === r.product_id) ? r.product_id : '';
   $('r-surface').value = r.surface;
