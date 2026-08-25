@@ -756,7 +756,7 @@ async function editRule(id) {
   let rCardsParsed = [];
   try { rCardsParsed = JSON.parse(r.cards ?? '[]') || []; } catch {}
   RULE_FLOW = r.flow_id ? FLOWS.find((f) => f.id === r.flow_id) || null : null;
-  syncActionOptions(); // recria o select já com a opção da sequência embutida
+  renderDmModeOptions(); // recria o select "Resposta na DM" já com a opção da sequência embutida
   $('r-dm-mode').value = rCardsParsed.length ? 'cards' : RULE_FLOW ? '__inline' : 'text';
   RCARDS = rCardsParsed.map((c) => ({ ...c }));
   $('r-cards-text').value = rCardsParsed.length ? (r.dm_text || '') : '';
@@ -783,7 +783,7 @@ async function editRule(id) {
 function cancelEdit() {
   EDITING = null;
   RULE_FLOW = null;
-  syncActionOptions();
+  renderDmModeOptions();
   $('r-product').value = '';
   $('f-up-num').value = ''; $('f-up-text').value = '';
   $('r-trigger').value = ''; $('r-reply').value = ''; $('r-dm').value = '';
