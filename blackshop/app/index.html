@@ -588,6 +588,20 @@ function ruleReplies(r) {
   return r.reply_text ? [r.reply_text] : [];
 }
 
+// Copia a regra pra outro perfil conectado (sequência, cartão e produto vão junto; posts não)
+async function copyRuleTo(id) {
+  const outros = ACCOUNTS.filter((a) => a.id !== SELECTED.id);
+  if (!outros.length) return;
+  let dest = outros[0];
+  if (outros.length > 1) {
+    const escolha = prompt('Copiar pra qual perfil?\n' + outros.map((a, i) => `${i + 1} — @${a.username}`).join('\n') + '\n\nDigita o número:');
+    dest = outros[Number(escolha) - 1];
+    if (!dest) return;
+  } else if (!confirm(`Copiar essa regra pro perfil @${dest.username}?`)) return;
+  await api(`/rules/${id}/copy`, { method: 'POST', body: JSON.stringify({ account_id: dest.id }) });
+  toast(`regra copiada pra @${dest.username} ✅ Lá, edita a regra e escolhe as publicações (post é de cada perfil)`);
+}
+
 async function delProduct(id, nome) {
   if (!confirm(`Excluir o produto "${nome}"? As regras dele NÃO são apagadas — só ficam no grupo "sem produto".`)) return;
   await api(`/products/${id}`, { method: 'DELETE' });
@@ -631,6 +645,7 @@ function renderRules() {
         ${r.surface === 'comment' ? `<button class="ghost" style="padding:5px 10px" title="responder comentários antigos que batem nessa regra" onclick="retroRule('${r.id}')">🕰️</button>` : ''}
         <button class="ghost" style="padding:5px 10px" onclick="editRule('${r.id}')">editar</button>
         <button class="ghost" style="padding:5px 10px" title="criar uma nova regra a partir dessa" onclick="cloneRule('${r.id}')">📋 clonar</button>
+        ${ACCOUNTS.length > 1 ? `<button class="ghost" style="padding:5px 10px" title="copiar essa regra pra outro perfil (sequência, cartão e produto vão junto)" onclick="copyRuleTo('${r.id}')">➡️ outro perfil</button>` : ''}
         <button class="ghost" style="padding:5px 10px" onclick="toggleRule('${r.id}', ${r.active ? 0 : 1})">${r.active ? 'pausar' : 'ativar'}</button>
       </td>
       <td><button class="danger" onclick="delRule('${r.id}')">excluir</button></td>
