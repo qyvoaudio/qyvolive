@@ -714,7 +714,7 @@ async function addRule() {
     await loadFlows();
     toast(`sequência criada dentro da regra ✨`);
   } else if (dmMode === '__inline') {
-    if (!RULE_FLOW) { // recupera: recarrega as sequências e acha a da regra
+    if (!RULE_FLOW && EDITING) { // recupera: recarrega as sequências e acha a da regra
       const cur = RULES.find((x) => x.id === EDITING);
       await loadFlows();
       RULE_FLOW = cur?.flow_id ? FLOWS.find((f) => f.id === cur.flow_id) || null : null;
@@ -723,11 +723,25 @@ async function addRule() {
       toast('não achei a sequência dessa regra — me chama que eu olho no banco', true);
       return;
     }
-    await api(`/flows/${RULE_FLOW.id}`, {
-      method: 'PUT',
-      body: JSON.stringify({ steps: FSTEPS.map((st) => ({ ...st, buttons: st.buttons.map((b) => ({ ...b })), cards: st.cards ? st.cards.map((c) => ({ ...c })) : null })) }),
-    });
-    dmMode = RULE_FLOW.id;
+    if (EDITING) {
+      // editando a própria regra: atualiza a sequência dela
+      await api(`/flows/${RULE_FLOW.id}`, {
+        method: 'PUT',
+        body: JSON.stringify({ steps: FSTEPS.map((st) => ({ ...st, buttons: st.buttons.map((b) => ({ ...b })), cards: st.cards ? st.cards.map((c) => ({ ...c })) : null })) }),
+      });
+      dmMode = RULE_FLOW.id;
+    } else {
+      // clonando: a regra nova ganha uma sequência PRÓPRIA (cópia), com contadores de clique novos
+      const created = await api(`/accounts/${SELECTED.id}/flows`, {
+        method: 'POST',
+        body: JSON.stringify({
+          name: `${RULE_FLOW.name} (cópia)`,
+          embedded: true,
+          steps: FSTEPS.map((st) => ({ ...st, buttons: st.buttons.map((b) => ({ ...b })), cards: st.cards ? st.cards.map(({ track_code, ...c }) => ({ ...c })) : null })),
+        }),
+      });
+      dmMode = created.id;
+    }
     await loadFlows();
   }
   if (!['text', 'cards'].includes(dmMode) && !/^[0-9a-f-]{30,}$/.test(dmMode)) {
@@ -825,8 +839,8 @@ function cancelEdit() {
   $('rule-form').querySelector('summary').textContent = '+ nova regra';
 }
 
-function cloneRule(id) {
-  editRule(id);                       // preenche o formulário com tudo da regra original
+async function cloneRule(id) {
+  await editRule(id);                 // preenche o formulário com tudo da regra original (e ESPERA terminar)
   EDITING = null;                     // ...mas salva como REGRA NOVA
   RCARDS = RCARDS.map(({ track_code, ...c }) => c); // cartões clonados ganham contadores próprios
   $('r-save').textContent = 'Salvar regra nova (cópia)';
