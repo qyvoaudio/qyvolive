@@ -331,11 +331,13 @@
             <button class="ghost" style="padding:4px 10px" onclick="$('rep-days').value=7;loadReport()">7</button>
             <button class="ghost" style="padding:4px 10px" onclick="$('rep-days').value=30;loadReport()">30</button>
             <button class="ghost" style="padding:4px 10px" onclick="$('rep-days').value=90;loadReport()">90</button>
+            <label style="display:inline-flex;align-items:center;gap:5px;margin-left:10px;font-weight:400"><input type="checkbox" id="rep-all" onchange="loadReport()" style="width:auto"> somar todos os perfis</label>
           </span>
         </h2>
         <div id="report" class="row"></div>
         <div id="report-product" class="mt"></div>
         <div id="report-top" class="mt"></div>
+        <div id="report-shopee" class="mt"></div>
       </div>
 
       <div class="card">
@@ -1257,7 +1259,20 @@ async function sendChat() {
 
 // ---- relatório ----
 async function loadReport() {
-  const d = await api(`/accounts/${SELECTED.id}/report?days=${$('rep-days').value}`);
+  const dias = $('rep-days').value;
+  const contas = ($('rep-all')?.checked && ACCOUNTS.length > 1) ? ACCOUNTS : [SELECTED];
+  const partes = await Promise.all(contas.map((a) => api(`/accounts/${a.id}/report?days=${dias}`)));
+  // soma os números de todos os perfis escolhidos
+  const d = partes[0];
+  for (const extra of partes.slice(1)) {
+    for (const k of ['comments_received', 'comments_replied', 'dms_sent_total', 'link_clicks_total', 'emails_captured', 'people_in_dm', 'followups_sent']) d[k] += extra[k] ?? 0;
+    for (const pr of extra.by_product ?? []) {
+      const meu = (d.by_product ?? []).find((x) => x.name === pr.name);
+      if (meu) { meu.fires += pr.fires; meu.clicks += pr.clicks; } else (d.by_product ??= []).push(pr);
+    }
+    d.top_rules = [...(d.top_rules ?? []), ...(extra.top_rules ?? [])].sort((a, b) => b.c - a.c).slice(0, 5);
+  }
+  if (d.by_product) d.by_product.sort((a, b) => b.fires - a.fires);
   const tile = (n, label) => `
     <div style="background:var(--panel2);border-radius:12px;padding:14px 16px;text-align:center;min-width:120px">
       <div style="font-size:26px;font-weight:700">${n}</div>
@@ -1279,6 +1294,35 @@ async function loadReport() {
   $('report-top').innerHTML = d.top_rules.length
     ? '<b>Regras que mais dispararam:</b> ' + d.top_rules.map((r) => `<span class="pill rule">${esc(r.trigger_text.slice(0, 30))} · ${r.c}×</span>`).join(' ')
     : '<span class="muted">Nenhuma regra disparou no período ainda.</span>';
+
+  // 🛒 comissões da Shopee (só pra contas com credencial cadastrada)
+  const comCreds = contas.filter((a) => a.shopee_app_id);
+  if (!comCreds.length) { $('report-shopee').innerHTML = ''; return; }
+  $('report-shopee').innerHTML = '<span class="muted">carregando comissões da Shopee… 🛒</span>';
+  try {
+    const rels = await Promise.all(comCreds.map((a) => api(`/accounts/${a.id}/shopee/report?days=${Math.min(dias, 90)}`)));
+    let comissao = 0, conv = 0, pend = 0, itens = {};
+    for (const r of rels) {
+      comissao += Number(r.comissao_total) || 0;
+      conv += r.conversoes;
+      pend += Number(r.por_status?.PENDING ?? 0);
+      for (const it of r.top_itens ?? []) {
+        itens[it.name] = itens[it.name] ?? { ...it, qty: 0, commission: 0 };
+        itens[it.name].qty += it.qty;
+        itens[it.name].commission += Number(it.commission) || 0;
+      }
+    }
+    const lista = Object.values(itens).sort((a, b) => b.commission - a.commission).slice(0, 10);
+    $('report-shopee').innerHTML = `<b>🛒 Shopee — comissões no período</b>
+      <div class="row" style="margin-top:8px">
+        <div style="background:var(--panel2);border-radius:12px;padding:14px 16px;text-align:center;min-width:120px"><div style="font-size:26px;font-weight:700">R$ ${comissao.toFixed(2).replace('.', ',')}</div><div class="muted">comissão total</div></div>
+        <div style="background:var(--panel2);border-radius:12px;padding:14px 16px;text-align:center;min-width:120px"><div style="font-size:26px;font-weight:700">${conv}</div><div class="muted">vendas geradas</div></div>
+        <div style="background:var(--panel2);border-radius:12px;padding:14px 16px;text-align:center;min-width:120px"><div style="font-size:26px;font-weight:700">R$ ${pend.toFixed(2).replace('.', ',')}</div><div class="muted">ainda pendente</div></div>
+      </div>` + (lista.length ? '<table style="margin-top:8px"><thead><tr><th></th><th>Item vendido</th><th>Qtd</th><th>Comissão</th></tr></thead><tbody>' +
+        lista.map((i) => `<tr><td>${i.image ? `<img src="${i.image}" style="width:34px;height:34px;object-fit:cover;border-radius:6px">` : ''}</td><td>${esc(i.name.slice(0, 60))}</td><td>${i.qty}</td><td>R$ ${i.commission.toFixed(2).replace('.', ',')}</td></tr>`).join('') + '</tbody></table>' : '');
+  } catch {
+    $('report-shopee').innerHTML = '<span class="muted">não consegui puxar as comissões da Shopee agora</span>';
+  }
 }
 
 // ---- contatos ----
