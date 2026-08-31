@@ -1501,11 +1501,34 @@ const EN = {
   'pessoas no direct': 'people in DMs', 'acompanhamentos': 'follow-ups',
 };
 
+// pedaços com número/emoji no meio que o dicionário exato não pega
+const EN_REGEX = [
+  [/(\d+) publicaç(?:ões|ão)/g, '$1 post(s)'],
+  [/botão destrava/g, 'unlock button'],
+  [/cartão com link/g, 'card with link'],
+  [/comentário \+ DM/g, 'comment + DM'],
+  [/só comentário/g, 'comment only'],
+  [/só DM/g, 'DM only'],
+  [/(\d+) regra(s)?/g, '$1 rule$2'],
+  [/(\d+) variações/g, '$1 variations'],
+  [/todos os comentários/g, 'all comments'],
+  [/sem produto/g, 'no product'],
+  [/Gatilho/g, 'Trigger'],
+  [/Onde/g, 'Where'],
+  [/Ação/g, 'Action'],
+  [/Prioridade/g, 'Priority'],
+];
+
 function translatePage() {
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
   while (walker.nextNode()) {
     const t = walker.currentNode.nodeValue.trim();
     if (EN[t]) walker.currentNode.nodeValue = walker.currentNode.nodeValue.replace(t, EN[t]);
+    else if (t) {
+      let v = walker.currentNode.nodeValue;
+      for (const [re, sub] of EN_REGEX) v = v.replace(re, sub);
+      if (v !== walker.currentNode.nodeValue) walker.currentNode.nodeValue = v;
+    }
   }
   document.querySelectorAll('input[placeholder], textarea[placeholder]').forEach((el) => {
     if (EN[el.placeholder]) el.placeholder = EN[el.placeholder];
