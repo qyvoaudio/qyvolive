@@ -77,6 +77,7 @@
       <h1>Black<span>Shop</span></h1>
       <small>respostas automáticas · Instagram &amp; Facebook</small>
     </div>
+    <button class="ghost" id="btn-sair" style="margin-left:auto;padding:6px 14px;display:none" onclick="sair()">sair</button>
   </header>
 
   <div class="card" id="login-card">
@@ -355,6 +356,12 @@
 <script>
 const API_BASE = 'https://black-shop.caroldepaz.workers.dev';
 let TOKEN = localStorage.getItem('black_token') || '';
+
+async function sair() {
+  try { await api('/auth/logout', { method: 'POST' }); } catch {}
+  localStorage.removeItem('black_token');
+  location.reload();
+}
 let ACCOUNTS = [];
 let SELECTED = null;
 let RULES = [];
@@ -383,7 +390,7 @@ async function api(path, opts = {}) {
     localStorage.removeItem('black_token');
     toast('Sessão expirada — entra de novo', true);
     $('login-card').style.display = 'block';
-    $('app').style.display = 'none';
+    $('app').style.display = 'none'; $('btn-sair').style.display = 'none';
     throw new Error('unauthorized');
   }
   const data = await res.json();
@@ -430,7 +437,7 @@ async function boot() {
   } catch { return; }
   if (!ACCOUNTS) return;
   $('login-card').style.display = 'none';
-  $('app').style.display = 'block';
+  $('app').style.display = 'block'; $('btn-sair').style.display = 'inline-block';
   $('connect-link').href = API_BASE + '/oauth/start?state=' + encodeURIComponent(TOKEN);
   renderAccounts();
 }
