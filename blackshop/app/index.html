@@ -133,6 +133,7 @@
     <div id="account-panels" style="display:none">
       <div class="card">
         <h2>Regras — <span id="sel-name"></span></h2>
+        <div id="unmatched-box"></div>
         <table id="rules-table">
           <thead><tr><th>Onde</th><th>Gatilho</th><th>Ação</th><th>Prior.</th><th></th><th></th></tr></thead>
           <tbody></tbody>
@@ -630,6 +631,54 @@ function toggleGroup(key) {
 async function loadRules() {
   RULES = await api(`/accounts/${SELECTED.id}/rules`);
   renderRules();
+  loadUnmatched(); // comentários que chegaram sem regra
+}
+
+// ⚠️ comentários sem regra: oferece vincular o post a uma regra (responde os presos) ou criar regra nova
+async function loadUnmatched() {
+  try {
+    const grupos = await api(`/accounts/${SELECTED.id}/unmatched`);
+    if (!grupos.length) { $('unmatched-box').innerHTML = ''; return; }
+    const opcoes = RULES.filter((r) => r.surface === 'comment' && r.active)
+      .map((r) => {
+        const prod = PRODUCTS.find((p) => p.id === r.product_id);
+        const nome = prod ? prod.name : (ruleCards(r)[0]?.title || r.trigger_text);
+        return `<option value="${r.id}">${esc(String(nome).slice(0, 45))}</option>`;
+      }).join('');
+    $('unmatched-box').innerHTML = grupos.map((g) => `
+      <div style="border:2px solid #f59e0b;border-radius:12px;padding:14px;margin-bottom:12px;background:var(--panel2)">
+        <b>⚠️ ${g.total} comentário${g.total > 1 ? 's' : ''} sem resposta</b> num post sem regra
+        <span class="muted">(post ${g.media_id} — se não estiver na tua galeria, é o post que o anúncio criou)</span><br>
+        <span class="muted">${g.exemplos.map((e) => `@${esc(e.de ?? '?')}: "${esc(e.texto)}"`).join(' · ')}</span>
+        <div class="row" style="align-items:flex-end;margin-top:10px">
+          <div style="flex:2"><label>Responder com a regra de:</label><select id="um-rule-${g.media_id}">${opcoes}</select></div>
+          <button style="flex:0 0 auto" onclick="attachMediaTo('${g.media_id}')">🔗 vincular e responder</button>
+          <button class="ghost" style="flex:0 0 auto" onclick="newRuleForMedia('${g.media_id}')">+ criar regra pra esse post</button>
+        </div>
+      </div>`).join('');
+  } catch { /* melhor sem o aviso do que quebrar o painel */ }
+}
+
+async function attachMediaTo(mid) {
+  const rid = $(`um-rule-${mid}`).value;
+  if (!rid) return;
+  toast('vinculando e respondendo os presos… ⏳');
+  const r = await api(`/rules/${rid}/attach-media`, { method: 'POST', body: JSON.stringify({ media_id: mid }) });
+  toast(`post vinculado ✅ ${r.respondidos} respondido(s), ${r.dms_enviadas} DM(s)${r.fora_do_gatilho ? `, ${r.fora_do_gatilho} fora do gatilho` : ''}${r.erros?.length ? ` — ${r.erros.length} erro(s)` : ''}`);
+  loadRules();
+}
+
+function newRuleForMedia(mid) {
+  cancelEdit();
+  $('r-surface').value = 'comment';
+  syncActionOptions();
+  $('r-media-mode').value = 'one';
+  mediaModeChanged();
+  MEDIA_SELS = [String(mid)];
+  toast('formulário pronto — o post já está marcado na regra (mesmo sendo post de anúncio)');
+  const form = $('rule-form');
+  form.open = true;
+  form.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function renderRules() {
@@ -1436,6 +1485,10 @@ function esc(s) {
 
 // Modo inglês pro screencast do App Review (?lang=en) — o Meta pede interface em inglês na gravação
 const EN = {
+  'sem resposta': 'unanswered',
+  'Responder com a regra de:': 'Reply using the rule of:',
+  '🔗 vincular e responder': '🔗 link & reply',
+  '+ criar regra pra esse post': '+ create rule for this post',
   '✨ 5 variações com IA': '✨ 5 AI variations',
   '⏰ mensagem de acompanhamento (opcional)': '⏰ follow-up message (optional)',
   '⬇️ ver posts mais antigos': '⬇️ see older posts',
