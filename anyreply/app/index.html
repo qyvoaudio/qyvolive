@@ -389,13 +389,13 @@ const KIWIFY_CHECKOUT = 'https://pay.kiwify.com.br/GPyOVt9';
 
 let TOKEN = localStorage.getItem('black_token') || '';
 
-async function mudaAba(aba) {
+function mudaAba(aba) {
   document.querySelectorAll('.aba-card').forEach((c) => c.classList.toggle('mostra', c.dataset.aba === aba));
   document.querySelectorAll('#abas button').forEach((b) => b.classList.toggle('ativa', b.dataset.aba === aba));
   try { localStorage.setItem('bs_aba', aba); } catch {}
 }
 
-function sair() {
+async function sair() {
   try { await api('/auth/logout', { method: 'POST' }); } catch {}
   localStorage.removeItem('black_token');
   location.reload();
