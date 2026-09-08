@@ -11,10 +11,13 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #F7F8FA; --panel: #FFFFFF; --panel2: #F2F4F7; --border: #E6E8EE;
-    --text: #14151A; --muted: #6A7080; --accent: #FF1F8E; --accent-soft: #FFF0F7;
-    --ok: #16A34A; --ok-soft: #EAF7EF; --warn: #B45309; --err: #DC2626; --err-soft: #FDECEC;
+    --bg: #06080F; --panel: #0D1220; --panel2: #131A2E; --border: #1E2A45;
+    --text: #EDF0FA; --muted: #8B93AD; --accent: #3B82F6; --accent-soft: #10203E;
+    --brand2: #A855F7;
+    --ok: #34D399; --ok-soft: #0D2B22; --warn: #FBBF24; --err: #F87171; --err-soft: #351417;
   }
+  h1 span { background: linear-gradient(90deg, #3B82F6, #A855F7); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  button:not(.ghost):not(.danger) { background: linear-gradient(90deg, #3B82F6, #A855F7); border: none; color: #fff; }
   * { box-sizing: border-box; margin: 0; }
   body { background: var(--bg); color: var(--text); font: 15px/1.55 'DM Sans', -apple-system, sans-serif; }
   .wrap { max-width: 980px; margin: 0 auto; padding: 20px 16px 80px; }
@@ -75,7 +78,7 @@
     <img class="logo" src="../assets/anyreply_logo.png" alt="AnyReply">
     <div>
       <h1>Any<span>Reply</span></h1>
-      <small>respostas automáticas · Instagram &amp; Facebook</small>
+      <small>respostas automáticas · Instagram</small>
     </div>
     <button class="ghost" id="btn-sair" style="margin-left:auto;padding:6px 14px;display:none" onclick="sair()">sair</button>
   </header>
@@ -1524,7 +1527,7 @@ const EN = {
   'Entrar': 'Sign in', 'Criar conta nova': 'Create account', 'já tenho conta': 'I have an account',
   'E-mail': 'Email', 'Senha': 'Password', 'mínimo 8 caracteres': 'minimum 8 characters',
   'Criar minha conta': 'Create my account', 'acesso admin': 'admin access',
-  'respostas automáticas · Instagram & Facebook': 'automatic replies · Instagram & Facebook',
+  'respostas automáticas · Instagram': 'automatic replies · Instagram',
   'Contas conectadas': 'Connected accounts', '📸 Conectar Instagram': '📸 Connect Instagram',
   '· autorização oficial do Meta, 2 cliques': "· Meta's official authorization, 2 clicks",
   'gerenciar': 'manage', 'desconectar': 'disconnect',
