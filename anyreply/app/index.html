@@ -105,6 +105,14 @@
     </details>
   </div>
 
+  <div class="card" id="lock-card" style="display:none;text-align:center;padding:40px">
+    <div style="font-size:40px;margin-bottom:10px">🔒</div>
+    <h2>Sua assinatura está inativa</h2>
+    <p class="muted" style="max-width:420px;margin:10px auto 22px">Pra usar o AnyReply é só ativar (ou reativar) sua assinatura. Leva 1 minuto e tem 7 dias grátis.</p>
+    <a id="lock-cta" href="#" style="text-decoration:none"><button style="padding:14px 30px">Ativar minha assinatura</button></a>
+    <div class="mt"><button class="ghost" onclick="sair()">entrar com outra conta</button></div>
+  </div>
+
   <div id="app" style="display:none">
     <div class="card">
       <h2>Contas conectadas</h2>
@@ -359,6 +367,8 @@
 
 <script>
 const API_BASE = 'https://black-shop.caroldepaz.workers.dev';
+const KIWIFY_CHECKOUT = ''; // ← link do checkout da Kiwify entra aqui
+
 let TOKEN = localStorage.getItem('black_token') || '';
 
 async function sair() {
@@ -398,6 +408,14 @@ async function api(path, opts = {}) {
     throw new Error('unauthorized');
   }
   const data = await res.json();
+  if (res.status === 402) {
+    $('app').style.display = 'none'; $('btn-sair').style.display = 'none';
+    $('login-card').style.display = 'none';
+    $('lock-card').style.display = 'block';
+    if (KIWIFY_CHECKOUT) $('lock-cta').href = KIWIFY_CHECKOUT;
+    else { $('lock-cta').querySelector('button').textContent = 'Assinatura em breve — fala com o suporte'; }
+    throw new Error('assinatura inativa');
+  }
   if (!res.ok) { toast(data.error || 'erro', true); throw new Error(data.error); }
   return data;
 }
@@ -1488,6 +1506,9 @@ function esc(s) {
 
 // Modo inglês pro screencast do App Review (?lang=en) — o Meta pede interface em inglês na gravação
 const EN = {
+  'Sua assinatura está inativa': 'Your subscription is inactive',
+  'Ativar minha assinatura': 'Activate my subscription',
+  'entrar com outra conta': 'sign in with another account',
   'sem resposta': 'unanswered',
   'Responder com a regra de:': 'Reply using the rule of:',
   '🔗 vincular e responder': '🔗 link & reply',
