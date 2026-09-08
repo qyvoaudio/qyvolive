@@ -11,11 +11,21 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #06080F; --panel: #0D1220; --panel2: #131A2E; --border: #1E2A45;
-    --text: #EDF0FA; --muted: #8B93AD; --accent: #3B82F6; --accent-soft: #10203E;
+    --bg: #F7F8FA; --panel: #FFFFFF; --panel2: #F2F4F7; --border: #E6E8EE;
+    --text: #14151A; --muted: #6A7080; --accent: #3B82F6; --accent-soft: #EAF1FF;
     --brand2: #A855F7;
-    --ok: #34D399; --ok-soft: #0D2B22; --warn: #FBBF24; --err: #F87171; --err-soft: #351417;
+    --ok: #16A34A; --ok-soft: #EAF7EF; --warn: #B45309; --err: #DC2626; --err-soft: #FDECEC;
   }
+  /* abas estilo ManyChat */
+  #abas { display: flex; gap: 6px; margin: 4px 0 18px; border-bottom: 2px solid var(--border); flex-wrap: wrap; }
+  #abas button {
+    background: none !important; border: none; color: var(--muted); font-weight: 600; font-size: 14.5px;
+    padding: 10px 16px; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; border-radius: 0;
+  }
+  #abas button.ativa { color: var(--accent); border-bottom-color: var(--accent); }
+  #abas button:hover { color: var(--text); }
+  .aba-card { display: none; }
+  .aba-card.mostra { display: block; }
   h1 span { background: linear-gradient(90deg, #3B82F6, #A855F7); -webkit-background-clip: text; background-clip: text; color: transparent; }
   button:not(.ghost):not(.danger) { background: linear-gradient(90deg, #3B82F6, #A855F7); border: none; color: #fff; }
   * { box-sizing: border-box; margin: 0; }
@@ -114,7 +124,15 @@
   </div>
 
   <div id="app" style="display:none">
-    <div class="card">
+    <div id="abas">
+      <button data-aba="inicio" onclick="mudaAba('inicio')">🏠 Início</button>
+      <button data-aba="automacoes" onclick="mudaAba('automacoes')">⚡ Automações</button>
+      <button data-aba="conversas" onclick="mudaAba('conversas')">💬 Conversas</button>
+      <button data-aba="contatos" onclick="mudaAba('contatos')">👥 Contatos</button>
+      <button data-aba="relatorio" onclick="mudaAba('relatorio')">📊 Relatório</button>
+      <button data-aba="ajustes" onclick="mudaAba('ajustes')">⚙️ Ajustes</button>
+    </div>
+    <div class="card aba-card" data-aba="inicio">
       <h2>Contas conectadas</h2>
       <div id="accounts"></div>
       <div class="mt">
@@ -142,7 +160,7 @@
     </div>
 
     <div id="account-panels" style="display:none">
-      <div class="card">
+      <div class="card aba-card" data-aba="automacoes">
         <h2>Regras — <span id="sel-name"></span></h2>
         <div id="unmatched-box"></div>
         <table id="rules-table">
@@ -244,7 +262,7 @@
         </details>
       </div>
 
-      <div class="card">
+      <div class="card aba-card" data-aba="ajustes">
         <h2>📱 Grupo do WhatsApp</h2>
         <table id="flows-table" style="display:none">
           <thead><tr><th>Nome</th><th>Passos</th><th></th><th></th><th></th></tr></thead>
@@ -280,7 +298,7 @@
         </details>
       </div>
 
-      <div class="card">
+      <div class="card aba-card" data-aba="conversas">
         <h2>Conversas — live chat <button class="ghost" style="float:right;padding:5px 12px" onclick="loadConversations()">atualizar</button></h2>
         <div style="display:flex;gap:14px;min-height:280px">
           <div id="conv-list" style="flex:0 0 240px;border-right:1px solid var(--border);padding-right:10px;overflow-y:auto;max-height:420px">
@@ -299,7 +317,7 @@
         <span class="muted">O Instagram permite resposta manual até 24h depois da última mensagem da pessoa.</span>
       </div>
 
-      <div class="card">
+      <div class="card aba-card" data-aba="contatos">
         <h2>Contatos capturados
           <span style="float:right">
             <button class="ghost" style="padding:5px 12px" onclick="exportContacts()">⬇️ exportar CSV</button>
@@ -312,7 +330,7 @@
         </table>
       </div>
 
-      <div class="card">
+      <div class="card aba-card" data-aba="ajustes">
         <h2>Perguntas iniciais — aparecem pra quem abre conversa nova no direct</h2>
         <div id="ib-list"></div>
         <div class="spacer"></div>
@@ -320,7 +338,7 @@
         <span class="muted"> · até 4 · quem toca na pergunta recebe a resposta na hora</span>
       </div>
 
-      <div class="card">
+      <div class="card aba-card" data-aba="ajustes">
         <h2>IA (quando nenhuma regra bate)</h2>
         <div class="row">
           <div><label><input type="checkbox" id="ai-dm" style="width:auto"> responder DMs com IA</label></div>
@@ -336,7 +354,7 @@
         <span class="muted"> · a IA nunca inventa preço, prazo ou promessa</span>
       </div>
 
-      <div class="card">
+      <div class="card aba-card" data-aba="relatorio">
         <h2>Relatório
           <span style="float:right;display:flex;gap:6px;align-items:center">
             <input id="rep-days" type="number" min="1" max="90" value="7" style="width:70px;padding:5px" onchange="loadReport()">
@@ -353,7 +371,7 @@
         <div id="report-shopee" class="mt"></div>
       </div>
 
-      <div class="card">
+      <div class="card aba-card" data-aba="relatorio">
         <h2>Últimos eventos <button class="ghost" style="float:right;padding:5px 12px" onclick="loadEvents()">atualizar</button></h2>
         <table id="events-table">
           <thead><tr><th>Quando (UTC)</th><th>Tipo</th><th>De</th><th>Texto</th><th>Respondido</th></tr></thead>
@@ -371,7 +389,13 @@ const KIWIFY_CHECKOUT = 'https://pay.kiwify.com.br/GPyOVt9';
 
 let TOKEN = localStorage.getItem('black_token') || '';
 
-async function sair() {
+async function mudaAba(aba) {
+  document.querySelectorAll('.aba-card').forEach((c) => c.classList.toggle('mostra', c.dataset.aba === aba));
+  document.querySelectorAll('#abas button').forEach((b) => b.classList.toggle('ativa', b.dataset.aba === aba));
+  try { localStorage.setItem('bs_aba', aba); } catch {}
+}
+
+function sair() {
   try { await api('/auth/logout', { method: 'POST' }); } catch {}
   localStorage.removeItem('black_token');
   location.reload();
@@ -1506,6 +1530,8 @@ function esc(s) {
 
 // Modo inglês pro screencast do App Review (?lang=en) — o Meta pede interface em inglês na gravação
 const EN = {
+  '🏠 Início': '🏠 Home', '⚡ Automações': '⚡ Automations', '💬 Conversas': '💬 Live Chat',
+  '👥 Contatos': '👥 Contacts', '📊 Relatório': '📊 Report', '⚙️ Ajustes': '⚙️ Settings',
   'Sua assinatura está inativa': 'Your subscription is inactive',
   'Ativar minha assinatura': 'Activate my subscription',
   'entrar com outra conta': 'sign in with another account',
@@ -1620,6 +1646,8 @@ function translatePage() {
 const langParam = new URLSearchParams(location.search).get('lang');
 if (langParam === 'en') localStorage.setItem('bs_lang', 'en');
 if (langParam === 'pt') localStorage.removeItem('bs_lang');
+mudaAba(localStorage.getItem('bs_aba') || 'automacoes');
+
 if (localStorage.getItem('bs_lang') === 'en') {
   setInterval(translatePage, 700); // idempotente: re-traduz o que o JS re-renderizar
 }
