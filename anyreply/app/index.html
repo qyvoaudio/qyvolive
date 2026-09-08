@@ -114,6 +114,39 @@
   #side-nav button:hover { background: var(--panel2); color: var(--text); }
   #side-nav button.ativa { background: var(--accent-soft); color: var(--accent); }
   .side-sair { margin-top: auto; width: 100%; }
+  #acct-dropdown { position: relative; margin-bottom: 4px; }
+  #acct-current { display: flex; align-items: center; gap: 8px; width: 100%; background: var(--panel2); border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; cursor: pointer; color: var(--text); font-weight: 700; }
+  #acct-current img { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; flex: 0 0 auto; background: var(--border); }
+  #acct-current .nm { flex: 1; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
+  #acct-current .car { color: var(--muted); }
+  #acct-menu { margin-top: 4px; border: 1px solid var(--border); border-radius: 10px; background: var(--panel); overflow: hidden; box-shadow: 0 6px 20px rgba(20,21,26,.1); }
+  .acct-opt { display: flex; align-items: center; gap: 8px; width: 100%; background: transparent; border: none; padding: 8px 10px; cursor: pointer; text-align: left; color: var(--text); font-weight: 600; font-size: 13.5px; }
+  .acct-opt img { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; flex: 0 0 auto; background: var(--border); }
+  .acct-opt:hover { background: var(--panel2); }
+  .acct-opt.ativa { background: var(--accent-soft); }
+  .acct-opt .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .acct-opt small { display: block; font-weight: 500; font-size: 11px; color: var(--muted); }
+  .acct-opt .x { color: var(--muted); font-size: 15px; padding: 0 4px; }
+  .acct-opt .x:hover { color: var(--err); }
+  /* automações master-detail: produtos à esquerda, regra à direita */
+  .auto-split { display: flex; gap: 18px; align-items: flex-start; }
+  .auto-left { flex: 0 0 264px; }
+  .auto-right { flex: 1; min-width: 0; }
+  .auto-left-head { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+  .prod-item { display: flex; align-items: center; gap: 9px; width: 100%; text-align: left; background: transparent; border: 1px solid var(--border); border-radius: 10px; padding: 9px 11px; margin-bottom: 6px; cursor: pointer; color: var(--text); font-weight: 600; }
+  .prod-item:hover { background: var(--panel2); }
+  .prod-item.ativa { border-color: var(--accent); background: var(--accent-soft); }
+  .prod-item img { width: 36px; height: 36px; border-radius: 8px; object-fit: cover; flex: 0 0 auto; background: var(--panel2); }
+  .prod-item .ph { width: 36px; height: 36px; border-radius: 8px; flex: 0 0 auto; background: var(--panel2); display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .prod-item .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
+  .prod-item small { display: block; font-weight: 500; font-size: 11px; color: var(--muted); }
+  .prod-item .del { color: var(--muted); font-size: 14px; padding: 0 3px; flex: 0 0 auto; }
+  .prod-item .del:hover { color: var(--err); }
+  .rule-block { border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; }
+  .rule-block .rb-top { display: flex; align-items: flex-start; gap: 10px; }
+  .rule-block .rb-acts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .rule-block .rb-acts button { padding: 5px 10px; }
+  @media (max-width: 760px) { .auto-split { flex-direction: column; } .auto-left { flex: none; width: 100%; } }
   #main { flex: 1; min-width: 0; padding: 26px 34px; max-width: 1160px; }
   @media (max-width: 760px) {
     #app { flex-direction: column; }
@@ -169,8 +202,11 @@
 <div id="app" style="display:none">
     <aside id="side">
       <div class="side-brand"><img src="../assets/anyreply_logo.png" alt="AnyReply"><span>Any<b>Reply</b></span></div>
-      <div class="side-sec">Contas</div>
-      <div id="acct-switcher"></div>
+      <div class="side-sec">Conta</div>
+      <div id="acct-dropdown">
+        <button id="acct-current" onclick="toggleAcctMenu()"><img id="acct-cur-pic" alt=""><span class="nm" id="acct-cur-name">—</span><span class="car">▾</span></button>
+        <div id="acct-menu" hidden></div>
+      </div>
       <a id="connect-link" href="#" style="text-decoration:none"><button class="side-connect">📸 Conectar Instagram</button></a>
       <details class="side-manual">
         <summary>+ adicionar manual</summary>
@@ -197,13 +233,16 @@
     <main id="main">
     <div id="account-panels" style="display:none">
       <div class="card aba-card" data-aba="automacoes">
-        <h2>Regras — <span id="sel-name"></span></h2>
+        <h2>Automações — <span id="sel-name"></span></h2>
         <div id="unmatched-box"></div>
-        <table id="rules-table">
-          <thead><tr><th>Onde</th><th>Gatilho</th><th>Ação</th><th>Prior.</th><th></th><th></th></tr></thead>
-          <tbody></tbody>
-        </table>
-        <details class="mt" id="rule-form">
+        <div class="auto-split">
+          <div class="auto-left">
+            <div class="auto-left-head"><span>Produtos</span></div>
+            <div id="prod-list"></div>
+          </div>
+          <div class="auto-right">
+            <div id="rules-detail"></div>
+            <details class="mt" id="rule-form">
           <summary>+ nova regra</summary>
           <label>Produto (opcional — agrupa as regras e facilita achar depois)</label>
           <select id="r-product" onchange="productChanged()">
@@ -295,7 +334,9 @@
           <div class="spacer"></div>
           <button id="r-save" onclick="addRule()">Salvar regra</button>
           <button id="r-cancel" class="ghost" style="display:none" onclick="cancelEdit()">cancelar edição</button>
-        </details>
+            </details>
+          </div>
+        </div>
       </div>
 
       <div class="card aba-card" data-aba="configuracoes">
@@ -539,22 +580,35 @@ async function boot() {
 
 // ---- contas ----
 function renderAccounts() {
-  const el = $('acct-switcher');
   if (!ACCOUNTS.length) {
-    el.innerHTML = '<p class="muted" style="padding:4px 6px">Conecte seu Instagram 👇</p>';
+    $('acct-cur-name').textContent = '(conecte seu Instagram)';
+    $('acct-menu').innerHTML = '';
     $('account-panels').style.display = 'none';
     return;
   }
-  el.innerHTML = ACCOUNTS.map(a => `
-    <div class="acct-row">
-      <button class="acct ${SELECTED && SELECTED.id === a.id ? 'ativa' : ''}" data-acct="${a.id}" onclick="selectAccount('${a.id}')">
-        ${a.username ? '@' + esc(a.username) : '(sem nome)'}
-        <small class="${a.status === 'active' ? 'ok' : 'off'}">${a.status === 'active' ? 'ativo' : esc(a.status)}</small>
-      </button>
-      <button class="acct-x" title="desconectar" onclick="disconnectAccount('${a.id}', '${(a.username || '').replace(/'/g, '')}')">×</button>
-    </div>`).join('');
+  $('acct-menu').innerHTML = ACCOUNTS.map(a => `
+    <button class="acct-opt ${SELECTED && SELECTED.id === a.id ? 'ativa' : ''}" data-acct="${a.id}" onclick="selectAccount('${a.id}'); toggleAcctMenu(true)">
+      <img src="${a.profile_pic || ''}" alt="" onerror="this.style.visibility='hidden'">
+      <span class="nm">${a.username ? '@' + esc(a.username) : '(sem nome)'}<small>${a.status === 'active' ? 'ativo' : esc(a.status)}</small></span>
+      <span class="x" title="desconectar" onclick="event.stopPropagation(); disconnectAccount('${a.id}', '${(a.username || '').replace(/'/g, '')}')">×</span>
+    </button>`).join('');
   if (!SELECTED && ACCOUNTS.length) selectAccount(ACCOUNTS[0].id);
 }
+
+function toggleAcctMenu(forceClose) {
+  const m = $('acct-menu');
+  m.hidden = forceClose ? true : !m.hidden;
+}
+function setAcctCurrent(a) {
+  const img = $('acct-cur-pic');
+  img.src = a.profile_pic || '';
+  img.style.visibility = a.profile_pic ? 'visible' : 'hidden';
+  $('acct-cur-name').textContent = a.username ? '@' + a.username : a.platform;
+}
+document.addEventListener('click', (e) => {
+  const dd = document.getElementById('acct-dropdown');
+  if (dd && !dd.contains(e.target)) { const m = document.getElementById('acct-menu'); if (m) m.hidden = true; }
+});
 
 async function addAccount() {
   const body = {
@@ -577,7 +631,8 @@ async function selectAccount(id) {
   $('shopee-appid').value = SELECTED.shopee_app_id || '';
   $('shopee-secret').value = SELECTED.shopee_secret || '';
   $('sel-name').textContent = SELECTED.username ? '@' + SELECTED.username : SELECTED.platform;
-  document.querySelectorAll('#acct-switcher .acct').forEach((b) => b.classList.toggle('ativa', b.dataset.acct === id));
+  setAcctCurrent(SELECTED);
+  document.querySelectorAll('#acct-menu .acct-opt').forEach((b) => b.classList.toggle('ativa', b.dataset.acct === id));
   const sh = $('shopee-status'); if (sh) sh.textContent = SELECTED.shopee_app_id ? '✅ credencial salva (AppID ' + SELECTED.shopee_app_id + ')' : 'nenhuma credencial salva ainda';
   loadShopeeTab();
   $('account-panels').style.display = 'block';
@@ -776,56 +831,66 @@ function newRuleForMedia(mid) {
   form.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
+let PROD_SELECTED = 'all';
+function selectProduct(key) {
+  PROD_SELECTED = key;
+  if (key && key !== 'solo' && PRODUCTS.some((p) => p.id === key)) { const sel = $('r-product'); if (sel) sel.value = key; }
+  renderRules();
+}
+
 function renderRules() {
   const rules = RULES;
-  const rowHtml = (r) => `
-    <tr style="${r.active ? '' : 'opacity:.45'}">
-      <td><span class="pill">${r.surface === 'dm' ? 'DM' : r.surface === 'story' ? 'story' : 'comentário'}</span></td>
-      <td>${ruleCardImage(r) ? `<img src="${ruleCardImage(r)}" style="width:40px;height:40px;object-fit:cover;border-radius:8px;float:left;margin-right:10px" loading="lazy">` : ''}<b>${r.match_type === 'all' ? '🌐 todos os comentários' : esc(r.trigger_text)}</b> <span class="muted">(${r.match_type === 'all' ? 'pega-tudo' : r.match_type})</span>
-          ${ruleReplies(r).length > 1 ? ` <span class="pill rule">${ruleReplies(r).length} variações</span>` : ''}
+
+  // ---- coluna esquerda: produtos ----
+  const groups = [];
+  for (const p of PRODUCTS) {
+    const rs = rules.filter((r) => r.product_id === p.id);
+    groups.push({ key: p.id, name: p.name, count: rs.length, img: rs.map(ruleCardImage).find(Boolean), del: true });
+  }
+  const solo = rules.filter((r) => !r.product_id || !PRODUCTS.some((p) => p.id === r.product_id));
+  if (solo.length) groups.push({ key: 'solo', name: 'sem produto', count: solo.length, img: solo.map(ruleCardImage).find(Boolean), del: false });
+  if (!groups.some((g) => g.key === PROD_SELECTED)) PROD_SELECTED = groups[0] ? groups[0].key : 'all';
+
+  $('prod-list').innerHTML = groups.length ? groups.map((g) => `
+    <button class="prod-item ${g.key === PROD_SELECTED ? 'ativa' : ''}" onclick="selectProduct('${g.key}')">
+      ${g.img ? `<img src="${g.img}" onerror="this.outerHTML='<span class=ph>📦</span>'">` : '<span class="ph">📦</span>'}
+      <span class="nm">${esc(g.name)}<small>${g.count} regra${g.count !== 1 ? 's' : ''}</small></span>
+      ${g.del ? `<span class="del" title="excluir produto" onclick="event.stopPropagation();delProduct('${g.key}','${esc(g.name).replace(/'/g, '')}')">🗑</span>` : ''}
+    </button>`).join('') : '<p class="muted" style="font-size:13px">Nenhum produto ainda. Crie a primeira regra em "+ nova regra".</p>';
+
+  // ---- coluna direita: regras do produto escolhido ----
+  const visiveis = PROD_SELECTED === 'solo' ? solo : rules.filter((r) => r.product_id === PROD_SELECTED);
+  const bloco = (r) => `
+    <div class="rule-block" style="${r.active ? '' : 'opacity:.5'}">
+      <div class="rb-top">
+        ${ruleCardImage(r) ? `<img src="${ruleCardImage(r)}" style="width:46px;height:46px;object-fit:cover;border-radius:8px;flex:0 0 auto" loading="lazy">` : ''}
+        <div style="flex:1;min-width:0">
+          <span class="pill">${r.surface === 'dm' ? 'DM' : r.surface === 'story' ? 'story' : 'comentário'}</span>
+          <b style="margin-left:4px">${r.match_type === 'all' ? '🌐 todos os comentários' : esc(r.trigger_text)}</b>
+          <span class="muted"> (${r.match_type === 'all' ? 'pega-tudo' : r.match_type}) · prioridade ${r.priority}</span>
           ${ruleMediaIds(r).length ? ` <span class="pill rule">📍 ${ruleMediaIds(r).length} publicaç${ruleMediaIds(r).length > 1 ? 'ões' : 'ão'}</span>` : ''}
-          ${ruleCards(r).length ? ' <span class="pill rule">🃏 cartão com link</span>' : ''}
-          ${r.flow_id ? ' <span class="pill rule">🔀 botão destrava</span>' : ''}<br>
-          <span class="muted">${esc(r.reply_text || '')}${r.reply_text && r.dm_text ? ' · ' : ''}${esc(r.dm_text || '')}${(() => {
+          ${ruleCards(r).length ? ' <span class="pill rule">🃏 cartão</span>' : ''}
+          ${r.flow_id ? ' <span class="pill rule">🔀 botão destrava</span>' : ''}
+          <div class="muted" style="margin-top:5px">${esc(r.reply_text || '')}${r.reply_text && r.dm_text ? ' · ' : ''}${esc(r.dm_text || '')}${(() => {
             const f = r.flow_id ? FLOWS.find((x) => x.id === r.flow_id) : null;
             const ini = f?.steps?.find((st) => st.step_key === 'start');
             const card = ruleCards(r)[0];
             return f ? ` · 🔀 "${esc((ini?.message || '').slice(0, 45))}…"${card ? ` → 🃏 ${esc(card.title)}` : ''}` : '';
-          })()}</span></td>
-      <td>${ACTION_LABEL[r.action] || r.action}</td>
-      <td>${r.priority}</td>
-      <td style="white-space:nowrap">
-        ${r.surface === 'comment' ? `<button class="ghost" style="padding:5px 10px" title="responder comentários antigos que batem nessa regra" onclick="retroRule('${r.id}')">🕰️</button>` : ''}
-        <button class="ghost" style="padding:5px 10px" onclick="editRule('${r.id}')">editar</button>
-        <button class="ghost" style="padding:5px 10px" title="criar uma nova regra a partir dessa" onclick="cloneRule('${r.id}')">📋 clonar</button>
-        ${ACCOUNTS.length > 1 ? `<button class="ghost" style="padding:5px 10px" title="copiar essa regra pra outro perfil (sequência, cartão e produto vão junto)" onclick="copyRuleTo('${r.id}')">➡️ outro perfil</button>` : ''}
-        <button class="ghost" style="padding:5px 10px" onclick="toggleRule('${r.id}', ${r.active ? 0 : 1})">${r.active ? 'pausar' : 'ativar'}</button>
-      </td>
-      <td><button class="danger" onclick="delRule('${r.id}')">excluir</button></td>
-    </tr>`;
-
-  const groupHeader = (key, label, img, count) => {
-    const open = !COLLAPSED.has(key);
-    const del = key !== 'solo' ? `<button class="ghost" style="float:right;padding:2px 9px" title="excluir produto (as regras dele não são apagadas, só ficam sem produto)" onclick="event.stopPropagation();delProduct('${key}', '${esc(label).replace(/'/g, '')}')">🗑</button>` : '';
-    return `<tr style="cursor:pointer" onclick="toggleGroup('${key}')" title="${open ? 'recolher' : 'expandir'}">
-      <td colspan="6" style="background:var(--panel2);font-weight:700;border-radius:8px">${del}
-        <span class="muted" style="display:inline-block;width:16px">${open ? '▾' : '▸'}</span>${img ? `<img src="${img}" style="width:26px;height:26px;object-fit:cover;border-radius:6px;vertical-align:middle;margin-right:8px">` : '📦 '}${esc(label)}
-        <span class="muted" style="font-weight:400">· ${count} regra${count > 1 ? 's' : ''}</span>
-      </td></tr>`;
-  };
-  let html = '';
-  for (const p of PRODUCTS) {
-    const rs = rules.filter((r) => r.product_id === p.id);
-    if (!rs.length) continue;
-    html += groupHeader(p.id, p.name, rs.map(ruleCardImage).find(Boolean), rs.length);
-    if (!COLLAPSED.has(p.id)) html += rs.map(rowHtml).join('');
-  }
-  const solo = rules.filter((r) => !r.product_id || !PRODUCTS.some((p) => p.id === r.product_id));
-  if (solo.length) {
-    html += groupHeader('solo', 'sem produto', solo.map(ruleCardImage).find(Boolean), solo.length);
-    if (!COLLAPSED.has('solo')) html += solo.map(rowHtml).join('');
-  }
-  $('rules-table').querySelector('tbody').innerHTML = html || '<tr><td colspan="6" class="muted">Nenhuma regra ainda.</td></tr>';
+          })()}</div>
+        </div>
+      </div>
+      <div class="rb-acts">
+        ${r.surface === 'comment' ? `<button class="ghost" title="responder comentários antigos" onclick="retroRule('${r.id}')">🕰️ retroativo</button>` : ''}
+        <button class="ghost" onclick="editRule('${r.id}')">editar</button>
+        <button class="ghost" title="criar nova regra a partir dessa" onclick="cloneRule('${r.id}')">📋 clonar</button>
+        ${ACCOUNTS.length > 1 ? `<button class="ghost" title="copiar pra outro perfil" onclick="copyRuleTo('${r.id}')">➡️ outro perfil</button>` : ''}
+        <button class="ghost" onclick="toggleRule('${r.id}', ${r.active ? 0 : 1})">${r.active ? 'pausar' : 'ativar'}</button>
+        <button class="danger" onclick="delRule('${r.id}')">excluir</button>
+      </div>
+    </div>`;
+  $('rules-detail').innerHTML = visiveis.length
+    ? visiveis.map(bloco).join('')
+    : '<p class="muted">Esse produto ainda não tem regra. Use o "+ nova regra" abaixo.</p>';
 }
 
 async function addRule() {
