@@ -336,6 +336,8 @@
           <button class="ghost" style="flex:0 0 auto" onclick="saveShopeeCreds()">salvar</button>
         </div>
         <div id="shopee-status" class="mt muted"></div>
+        <h2 class="mt">Comissões (últimos 30 dias)</h2>
+        <div id="shopee-tab-report"><span class="muted">salva a credencial pra ver as comissões aqui.</span></div>
       </div>
 
       <div class="card aba-card" data-aba="conversas">
@@ -475,7 +477,9 @@ async function api(path, opts = {}) {
   }
   const data = await res.json();
   if (res.status === 402) {
-    $('app').style.display = 'none'; $('btn-sair').style.display = 'none';
+    $('app').style.display = 'none';
+    document.querySelector('.wrap').style.display = 'block';
+    document.querySelector('header').style.display = 'flex';
     $('login-card').style.display = 'none';
     $('lock-card').style.display = 'block';
     if (KIWIFY_CHECKOUT) $('lock-cta').href = KIWIFY_CHECKOUT;
@@ -526,6 +530,7 @@ async function boot() {
   if (!ACCOUNTS) return;
   $('login-card').style.display = 'none';
   document.querySelector('header').style.display = 'none';
+  document.querySelector('.wrap').style.display = 'none';
   $('app').style.display = 'flex';
   $('connect-link').href = API_BASE + '/oauth/start?state=' + encodeURIComponent(TOKEN);
   renderAccounts();
@@ -574,6 +579,7 @@ async function selectAccount(id) {
   $('sel-name').textContent = SELECTED.username ? '@' + SELECTED.username : SELECTED.platform;
   document.querySelectorAll('#acct-switcher .acct').forEach((b) => b.classList.toggle('ativa', b.dataset.acct === id));
   const sh = $('shopee-status'); if (sh) sh.textContent = SELECTED.shopee_app_id ? '✅ credencial salva (AppID ' + SELECTED.shopee_app_id + ')' : 'nenhuma credencial salva ainda';
+  loadShopeeTab();
   $('account-panels').style.display = 'block';
   await loadProducts();
   await Promise.all([loadRules(), loadFlows(), loadAi(), loadEvents(), loadConversations(), loadContacts(), loadReport(), loadIceBreakers()]);
@@ -1192,12 +1198,31 @@ function setBtnAction(i, j, val) {
   renderSteps();
 }
 
+async function loadShopeeTab() {
+  const box = $('shopee-tab-report');
+  if (!box) return;
+  if (!SELECTED.shopee_app_id) { box.innerHTML = '<span class="muted">salva a credencial pra ver as comissões aqui.</span>'; return; }
+  box.innerHTML = '<span class="muted">carregando comissões… 🛒</span>';
+  try {
+    const r = await api(`/accounts/${SELECTED.id}/shopee/report?days=30`);
+    const itens = (r.top_itens || []).map(i => `<tr><td>${i.image ? `<img src="${i.image}" style="width:34px;height:34px;object-fit:cover;border-radius:6px">` : ''}</td><td>${esc(i.name.slice(0,55))}</td><td>${i.qty}</td><td>R$ ${String(i.commission).replace('.', ',')}</td></tr>`).join('');
+    box.innerHTML = `<div class="row">
+      <div class="ai-tile" style="background:var(--panel2);border-radius:12px;padding:14px 16px;text-align:center;min-width:120px"><div style="font-size:24px;font-weight:800">R$ ${String(r.comissao_total).replace('.', ',')}</div><div class="muted">comissão total</div></div>
+      <div style="background:var(--panel2);border-radius:12px;padding:14px 16px;text-align:center;min-width:120px"><div style="font-size:24px;font-weight:800">${r.conversoes}</div><div class="muted">vendas geradas</div></div>
+      <div style="background:var(--panel2);border-radius:12px;padding:14px 16px;text-align:center;min-width:120px"><div style="font-size:24px;font-weight:800">R$ ${String(r.por_status?.PENDING ?? '0').replace('.', ',')}</div><div class="muted">ainda pendente</div></div>
+    </div>` + (itens ? `<table class="mt"><thead><tr><th></th><th>Item</th><th>Qtd</th><th>Comissão</th></tr></thead><tbody>${itens}</tbody></table>` : '<p class="muted mt">Sem vendas no período ainda.</p>');
+  } catch (e) {
+    box.innerHTML = '<span class="muted">não consegui puxar as comissões (confere a credencial na Shopee).</span>';
+  }
+}
+
 async function saveShopeeCreds() {
   await api(`/accounts/${SELECTED.id}`, { method: 'PATCH', body: JSON.stringify({
     shopee_app_id: $('shopee-appid').value.trim() || null,
     shopee_secret: $('shopee-secret').value.trim() || null,
   }) });
   SELECTED.shopee_app_id = $('shopee-appid').value.trim() || null;
+  loadShopeeTab();
   SELECTED.shopee_secret = $('shopee-secret').value.trim() || null;
   toast('credencial da Shopee salva 🛒');
 }
