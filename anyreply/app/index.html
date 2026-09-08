@@ -80,6 +80,48 @@
   }
   .media-grid img.sel { border-color: var(--accent); }
   .media-grid .mtype { position: absolute; }
+
+  /* ===== LAYOUT MANYCHAT: sidebar + main tela cheia ===== */
+  #app { display: flex; align-items: stretch; min-height: 100vh; }
+  #side {
+    flex: 0 0 246px; background: var(--panel); border-right: 1px solid var(--border);
+    padding: 16px 14px; display: flex; flex-direction: column; gap: 3px;
+    position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  }
+  .side-brand { display: flex; align-items: center; gap: 9px; padding: 4px 6px 12px; font-weight: 800; font-size: 19px; letter-spacing: -.02em; }
+  .side-brand img { width: 30px; height: 30px; border-radius: 8px; }
+  .side-brand b { background: linear-gradient(90deg,#3B82F6,#A855F7); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .side-sec { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; margin: 16px 6px 6px; }
+  .acct-row { display: flex; align-items: stretch; gap: 4px; margin-bottom: 3px; }
+  #acct-switcher .acct {
+    flex: 1; min-width: 0; text-align: left; background: transparent; color: var(--text);
+    border: 1px solid transparent; border-radius: 9px; padding: 8px 10px; font-weight: 600; cursor: pointer;
+    font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  #acct-switcher .acct small { display: block; font-weight: 500; font-size: 11px; margin-top: 1px; }
+  #acct-switcher .acct small.ok { color: var(--ok); } #acct-switcher .acct small.off { color: var(--muted); }
+  #acct-switcher .acct:hover { background: var(--panel2); }
+  #acct-switcher .acct.ativa { background: var(--accent-soft); color: var(--accent); }
+  #acct-switcher .acct-x { flex: 0 0 auto; background: transparent; border: none; color: var(--muted); font-size: 16px; padding: 0 8px; cursor: pointer; }
+  #acct-switcher .acct-x:hover { color: var(--err); }
+  .side-connect { width: 100%; margin-top: 6px; font-size: 13px; padding: 9px; }
+  .side-manual { margin-top: 8px; } .side-manual summary { font-size: 12px; padding: 4px 6px; }
+  #side-nav { display: flex; flex-direction: column; gap: 2px; }
+  #side-nav button {
+    width: 100%; text-align: left; background: transparent; color: var(--muted); border: none;
+    border-radius: 9px; padding: 10px 12px; font-weight: 600; cursor: pointer; font-size: 14.5px;
+  }
+  #side-nav button:hover { background: var(--panel2); color: var(--text); }
+  #side-nav button.ativa { background: var(--accent-soft); color: var(--accent); }
+  .side-sair { margin-top: auto; width: 100%; }
+  #main { flex: 1; min-width: 0; padding: 26px 34px; max-width: 1160px; }
+  @media (max-width: 760px) {
+    #app { flex-direction: column; }
+    #side { flex: none; height: auto; position: static; flex-direction: row; flex-wrap: wrap; }
+    #side-nav { flex-direction: row; flex-wrap: wrap; }
+    .side-sair { margin-top: 8px; width: auto; }
+    #main { padding: 18px 16px; }
+  }
 </style>
 </head>
 <body>
@@ -122,43 +164,37 @@
     <a id="lock-cta" href="#" style="text-decoration:none"><button style="padding:14px 30px">Ativar minha assinatura</button></a>
     <div class="mt"><button class="ghost" onclick="sair()">entrar com outra conta</button></div>
   </div>
+</div><!-- /.wrap -->
 
-  <div id="app" style="display:none">
-    <div id="abas">
-      <button data-aba="inicio" onclick="mudaAba('inicio')">🏠 Início</button>
-      <button data-aba="automacoes" onclick="mudaAba('automacoes')">⚡ Automações</button>
-      <button data-aba="conversas" onclick="mudaAba('conversas')">💬 Conversas</button>
-      <button data-aba="contatos" onclick="mudaAba('contatos')">👥 Contatos</button>
-      <button data-aba="relatorio" onclick="mudaAba('relatorio')">📊 Relatório</button>
-      <button data-aba="ajustes" onclick="mudaAba('ajustes')">⚙️ Ajustes</button>
-    </div>
-    <div class="card aba-card" data-aba="inicio">
-      <h2>Contas conectadas</h2>
-      <div id="accounts"></div>
-      <div class="mt">
-        <a id="connect-link" href="#" style="text-decoration:none">
-          <button>📸 Conectar Instagram</button>
-        </a>
-        <span class="muted"> · autorização oficial do Meta, 2 cliques</span>
-      </div>
-      <details class="mt">
-        <summary>+ adicionar conta manualmente (avançado)</summary>
-        <div class="row">
-          <div><label>Plataforma</label>
-            <select id="acc-platform"><option value="instagram">Instagram</option><option value="facebook">Facebook</option></select></div>
-          <div><label>@ usuário</label><input id="acc-username" placeholder="ex: blackshop"></div>
-        </div>
-        <div class="row">
-          <div><label>IG User ID</label><input id="acc-ig-id" placeholder="id numérico do IG profissional"></div>
-          <div><label>Page ID</label><input id="acc-page-id" placeholder="id da Página do Facebook"></div>
-        </div>
-        <label>Page Access Token (longa duração)</label>
-        <input id="acc-token" type="password" placeholder="EAAG...">
+<div id="app" style="display:none">
+    <aside id="side">
+      <div class="side-brand"><img src="../assets/anyreply_logo.png" alt="AnyReply"><span>Any<b>Reply</b></span></div>
+      <div class="side-sec">Contas</div>
+      <div id="acct-switcher"></div>
+      <a id="connect-link" href="#" style="text-decoration:none"><button class="side-connect">📸 Conectar Instagram</button></a>
+      <details class="side-manual">
+        <summary>+ adicionar manual</summary>
+        <label>Plataforma</label>
+        <select id="acc-platform"><option value="instagram">Instagram</option><option value="facebook">Facebook</option></select>
+        <label>@ usuário</label><input id="acc-username" placeholder="ex: anyreply">
+        <label>IG User ID</label><input id="acc-ig-id" placeholder="id numérico">
+        <label>Page ID</label><input id="acc-page-id" placeholder="id da Página FB">
+        <label>Page Access Token</label><input id="acc-token" type="password" placeholder="EAAG...">
         <div class="spacer"></div>
         <button onclick="addAccount()">Salvar conta</button>
       </details>
-    </div>
-
+      <div class="side-sec">Menu</div>
+      <nav id="side-nav">
+        <button data-aba="automacoes" onclick="mudaAba('automacoes')">⚡ Automações</button>
+        <button data-aba="conversas" onclick="mudaAba('conversas')">💬 Conversas</button>
+        <button data-aba="contatos" onclick="mudaAba('contatos')">👥 Contatos</button>
+        <button data-aba="shopee" onclick="mudaAba('shopee')">🛒 Shopee</button>
+        <button data-aba="relatorio" onclick="mudaAba('relatorio')">📊 Relatório</button>
+        <button data-aba="configuracoes" onclick="mudaAba('configuracoes')">⚙️ Configurações</button>
+      </nav>
+      <button class="ghost side-sair" onclick="sair()">sair</button>
+    </aside>
+    <main id="main">
     <div id="account-panels" style="display:none">
       <div class="card aba-card" data-aba="automacoes">
         <h2>Regras — <span id="sel-name"></span></h2>
@@ -262,7 +298,7 @@
         </details>
       </div>
 
-      <div class="card aba-card" data-aba="ajustes">
+      <div class="card aba-card" data-aba="configuracoes">
         <h2>📱 Grupo do WhatsApp</h2>
         <table id="flows-table" style="display:none">
           <thead><tr><th>Nome</th><th>Passos</th><th></th><th></th><th></th></tr></thead>
@@ -274,13 +310,6 @@
             <input id="wa-link" placeholder="https://chat.whatsapp.com/...">
           </div>
           <button class="ghost" style="flex:0 0 auto" onclick="saveWaLink()">salvar link</button>
-        </div>
-        <h2 class="mt">🛒 Shopee — API de afiliada</h2>
-        <span class="muted">Com a credencial salva, o botão "🛒 preencher pela Shopee" dos cartões monta tudo sozinho: cola o link do produto → título, foto e o SEU link de afiliada rastreado. A credencial fica em affiliate.shopee.com.br/open_api (página "Meu API").</span>
-        <div class="row" style="align-items:flex-end">
-          <div><label>AppID</label><input id="shopee-appid" placeholder="ex: 18359270775"></div>
-          <div style="flex:2"><label>Senha da API</label><input id="shopee-secret" placeholder="a Senha da página Meu API"></div>
-          <button class="ghost" style="flex:0 0 auto" onclick="saveShopeeCreds()">salvar</button>
         </div>
         <details class="mt" id="flow-form" style="display:none">
           <summary>+ nova sequência</summary>
@@ -296,6 +325,17 @@
           <button id="f-save" onclick="saveFlow()">Salvar sequência</button>
           <button id="f-cancel" class="ghost" style="display:none" onclick="cancelFlowEdit()">cancelar edição</button>
         </details>
+      </div>
+
+      <div class="card aba-card" data-aba="shopee">
+        <h2>🛒 Shopee — API de afiliada</h2>
+        <span class="muted">Com a credencial salva, o botão "🛒 preencher pela Shopee" dos cartões monta tudo sozinho: cola o link do produto → título, foto e o SEU link de afiliada rastreado. A credencial fica em affiliate.shopee.com.br/open_api (página "Meu API").</span>
+        <div class="row" style="align-items:flex-end;margin-top:8px">
+          <div><label>AppID</label><input id="shopee-appid" placeholder="ex: 18359270775"></div>
+          <div style="flex:2"><label>Senha da API</label><input id="shopee-secret" placeholder="a Senha da página Meu API"></div>
+          <button class="ghost" style="flex:0 0 auto" onclick="saveShopeeCreds()">salvar</button>
+        </div>
+        <div id="shopee-status" class="mt muted"></div>
       </div>
 
       <div class="card aba-card" data-aba="conversas">
@@ -330,7 +370,7 @@
         </table>
       </div>
 
-      <div class="card aba-card" data-aba="ajustes">
+      <div class="card aba-card" data-aba="configuracoes">
         <h2>Perguntas iniciais — aparecem pra quem abre conversa nova no direct</h2>
         <div id="ib-list"></div>
         <div class="spacer"></div>
@@ -338,7 +378,7 @@
         <span class="muted"> · até 4 · quem toca na pergunta recebe a resposta na hora</span>
       </div>
 
-      <div class="card aba-card" data-aba="ajustes">
+      <div class="card aba-card" data-aba="configuracoes">
         <h2>IA (quando nenhuma regra bate)</h2>
         <div class="row">
           <div><label><input type="checkbox" id="ai-dm" style="width:auto"> responder DMs com IA</label></div>
@@ -379,8 +419,8 @@
         </table>
       </div>
     </div>
+    </main>
   </div>
-</div>
 <div id="toast"></div>
 
 <script>
@@ -390,8 +430,10 @@ const KIWIFY_CHECKOUT = 'https://pay.kiwify.com.br/GPyOVt9';
 let TOKEN = localStorage.getItem('black_token') || '';
 
 function mudaAba(aba) {
+  if (aba === 'inicio') aba = 'automacoes';
+  if (aba === 'ajustes') aba = 'configuracoes';
   document.querySelectorAll('.aba-card').forEach((c) => c.classList.toggle('mostra', c.dataset.aba === aba));
-  document.querySelectorAll('#abas button').forEach((b) => b.classList.toggle('ativa', b.dataset.aba === aba));
+  document.querySelectorAll('#side-nav button').forEach((b) => b.classList.toggle('ativa', b.dataset.aba === aba));
   try { localStorage.setItem('bs_aba', aba); } catch {}
 }
 
@@ -483,29 +525,29 @@ async function boot() {
   } catch { return; }
   if (!ACCOUNTS) return;
   $('login-card').style.display = 'none';
-  $('app').style.display = 'block'; $('btn-sair').style.display = 'inline-block';
+  document.querySelector('header').style.display = 'none';
+  $('app').style.display = 'flex';
   $('connect-link').href = API_BASE + '/oauth/start?state=' + encodeURIComponent(TOKEN);
   renderAccounts();
+  mudaAba(localStorage.getItem('bs_aba') || 'automacoes');
 }
 
 // ---- contas ----
 function renderAccounts() {
-  const el = $('accounts');
+  const el = $('acct-switcher');
   if (!ACCOUNTS.length) {
-    el.innerHTML = '<p class="muted">Nenhuma conta ainda — conecta seu Instagram no botão aí embaixo 👇</p>';
+    el.innerHTML = '<p class="muted" style="padding:4px 6px">Conecte seu Instagram 👇</p>';
     $('account-panels').style.display = 'none';
     return;
   }
-  el.innerHTML = '<table><tbody>' + ACCOUNTS.map(a => `
-    <tr>
-      <td><b>${a.username ? '@' + a.username : '(sem nome)'}</b> <span class="pill">${a.platform}</span></td>
-      <td class="muted">${a.ig_user_id ? 'IG ' + a.ig_user_id : ''}</td>
-      <td><span class="pill ${a.status === 'active' ? 'on' : ''}">${a.status}</span></td>
-      <td class="right" style="white-space:nowrap">
-        <button class="ghost" onclick="selectAccount('${a.id}')">gerenciar</button>
-        <button class="danger" onclick="disconnectAccount('${a.id}', '${a.username ?? ''}')">desconectar</button>
-      </td>
-    </tr>`).join('') + '</tbody></table>';
+  el.innerHTML = ACCOUNTS.map(a => `
+    <div class="acct-row">
+      <button class="acct ${SELECTED && SELECTED.id === a.id ? 'ativa' : ''}" data-acct="${a.id}" onclick="selectAccount('${a.id}')">
+        ${a.username ? '@' + esc(a.username) : '(sem nome)'}
+        <small class="${a.status === 'active' ? 'ok' : 'off'}">${a.status === 'active' ? 'ativo' : esc(a.status)}</small>
+      </button>
+      <button class="acct-x" title="desconectar" onclick="disconnectAccount('${a.id}', '${(a.username || '').replace(/'/g, '')}')">×</button>
+    </div>`).join('');
   if (!SELECTED && ACCOUNTS.length) selectAccount(ACCOUNTS[0].id);
 }
 
@@ -530,6 +572,8 @@ async function selectAccount(id) {
   $('shopee-appid').value = SELECTED.shopee_app_id || '';
   $('shopee-secret').value = SELECTED.shopee_secret || '';
   $('sel-name').textContent = SELECTED.username ? '@' + SELECTED.username : SELECTED.platform;
+  document.querySelectorAll('#acct-switcher .acct').forEach((b) => b.classList.toggle('ativa', b.dataset.acct === id));
+  const sh = $('shopee-status'); if (sh) sh.textContent = SELECTED.shopee_app_id ? '✅ credencial salva (AppID ' + SELECTED.shopee_app_id + ')' : 'nenhuma credencial salva ainda';
   $('account-panels').style.display = 'block';
   await loadProducts();
   await Promise.all([loadRules(), loadFlows(), loadAi(), loadEvents(), loadConversations(), loadContacts(), loadReport(), loadIceBreakers()]);
@@ -1530,8 +1574,8 @@ function esc(s) {
 
 // Modo inglês pro screencast do App Review (?lang=en) — o Meta pede interface em inglês na gravação
 const EN = {
-  '🏠 Início': '🏠 Home', '⚡ Automações': '⚡ Automations', '💬 Conversas': '💬 Live Chat',
-  '👥 Contatos': '👥 Contacts', '📊 Relatório': '📊 Report', '⚙️ Ajustes': '⚙️ Settings',
+  '⚡ Automações': '⚡ Automations', '💬 Conversas': '💬 Live Chat',
+  '👥 Contatos': '👥 Contacts', '🛒 Shopee': '🛒 Shopee', '📊 Relatório': '📊 Report', '⚙️ Configurações': '⚙️ Settings',
   'Sua assinatura está inativa': 'Your subscription is inactive',
   'Ativar minha assinatura': 'Activate my subscription',
   'entrar com outra conta': 'sign in with another account',
