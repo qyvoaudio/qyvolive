@@ -130,7 +130,7 @@
   .acct-opt .x:hover { color: var(--err); }
   /* automações master-detail: produtos à esquerda, regra à direita */
   .auto-split { display: flex; gap: 18px; align-items: flex-start; }
-  .auto-left { flex: 0 0 264px; }
+  .auto-left { flex: 0 0 240px; }
   .auto-right { flex: 1; min-width: 0; }
   .auto-left-head { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
   .prod-item { display: flex; align-items: center; gap: 9px; width: 100%; text-align: left; background: transparent; border: 1px solid var(--border); border-radius: 10px; padding: 9px 11px; margin-bottom: 6px; cursor: pointer; color: var(--text); font-weight: 600; }
@@ -147,7 +147,7 @@
   .rule-block .rb-acts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
   .rule-block .rb-acts button { padding: 5px 10px; }
   @media (max-width: 760px) { .auto-split { flex-direction: column; } .auto-left { flex: none; width: 100%; } }
-  #main { flex: 1; min-width: 0; padding: 26px 34px; max-width: 1160px; }
+  #main { flex: 1; min-width: 0; padding: 24px 34px; }
   @media (max-width: 760px) {
     #app { flex-direction: column; }
     #side { flex: none; height: auto; position: static; flex-direction: row; flex-wrap: wrap; }
@@ -429,7 +429,8 @@
         </div>
         <label>Tom de voz / instruções da conta</label>
         <textarea id="ai-prompt" placeholder="Ex: Você é a assistente da AnyReply, loja de ... Responda curto, simpático, com emoji."></textarea>
-        <label>Sua chave de IA <span class="muted" id="ai-key-status">(nenhuma cadastrada)</span></label>
+        <div id="ai-key-status" style="padding:10px 14px;border-radius:10px;background:var(--panel2);font-weight:600;margin-bottom:10px">nenhuma IA cadastrada</div>
+        <label>Sua chave de IA</label>
         <input id="ai-key" type="password" placeholder="cole a chave — Gemini (AQ.), Claude (sk-ant), ChatGPT (sk-) ou Groq (gsk_)">
         <span class="muted">Funciona com <b>Google Gemini</b> (grátis em aistudio.google.com, começa com AQ.), <b>Anthropic Claude</b> (sk-ant), <b>OpenAI/ChatGPT</b> (sk-) e <b>Groq/Llama</b> (gsk_, grátis). O sistema detecta qual IA é pela chave. Deixe em branco pra manter a atual; escreva "remover" pra apagar.</span>
         <div class="spacer"></div>
@@ -451,7 +452,6 @@
         <div id="report" class="row"></div>
         <div id="report-product" class="mt"></div>
         <div id="report-top" class="mt"></div>
-        <div id="report-shopee" class="mt"></div>
       </div>
 
       <div class="card aba-card" data-aba="relatorio">
@@ -478,6 +478,8 @@ function mudaAba(aba) {
   document.querySelectorAll('.aba-card').forEach((c) => c.classList.toggle('mostra', c.dataset.aba === aba));
   document.querySelectorAll('#side-nav button').forEach((b) => b.classList.toggle('ativa', b.dataset.aba === aba));
   try { localStorage.setItem('bs_aba', aba); } catch {}
+  if (aba === 'configuracoes' && typeof SELECTED !== 'undefined' && SELECTED) loadAi();
+  if (aba === 'shopee' && typeof SELECTED !== 'undefined' && SELECTED) loadShopeeTab();
 }
 
 async function sair() {
@@ -1543,35 +1545,6 @@ async function loadReport() {
   $('report-top').innerHTML = d.top_rules.length
     ? '<b>Regras que mais dispararam:</b> ' + d.top_rules.map((r) => `<span class="pill rule">${esc(r.trigger_text.slice(0, 30))} · ${r.c}×</span>`).join(' ')
     : '<span class="muted">Nenhuma regra disparou no período ainda.</span>';
-
-  // 🛒 comissões da Shopee (só pra contas com credencial cadastrada)
-  const comCreds = contas.filter((a) => a.shopee_app_id);
-  if (!comCreds.length) { $('report-shopee').innerHTML = ''; return; }
-  $('report-shopee').innerHTML = '<span class="muted">carregando comissões da Shopee… 🛒</span>';
-  try {
-    const rels = await Promise.all(comCreds.map((a) => api(`/accounts/${a.id}/shopee/report?days=${Math.min(dias, 90)}`)));
-    let comissao = 0, conv = 0, pend = 0, itens = {};
-    for (const r of rels) {
-      comissao += Number(r.comissao_total) || 0;
-      conv += r.conversoes;
-      pend += Number(r.por_status?.PENDING ?? 0);
-      for (const it of r.top_itens ?? []) {
-        itens[it.name] = itens[it.name] ?? { ...it, qty: 0, commission: 0 };
-        itens[it.name].qty += it.qty;
-        itens[it.name].commission += Number(it.commission) || 0;
-      }
-    }
-    const lista = Object.values(itens).sort((a, b) => b.commission - a.commission).slice(0, 10);
-    $('report-shopee').innerHTML = `<b>🛒 Shopee — comissões no período</b>
-      <div class="row" style="margin-top:8px">
-        <div style="background:var(--panel2);border-radius:12px;padding:14px 16px;text-align:center;min-width:120px"><div style="font-size:26px;font-weight:700">R$ ${comissao.toFixed(2).replace('.', ',')}</div><div class="muted">comissão total</div></div>
-        <div style="background:var(--panel2);border-radius:12px;padding:14px 16px;text-align:center;min-width:120px"><div style="font-size:26px;font-weight:700">${conv}</div><div class="muted">vendas geradas</div></div>
-        <div style="background:var(--panel2);border-radius:12px;padding:14px 16px;text-align:center;min-width:120px"><div style="font-size:26px;font-weight:700">R$ ${pend.toFixed(2).replace('.', ',')}</div><div class="muted">ainda pendente</div></div>
-      </div>` + (lista.length ? '<table style="margin-top:8px"><thead><tr><th></th><th>Item vendido</th><th>Qtd</th><th>Comissão</th></tr></thead><tbody>' +
-        lista.map((i) => `<tr><td>${i.image ? `<img src="${i.image}" style="width:34px;height:34px;object-fit:cover;border-radius:6px">` : ''}</td><td>${esc(i.name.slice(0, 60))}</td><td>${i.qty}</td><td>R$ ${i.commission.toFixed(2).replace('.', ',')}</td></tr>`).join('') + '</tbody></table>' : '');
-  } catch {
-    $('report-shopee').innerHTML = '<span class="muted">não consegui puxar as comissões da Shopee agora</span>';
-  }
 }
 
 // ---- contatos ----
@@ -1628,8 +1601,9 @@ async function loadAi() {
   $('ai-comment').checked = !!ai.comment_enabled;
   $('ai-prompt').value = ai.system_prompt || '';
   $('ai-key').value = '';
-  $('ai-key-status').textContent = ai.has_key ? `✅ ${ai.provider || 'IA'} salva (${ai.key_preview})` : '(nenhuma cadastrada)';
-  $('ai-key-status').style.color = ai.has_key ? 'var(--ok)' : '';
+  const st = $('ai-key-status');
+  if (ai.has_key) { st.innerHTML = `✅ IA salva: <b>${ai.provider || 'IA'}</b> <span class="muted">(${ai.key_preview})</span>`; st.style.background = 'var(--ok-soft)'; st.style.color = 'var(--ok)'; }
+  else { st.textContent = 'nenhuma IA cadastrada'; st.style.background = 'var(--panel2)'; st.style.color = 'var(--muted)'; }
 }
 
 async function saveAi() {
