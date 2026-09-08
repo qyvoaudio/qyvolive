@@ -386,9 +386,9 @@
         </div>
         <label>Tom de voz / instruções da conta</label>
         <textarea id="ai-prompt" placeholder="Ex: Você é a assistente da AnyReply, loja de ... Responda curto, simpático, com emoji."></textarea>
-        <label>Sua chave de IA — Google Gemini (grátis) ou Anthropic Claude <span class="muted" id="ai-key-status">(nenhuma cadastrada)</span></label>
-        <input id="ai-key" type="password" placeholder="AQ.Ab... (Gemini, grátis em aistudio.google.com) ou sk-ant... (Claude)">
-        <span class="muted">Gemini tem plano gratuito: cria a chave em <b>aistudio.google.com</b> sem cartão (começa com AQ.). O sistema detecta qual IA é pela chave. Deixe em branco pra manter a atual; escreva "remover" pra apagar.</span>
+        <label>Sua chave de IA <span class="muted" id="ai-key-status">(nenhuma cadastrada)</span></label>
+        <input id="ai-key" type="password" placeholder="cole a chave — Gemini (AQ.), Claude (sk-ant), ChatGPT (sk-) ou Groq (gsk_)">
+        <span class="muted">Funciona com <b>Google Gemini</b> (grátis em aistudio.google.com, começa com AQ.), <b>Anthropic Claude</b> (sk-ant), <b>OpenAI/ChatGPT</b> (sk-) e <b>Groq/Llama</b> (gsk_, grátis). O sistema detecta qual IA é pela chave. Deixe em branco pra manter a atual; escreva "remover" pra apagar.</span>
         <div class="spacer"></div>
         <button onclick="saveAi()">Salvar IA</button>
         <span class="muted"> · a IA nunca inventa preço, prazo ou promessa</span>
@@ -414,7 +414,7 @@
       <div class="card aba-card" data-aba="relatorio">
         <h2>Últimos eventos <button class="ghost" style="float:right;padding:5px 12px" onclick="loadEvents()">atualizar</button></h2>
         <table id="events-table">
-          <thead><tr><th>Quando (UTC)</th><th>Tipo</th><th>De</th><th>Texto</th><th>Respondido</th></tr></thead>
+          <thead><tr><th>Quando (UTC)</th><th>Conta</th><th>Tipo</th><th>De</th><th>Texto</th><th>Respondido</th></tr></thead>
           <tbody></tbody>
         </table>
       </div>
@@ -1538,7 +1538,8 @@ async function loadAi() {
   $('ai-comment').checked = !!ai.comment_enabled;
   $('ai-prompt').value = ai.system_prompt || '';
   $('ai-key').value = '';
-  $('ai-key-status').textContent = ai.has_key ? `(cadastrada: ${ai.key_preview})` : '(nenhuma cadastrada)';
+  $('ai-key-status').textContent = ai.has_key ? `✅ ${ai.provider || 'IA'} salva (${ai.key_preview})` : '(nenhuma cadastrada)';
+  $('ai-key-status').style.color = ai.has_key ? 'var(--ok)' : '';
 }
 
 async function saveAi() {
@@ -1558,14 +1559,16 @@ async function saveAi() {
 // ---- eventos ----
 async function loadEvents() {
   const evs = await api(`/accounts/${SELECTED.id}/events`);
+  const conta = SELECTED.username ? '@' + SELECTED.username : SELECTED.platform;
   $('events-table').querySelector('tbody').innerHTML = evs.length ? evs.map(e => `
     <tr>
       <td class="muted">${e.created_at}</td>
+      <td><b>${esc(conta)}</b></td>
       <td>${e.type}</td>
       <td>${esc(e.from_username || e.from_id || '?')}</td>
-      <td>${esc((e.text || '').slice(0, 80))}</td>
+      <td>${esc((e.text || '').slice(0, 70))}</td>
       <td><span class="pill ${e.status === 'error' ? 'error' : e.responded_via === 'rule' ? 'rule' : e.responded_via === 'ai' ? 'ai' : ''}">${e.status === 'error' ? 'erro' : e.responded_via === 'rule' ? 'regra' : e.responded_via === 'ai' ? 'IA' : '—'}</span></td>
-    </tr>`).join('') : '<tr><td colspan="5" class="muted">Nenhum evento ainda — assim que chegar comentário ou DM, aparece aqui.</td></tr>';
+    </tr>`).join('') : '<tr><td colspan="6" class="muted">Nenhum evento ainda — assim que chegar comentário ou DM, aparece aqui.</td></tr>';
 }
 
 function esc(s) {
